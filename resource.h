@@ -8,8 +8,6 @@
 #define IDM_EXIT			 105
 #define IDI_DRAGFILES		 107
 #define IDI_SMALL			 108
-#define IDC_AYCENCODER		 109
-#define IDC_ENCODER			 109
 #define IDR_MAINFRAME		 128
 #define IDC_EDIT			 1000
 #define IDC_SEND			 1001

@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,13 +16,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 擔杮岅 resources
+// 日语(日本) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
-#ifdef _WIN32
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 #pragma code_page(932)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -31,20 +29,22 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_DRAGFILES           ICON    DISCARDABLE     "tama.ico"
-IDI_SMALL               ICON    DISCARDABLE     "small.ico"
+IDI_DRAGFILES           ICON                    "tama.ico"
+
+IDI_SMALL               ICON                    "small.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDC_ENCODER MENU DISCARDABLE 
+IDC_ENCODER MENU
 BEGIN
-    MENUITEM "廔椆",                        IDM_EXIT
+    MENUITEM "廔椆",                          IDM_EXIT
 END
 
-IDR_POPUP MENU DISCARDABLE 
+IDR_POPUP MENU
 BEGIN
     POPUP "popup"
     BEGIN
@@ -71,7 +71,7 @@ END
 // TEXTINCLUDE
 //
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
     "#include ""windows.h""\r\n"
@@ -80,13 +80,13 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
 END
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
@@ -94,7 +94,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -117,18 +116,13 @@ BEGIN
     BEGIN
         BLOCK "041104b0"
         BEGIN
-            VALUE "Comments", "AYA Console\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "tama construction 21\0"
-            VALUE "FileVersion", "1, 0, 0, 21\0"
-            VALUE "InternalName", "tama\0"
-            VALUE "LegalCopyright", "\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "tama.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "tama construction 21\0"
-            VALUE "ProductVersion", "1, 0, 0, 21\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "AYA Console"
+            VALUE "FileDescription", "tama construction 21"
+            VALUE "FileVersion", "1, 0, 0, 21"
+            VALUE "InternalName", "tama"
+            VALUE "OriginalFilename", "tama.exe"
+            VALUE "ProductName", "tama construction 21"
+            VALUE "ProductVersion", "1, 0, 0, 21"
         END
     END
     BLOCK "VarFileInfo"
@@ -137,22 +131,18 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_REQUEST DIALOG DISCARDABLE  0, 0, 282, 146
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_REQUEST DIALOG 0, 0, 282, 146
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "request"
 FONT 9, "俵俽 俹僑僔僢僋"
 BEGIN
-    CONTROL         "",IDC_RICHEDIT,"RICHEDIT",ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | 
-                    WS_HSCROLL | WS_TABSTOP,0,0,281,116
+    CONTROL         "",IDC_RICHEDIT,"RICHEDIT",TCS_HOTTRACK | TCS_VERTICAL | TCS_FOCUSONBUTTONDOWN | TCS_MULTISELECT | WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,0,0,281,116
     DEFPUSHBUTTON   "request",IDC_SEND,7,125,226,14
     PUSHBUTTON      "close",IDCANCEL,239,125,36,14
 END
@@ -164,7 +154,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     "IDD_REQUEST", DIALOG
     BEGIN
@@ -182,13 +172,12 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "Tama - AYA5 Console : c21b"
-    IDC_AYCENCODER          "TamaWndClass"
 END
 
-#endif    // 擔杮岅 resources
+#endif    // 日语(日本) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

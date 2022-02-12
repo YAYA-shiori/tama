@@ -56,17 +56,17 @@ struct	SFface
 HINSTANCE	hInst;							// インスタンス
 HWND		hWnd, hDlgWnd;					// ウィンドウハンドル、ダイヤログウィンドウハンドル
 HWND		hEdit;							// リッチエディットコントロールのハンドル
-TCHAR		szTitle[MAX_LOADSTRING];		// キャプション
-TCHAR		szWindowClass[MAX_LOADSTRING];	// ウィンドウクラス名
+string		szTitle;						// キャプション
+const char*	szWindowClass="TamaWndClass";	// ウィンドウクラス名
 SFShape		fontshape[F_NUMBER];			// フォントシェープ
 COLORREF	bkcol;							// 背景色
-char		fontface[STRMAX];				// フォントフェース名
+string		fontface;						// フォントフェース名
 int			fontcharset;					// フォントの文字セット
 string		dllpath;						// DLLパス
 string		b_dllpath;						// 直前にunloadしたdllのパス
 HMODULE		hDLL;							// DLLハンドル
 int			reqshow;						// リクエストダイヤログの表示状態
-char		dlgtext[STRMAX];				// リクエストダイヤログテキスト
+string		dlgtext;						// リクエストダイヤログテキスト
 char		charset;						// 文字セット
 vector<SFface>	fontarray;					// フォント一覧
 char		receive;						// 受信フラグ
@@ -84,17 +84,17 @@ BOOL	InitInstance( HINSTANCE, int );
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 int	CALLBACK EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam);
-int	GetFontCharSet(char *name);
+int	GetFontCharSet(string name);
 
 int	ExecLoad(void);
-int	ExecRequest(char *str);
+int	ExecRequest(const char *str);
 int	ExecUnload(void);
 
 void	EOS(int newaddsz);
 
 BOOL	SetFontShape(int shapeid);
 BOOL	SetFontShapeInit(int shapeid);
-BOOL	SetMyFont(char *facename, int shapeid, int scf);
+BOOL	SetMyFont(const char *facename, int shapeid, int scf);
 BOOL	SetMyBkColor(COLORREF col);
 BOOL	SetDlgFont(HWND hDlgEdit);
 BOOL	SetDlgBkColor(HWND hDlgEdit, COLORREF col);
@@ -105,6 +105,37 @@ bool	(*loadlib)(HGLOBAL h, long len);
 bool	(*unloadlib)(void);
 bool	(*logsend)(long hwnd);
 HGLOBAL	(*requestlib)(HGLOBAL h, long *len);
+
+string LoadStringFromResource(
+	__in UINT		   stringID,
+	__in_opt HINSTANCE instance = NULL) {
+	/*
+	//bug but idk why
+	TCHAR *pBuf = NULL;
+
+	int len = LoadStringA(
+		instance,
+		stringID,
+		reinterpret_cast<LPSTR>(&pBuf), 0);
+
+	if(len)
+		return string(pBuf, pBuf + len);
+	else
+		return "";
+	*/
+	string aret;
+	size_t size = 1024,len=size;
+	while(len == size && len) {
+		aret.resize(size);
+		auto len = LoadStringA(
+			instance,
+			stringID,
+			aret.data(), size);
+		size *= 2;
+	}
+	aret.resize(len);
+	return aret;
+}
 
 // Winmain
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -125,14 +156,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
-	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadString(hInstance, IDC_AYCENCODER, szWindowClass, MAX_LOADSTRING);
+	szTitle		  = LoadStringFromResource(IDS_APP_TITLE, hInstance);
 	MyRegisterClass( hInstance );
 
 	if(!InitInstance(hInstance, nCmdShow)) 
 		return FALSE;
 
-	hAccelTable = LoadAccelerators(hInstance, (LPCTSTR)IDC_AYCENCODER);
+	hAccelTable = LoadAccelerators(hInstance, szWindowClass);
 
 	while(GetMessage(&msg, NULL, 0, 0)) {
 		if(!TranslateAccelerator (msg.hwnd, hAccelTable, &msg)) {
@@ -190,12 +220,13 @@ void	SetParameter(POINT &wp, SIZE &ws)
 	EnumFontFamiliesEx(hDC, &logFont, (FONTENUMPROC)EnumFontFamExProc, NULL, 0);
 	ReleaseDC(hWnd, hDC);
 	// ファイルから取得
-	char	filename[STRMAX];
-	GetModuleFileName(NULL, filename, MAX_PATH);
+	string	filename;
+	filename.resize(MAX_PATH);
+	GetModuleFileName(NULL, filename.data(), MAX_PATH);
 	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_splitpath(filename, drive, dir, fname, ext);
-	sprintf(filename, "%s%stama.txt", drive, dir);
-	FILE	*fp = fopen(filename, "rt");
+	_splitpath(filename.c_str(), drive, dir, fname, ext);
+	filename=string()+drive+dir+"tama.txt";
+	FILE *fp = fopen(filename.c_str(), "rt");
 	if (fp != NULL) {
 		char	buf[STRMAX];
 		char	s0[STRMAX], s1[STRMAX];
@@ -274,7 +305,7 @@ void	SetParameter(POINT &wp, SIZE &ws)
 				}
 				// face
 				else if (!strcmp(s0, "face"))
-					strcpy(fontface, s1);
+					fontface=s1;
 				// window.x
 				else if (!strcmp(s0, "window.x"))
 					wp.x = atoi(s1);
@@ -296,48 +327,49 @@ void	SetParameter(POINT &wp, SIZE &ws)
 	// ファイル指定→unicode→システムデフォルト→Arial、の順に検索して設定
 
 	// ファイル指定
-	if (strlen(fontface)) {
+	if (fontface.size()) {
 		fontcharset = GetFontCharSet(fontface);
 		if (fontcharset != -1)
 			return;
 	}
 	// unicode
-	strcpy(fontface, FONTFACE);
+	fontface=FONTFACE;
 	fontcharset = GetFontCharSet(fontface);
 	if (fontcharset != -1)
 		return;
 	// システムデフォルト
 	switch(PRIMARYLANGID(GetSystemDefaultLangID())) {
 	case LANG_KOREAN:
-		strcpy(fontface, FONT_KOREAN);
+		fontface=FONT_KOREAN;
 		break;
 	case LANG_CHINESE:
-		strcpy(fontface, FONT_CHINESE);
+		fontface=FONT_CHINESE;
 		break;
 	case LANG_JAPANESE:
-		strcpy(fontface, FONT_JAPANESE);
+		fontface=FONT_JAPANESE;
 		break;
 	default:	// 他はすべて英語にしてしまう
-		strcpy(fontface, FONT_ENGLISH);
+		fontface=FONT_ENGLISH;
 		break;
 	};
 	fontcharset = GetFontCharSet(fontface);
 	if (fontcharset != -1)
 		return;
 	// あきらめ。Arial/Default_charset
-	strcpy(fontface, FONT_ENGLISH);
+	fontface=FONT_ENGLISH;
 	fontcharset = DEFAULT_CHARSET;
 }
 
 void	SaveParameter(void)
 {
 	// ファイルへ設定を書き出し
-	char	filename[STRMAX];
-	GetModuleFileName(NULL, filename, MAX_PATH);
+	string	filename;
+	filename.resize(MAX_PATH);
+	GetModuleFileName(NULL, filename.data(), MAX_PATH);
 	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_splitpath(filename, drive, dir, fname, ext);
-	sprintf(filename, "%s%stama.txt", drive, dir);
-	FILE	*fp = fopen(filename, "wt");
+	_splitpath(filename.c_str(), drive, dir, fname, ext);
+	filename = string() + drive + dir + "tama.txt";
+	FILE *fp = fopen(filename.c_str(), "wt");
 	if (fp != NULL) {
 		fprintf(fp, "default.pt,%d\n", fontshape[F_DEFAULT].pt);
 		fprintf(fp, "default.color,%x\n",
@@ -371,7 +403,7 @@ void	SaveParameter(void)
 		
 		fprintf(fp, "background.color,%x\n", ((bkcol & 0xff) << 16) + (bkcol & 0xff00) + ((bkcol >> 16) & 0xff));
 		
-		fprintf(fp, "face,%s\n", fontface);
+		fprintf(fp, "face,%s\n", fontface.c_str());
 
 		RECT	rect;
 		GetWindowRect(hWnd, &rect);
@@ -385,12 +417,12 @@ void	SaveParameter(void)
 	}
 }
 
-int	GetFontCharSet(char *name)
+int	GetFontCharSet(string name)
 {
 	// name名のフォントのcharsetを返す
 
 	for(vector<SFface>::iterator it = fontarray.begin(); it != fontarray.end(); it++) {
-		if (!it->face.compare(0, strlen(name), name))
+		if (it->face == name)
 			return it->charset;
 	}
 	return -1;
@@ -509,7 +541,7 @@ BOOL InitInstance( HINSTANCE hInstance, int nCmdShow )
 	hInst = hInstance;
 	RECT	rect;
 	GetWindowRect(::GetDesktopWindow(), &rect);
-	hWnd = CreateWindow(szWindowClass, szTitle,
+	hWnd = CreateWindow(szWindowClass, szTitle.c_str(),
 		WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 		rect.right >> 1, rect.bottom >> 1, rect.right >> 1, rect.bottom >> 1, NULL, NULL, NULL/*hInstance*/, NULL);
 	if( !hWnd ) 
@@ -536,7 +568,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	// メッセージプロシージャ
 
 	static HINSTANCE	hRtLib;
-	static char tmpdllpath[STRMAX];
+	static string tmpdllpath;
 
 	int wmId, wmEvent;
 	MSGFILTER *pmf;
@@ -578,22 +610,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				SetFontShape(cds->dwData);
 				if (cds->cbData > 0) {
 					// 更新
-					logbuf = (wchar_t *)malloc(sizeof(wchar_t)*(cds->cbData + 1));
-					wcscpy(logbuf, (wchar_t *)cds->lpData);
+					wstring logbuf;
+					logbuf.resize(cds->cbData);
+					wcscpy(logbuf.data(), (wchar_t *)cds->lpData);
 					GetVersionEx(&osi);
 					if (osi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
-						EOS(wcslen(logbuf));
-						SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf);
+						EOS(logbuf.size());
+						SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.c_str());
 					}
 					else {
-						mstr = CUnicodeF::utf16be_to_sjis(logbuf, &dmy, CHARSET_DEFAULT);
+						mstr = CUnicodeF::utf16be_to_sjis(logbuf.c_str(), &dmy, CHARSET_DEFAULT);
 						if (mstr != NULL) {
 							EOS(strlen(mstr));
 							SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr);
 							free(mstr);
 						}
 					}
-					free(logbuf);
 				}
 			}
 			else if (cds->dwData == F_NUMBER) {
@@ -609,9 +641,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case WM_DROPFILES:
 			hDrop = (HDROP)wParam;
-			if (::DragQueryFile(hDrop, 0xFFFFFFFF, tmpdllpath, MAX_PATH)) {
+			tmpdllpath.resize(MAX_PATH);
+			if(::DragQueryFile(hDrop, 0xFFFFFFFF, tmpdllpath.data(), MAX_PATH)) {
 				// ドロップされたファイル名を取得
-				::DragQueryFile(hDrop, 0, tmpdllpath, MAX_PATH);
+				::DragQueryFile(hDrop, 0, tmpdllpath.data(), MAX_PATH);
 				// load中ならunload
 				if (dllpath.size())
 					ExecUnload();
@@ -739,8 +772,11 @@ LRESULT CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 		switch(LOWORD(wp)) {
 		case IDC_SEND:
 			if (dllpath.size()) {
-				GetWindowText(GetDlgItem(hWnd, IDC_RICHEDIT), dlgtext, STRMAX);
-				ExecRequest(dlgtext);
+				auto DIofE = GetDlgItem(hWnd, IDC_RICHEDIT);
+				auto size  = GetWindowTextLength(DIofE);
+				dlgtext.resize(size);
+				GetWindowText(DIofE, dlgtext.data(), size);
+				ExecRequest(dlgtext.c_str());
 			}
 			return TRUE;
 		case IDCANCEL:
@@ -766,30 +802,26 @@ int	ExecLoad(void)
 	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 	_splitpath(dllpath.c_str(), drive, dir, fname, ext);
 	if (strlen(ext) != 4) {
-		char	mes[STRMAX];
-		sprintf(mes, "%s : tama error TE0001 : This file isn't AYA dll.", dllpath.c_str());
-		SetWindowText(hEdit, mes);
+		string tmp = dllpath + " : tama error TE0001 : This file isn't AYA dll.";
+		SetWindowText(hEdit, tmp.c_str());
 		return 0;
 	}
 	if (ext[0] != '.' ||
 		tolower(ext[1]) != 'd' ||
 		tolower(ext[2]) != 'l' ||
-		tolower(ext[3]) != 'l') {
-		char	mes[STRMAX];
-		sprintf(mes, "%s : tama error TE0001 : This file isn't AYA dll.", dllpath.c_str());
-		SetWindowText(hEdit, mes);
+	   tolower(ext[3]) != 'l') {
+		string tmp = dllpath + " : tama error TE0001 : This file isn't AYA dll.";
+		SetWindowText(hEdit, tmp.c_str());
 		return 0;
 	}
-	char	path[STRMAX + 1];
-	sprintf(path, "%s%s", drive, dir);
+	string path = string() + drive + dir;
 
 	// logsend
 	hDLL = LoadLibrary(dllpath.c_str());
 	logsend = (bool (*)(long hwnd))GetProcAddress(hDLL, "logsend");
 	if (logsend == NULL) {
-		char	mes[STRMAX];
-		sprintf(mes, "%s : tama error TE0002 : Cannot load dll. (logsend)", dllpath.c_str());
-		SetWindowText(hEdit, mes);
+		string tmp = dllpath + " : tama error TE0002 : Cannot load dll. (logsend)";
+		SetWindowText(hEdit, tmp.c_str());
 		FreeLibrary(hDLL);
 		return 0;
 	}
@@ -797,22 +829,21 @@ int	ExecLoad(void)
 	// load
 	loadlib = (bool (*)(HGLOBAL h, long len))GetProcAddress(hDLL, "load");
 	if (loadlib == NULL) {
-		char	mes[STRMAX];
-		sprintf(mes, "%s : tama error TE0003 : Load failure.", dllpath.c_str());
-		SetWindowText(hEdit, mes);
+		string tmp = dllpath + " : tama error TE0003 : Load failure.";
+		SetWindowText(hEdit, tmp.c_str());
 		FreeLibrary(hDLL);
 		return 0;
 	}
-	long pathlen = (long)strlen(path);
+	long pathlen = (long)path.size();
 	HGLOBAL	pathstr;
 	pathstr = ::GlobalAlloc(GMEM_FIXED, pathlen);
-	memcpy(pathstr, path, pathlen);
+	memcpy(pathstr, path.c_str(), pathlen);
 	(*loadlib)(pathstr, pathlen);
 
 	return 1;
 }
 
-int	ExecRequest(char *str)
+int	ExecRequest(const char *str)
 {
 	// リクエスト
 	// 0/1=失敗/成功
@@ -821,24 +852,23 @@ int	ExecRequest(char *str)
 //		return 0;
 
 	OSVERSIONINFO	osi = { sizeof(OSVERSIONINFO) };
-	char	mes[STRMAX];
 
 	SendMessage(hEdit, EM_SETSEL, -1, -1);
 
 	requestlib = (HGLOBAL (*)(HGLOBAL h, long *len))GetProcAddress(hDLL, "request");
 	if (requestlib == NULL) {
-		sprintf(mes, "%s : tama error TE0005 : Request failure.", dllpath.c_str());
-		EOS(strlen(mes));
-		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+		string tmp = dllpath + " : tama error TE0005 : Request failure.";
+		EOS(tmp.size());
+		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 		return 0;
 	}
 	// 文字コード変換
 	int	dmy;
 	wchar_t	*wstr = CUnicodeF::sjis_to_utf16be(str, &dmy, CHARSET_DEFAULT);
 	if (wstr == NULL) {
-		sprintf(mes, "%s : tama error TE0006 : Request failure.", dllpath.c_str());
-		EOS(strlen(mes));
-		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+		string tmp = dllpath + " : tama error TE0006 : Request failure.";
+		EOS(tmp.size());
+		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 		return 0;
 	}
 	char	*sstr;
@@ -847,9 +877,9 @@ int	ExecRequest(char *str)
 		sstr = CUnicodeF::utf16be_to_utf8(wstr, &dmy);
 		free(wstr);
 		if (sstr == NULL) {
-			sprintf(mes, "%s : tama error TE0007 : Request failure.", dllpath.c_str());
-			EOS(strlen(mes));
-			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+			string tmp = dllpath + " : tama error TE0007 : Request failure.";
+			EOS(tmp.size());
+			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 			return 0;
 		}
 	}
@@ -858,9 +888,9 @@ int	ExecRequest(char *str)
 		sstr = CUnicodeF::utf16be_to_sjis(wstr, &dmy, charset);
 		free(wstr);
 		if (sstr == NULL) {
-			sprintf(mes, "%s : tama error TE0008 : Request failure.", dllpath.c_str());
-			EOS(strlen(mes));
-			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+			string tmp = dllpath + " : tama error TE0008 : Request failure.";
+			EOS(tmp.size());
+			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 			return 0;
 		}
 	}
@@ -885,9 +915,9 @@ int	ExecRequest(char *str)
 			wstr = CUnicodeF::sjis_to_utf16be(returnstr, &dmy, charset);
 		free(returnstr);
 		if (wstr == NULL) {
-			sprintf(mes, "%s : tama error TE0009 : Request failure.", dllpath.c_str());
-			EOS(strlen(mes));
-			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+			string tmp = dllpath + " : tama error TE0009 : Request failure.";
+			EOS(tmp.size());
+			SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 			return 0;
 		}
 		free(wstr);
@@ -898,9 +928,9 @@ int	ExecRequest(char *str)
 	else {
 		// 取得失敗
 		GlobalFree(returnvalue);
-		sprintf(mes, "%s : tama error TE0010 : Request failure.", dllpath.c_str());
-		EOS(strlen(mes));
-		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mes);
+		string tmp = dllpath + " : tama error TE0010 : Request failure.";
+		EOS(tmp.size());
+		SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)tmp.c_str());
 		return 0;
 	}
 }
@@ -914,9 +944,8 @@ int	ExecUnload()
 
 	unloadlib = (bool (*)(void))GetProcAddress(hDLL, "unload");
 	if (unloadlib == NULL) {
-		char	mes[STRMAX];
-		sprintf(mes, "%s : tama error TE0004 : Unload failure.", dllpath.c_str());
-		SetWindowText(hEdit, mes);
+		string tmp = dllpath + " : tama error TE0004 : Unload failure.";
+		SetWindowText(hEdit, tmp.c_str());
 		FreeLibrary(hDLL);
 		return 0;
 	}
@@ -930,17 +959,17 @@ BOOL	SetFontShape(int shapeid)
 {
 	// IDでフォント属性を設定
 
-	return SetMyFont(fontface, shapeid, SCF_SELECTION);
+	return SetMyFont(fontface.c_str(), shapeid, SCF_SELECTION);
 }
 
 BOOL	SetFontShapeInit(int shapeid)
 {
 	// IDでフォント属性を初期化
 
-	return SetMyFont(fontface, shapeid, SCF_ALL);
+	return SetMyFont(fontface.c_str(), shapeid, SCF_ALL);
 }
 
-BOOL SetMyFont(char *facename, int shapeid, int scf)
+BOOL SetMyFont(const char *facename, int shapeid, int scf)
 {
 	// フォントフェース、ポイント、色、ボールドを設定
 
@@ -952,7 +981,7 @@ BOOL SetMyFont(char *facename, int shapeid, int scf)
 		CFM_UNDERLINE;
 	cfm.yHeight = 20*fontshape[shapeid].pt;	// pt to twips
 	cfm.bCharSet = fontcharset;
-	strcpy(cfm.szFaceName, facename);
+	strcpy_s(cfm.szFaceName, sizeof(cfm.szFaceName), facename);
 	cfm.dwEffects = (fontshape[shapeid].bold) ? CFE_BOLD : 0;
 	cfm.dwEffects |= (fontshape[shapeid].italic) ? CFE_ITALIC : 0;
 	cfm.crTextColor = fontshape[shapeid].col;
@@ -975,7 +1004,7 @@ BOOL SetDlgFont(HWND hDlgEdit)
 		CFM_UNDERLINE;
 	cfm.yHeight = 20*fontshape[F_DEFAULT].pt;	// pt to twips
 	cfm.bCharSet = fontcharset;
-	strcpy(cfm.szFaceName, fontface);
+	strcpy_s(cfm.szFaceName, sizeof(cfm.szFaceName), fontface.c_str());
 	cfm.dwEffects = (fontshape[F_DEFAULT].bold) ? CFE_BOLD : 0;
 	cfm.dwEffects |= (fontshape[F_DEFAULT].italic) ? CFE_ITALIC : 0;
 	cfm.crTextColor = fontshape[F_DEFAULT].col;
