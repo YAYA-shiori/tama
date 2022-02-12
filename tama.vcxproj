@@ -176,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="tama.ico" />
-    <Image Include="mes.bmp" />
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -48,9 +48,6 @@
     <Image Include="tama.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="mes.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="small.ico">
       <Filter>Resource Files</Filter>
     </Image>
