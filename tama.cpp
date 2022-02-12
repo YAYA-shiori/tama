@@ -76,7 +76,7 @@ HANDLE		hMutex;							// ミューテックスオブジェクト
 // 関数のプロトタイプ
 void	SetParameter(POINT &wp, SIZE &ws);
 void	SaveParameter(void);
-char	Split(char *str, char *s0, char *s1, char *sepstr);
+char	Split(char *str, char *s0, char *s1, const char *sepstr);
 void	CutSpace(char *str);
 int		HexStrToInt(char *str);
 ATOM	MyRegisterClass(HINSTANCE hInstance);
@@ -408,7 +408,7 @@ int CALLBACK EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, i
 	return 1;
 }
 
-char	Split(char *str, char *s0, char *s1, char *sepstr)
+char	Split(char *str, char *s0, char *s1, const char *sepstr)
 {
 	// strをs0とs1に分解
 
