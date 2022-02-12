@@ -575,7 +575,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	DWORD dwEvent;
 	COPYDATASTRUCT	*cds;
 	HDROP	hDrop;
-	wchar_t	*logbuf;
 	char	*mstr;
 	int	dmy;
 	HMENU hMenu, hSubMenu;
@@ -801,15 +800,11 @@ int	ExecLoad(void)
 	// dllフルパス作成
 	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 	_splitpath(dllpath.c_str(), drive, dir, fname, ext);
-	if (strlen(ext) != 4) {
-		string tmp = dllpath + " : tama error TE0001 : This file isn't AYA dll.";
-		SetWindowText(hEdit, tmp.c_str());
-		return 0;
-	}
-	if (ext[0] != '.' ||
+	if (strlen(ext) != 4 ||
+		ext[0] != '.' ||
 		tolower(ext[1]) != 'd' ||
 		tolower(ext[2]) != 'l' ||
-	   tolower(ext[3]) != 'l') {
+	    tolower(ext[3]) != 'l') {
 		string tmp = dllpath + " : tama error TE0001 : This file isn't AYA dll.";
 		SetWindowText(hEdit, tmp.c_str());
 		return 0;
@@ -818,25 +813,36 @@ int	ExecLoad(void)
 
 	// logsend
 	hDLL = LoadLibrary(dllpath.c_str());
+	if(hDLL == NULL) {
+		string tmp = dllpath + " : tama error TE0011 : Cannot load dll.";
+		SetWindowText(hEdit, tmp.c_str());
+		return 0;
+	}
 	logsend = (bool (*)(long hwnd))GetProcAddress(hDLL, "logsend");
 	if (logsend == NULL) {
+		FreeLibrary(hDLL);
 		string tmp = dllpath + " : tama error TE0002 : Cannot load dll. (logsend)";
 		SetWindowText(hEdit, tmp.c_str());
-		FreeLibrary(hDLL);
 		return 0;
 	}
 	(*logsend)((long)hWnd);
 	// load
 	loadlib = (bool (*)(HGLOBAL h, long len))GetProcAddress(hDLL, "load");
 	if (loadlib == NULL) {
+		FreeLibrary(hDLL);
 		string tmp = dllpath + " : tama error TE0003 : Load failure.";
 		SetWindowText(hEdit, tmp.c_str());
-		FreeLibrary(hDLL);
 		return 0;
 	}
 	long pathlen = (long)path.size();
 	HGLOBAL	pathstr;
 	pathstr = ::GlobalAlloc(GMEM_FIXED, pathlen);
+	if(pathstr == NULL) {
+		FreeLibrary(hDLL);
+		string tmp = dllpath + " : tama error TE0012 : GlobalAlloc failure.";
+		SetWindowText(hEdit, tmp.c_str());
+		return 0;
+	}
 	memcpy(pathstr, path.c_str(), pathlen);
 	(*loadlib)(pathstr, pathlen);
 
@@ -897,6 +903,12 @@ int	ExecRequest(const char *str)
 	// GMEM_FIXEDにコピー
 	long len = (long)strlen(sstr);
 	HGLOBAL	headerstr = ::GlobalAlloc(GMEM_FIXED, len);
+	if(headerstr == NULL) {
+		free(sstr);
+		string tmp = dllpath + " : tama error TE0012 : GlobalAlloc failure.";
+		SetWindowText(hEdit, tmp.c_str());
+		return 0;
+	}
 	memcpy(headerstr, sstr, len);
 	free(sstr);
 	// 実行
