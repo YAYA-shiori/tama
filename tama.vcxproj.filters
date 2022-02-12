@@ -21,7 +21,7 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UnicodeF.cpp">
+    <ClCompile Include="sstp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,7 +40,7 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UnicodeF.h">
+    <ClInclude Include="sstp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
