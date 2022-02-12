@@ -16,7 +16,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 日语(日本) resources
+// Japanese resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
@@ -177,7 +177,7 @@ BEGIN
     IDS_APP_TITLE           "Tama - AYA5 Console : c21b"
 END
 
-#endif    // 日语(日本) resources
+#endif    // Japanese resources
 /////////////////////////////////////////////////////////////////////////////
 
 
