@@ -264,14 +264,14 @@ int APIENTRY WinMain(
 	GhostSelection(hInstance);
 
 	ShowWindow(hWnd, SW_SHOW);
-	On_yatamaOpen(hWnd);
+	On_tamaOpen(hWnd);
 	while(GetMessage(&msg, NULL, 0, 0)) {
 		if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 	}
-	On_yatamaExit(hWnd);
+	On_tamaExit(hWnd);
 
 	if(hMutex != NULL)
 		::CloseHandle(hMutex);
