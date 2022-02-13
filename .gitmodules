@@ -1,0 +1,3 @@
+[submodule "my-gists"]
+	path = my-gists
+	url = git@github.com:steve02081504/my-gists.git
