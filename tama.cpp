@@ -77,7 +77,6 @@ Cshiori shiori;
 namespace args_info {
 	wstring		 ghost_link_to;
 	HWND		 ghost_hwnd = NULL;
-	vector<HWND> hwnd_list;
 }		// namespace args_info
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
@@ -206,11 +205,11 @@ void GhostSelection(HINSTANCE hInstance) {
 			auto gsui = CreateDialog(hInstance, (LPCTSTR)IDD_GHOST_SELECT, hWnd, (DLGPROC)GhostSelectDlgProc);
 			ShowWindow(gsui, SW_SHOW);
 			ShowWindow(hWnd, SW_HIDE);
-			hwnd_list.resize(fmobj.info_map.size());
 			for(auto &i: fmobj.info_map) {
 				HWND	tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
+				if(!tmp_hwnd)
+					continue;
 				wstring name;
-
 				if(i.second[L"fullname"].size())
 					name = i.second[L"fullname"];
 				if(i.second[L"name"].size()) {
@@ -220,8 +219,10 @@ void GhostSelection(HINSTANCE hInstance) {
 						name = i.second[L"name"];
 				}
 				auto index		 = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)name.c_str());
-				hwnd_list[index] = tmp_hwnd;
+				SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)tmp_hwnd);
 			}
+			auto index		 = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST).c_str());
+			SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)(HWND)-1);
 			while(GetMessage(&msg, NULL, 0, 0)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -231,7 +232,11 @@ void GhostSelection(HINSTANCE hInstance) {
 		}
 	}
 link_to_ghost:
+	if(ghost_hwnd == (HWND)-1)
+		ghost_hwnd = NULL;
 	linker.link_to_ghost(ghost_hwnd);
+	if(ghost_hwnd)
+		SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
 }
 
 // Winmain
@@ -507,10 +512,10 @@ void SaveParameter(void) {
 		RECT rect;
 		GetWindowRect(hWnd, &rect);
 
-		fprintf(fp, "window.x,%d\n", rect.left);
-		fprintf(fp, "window.y,%d\n", rect.top);
-		fprintf(fp, "window.width,%d\n", rect.right - rect.left + 1);
-		fprintf(fp, "window.height,%d\n", rect.bottom - rect.top + 1);
+		fprintf(fp, "window.x,%ld\n", rect.left);
+		fprintf(fp, "window.y,%ld\n", rect.top);
+		fprintf(fp, "window.width,%ld\n", rect.right - rect.left + 1);
+		fprintf(fp, "window.height,%ld\n", rect.bottom - rect.top + 1);
 
 		fclose(fp);
 	}
@@ -772,10 +777,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		wmId	= LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
 		switch(wmId) {
-		case IDM_EXIT:
-			// 終了
-			DestroyWindow(hWnd);
-			break;
 		case ID_TAMA_JUMPTOP:
 			//　先頭へジャンプ
 			SendMessage(hEdit, WM_VSCROLL, SB_TOP, NULL);
@@ -883,9 +884,12 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 		switch(LOWORD(wParam)) {
 		case IDOK: {
 			auto index = SendDlgItemMessage(hDlg, IDC_GHOST_SELECT_LIST, LB_GETCURSEL, 0, 0);
-			ghost_hwnd = hwnd_list[index];
-			hwnd_list.clear();
+			ghost_hwnd = (HWND)SendDlgItemMessageW(hDlg, IDC_GHOST_SELECT_LIST, LB_GETITEMDATA, index, 0);
 			EndDialog(hDlg, TRUE);
+			if(!ghost_hwnd) {
+				MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NULL_GHOST_HWND).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+				exit(EXIT_FAILURE);
+			}
 			return TRUE;
 		}
 		case IDCANCEL:
