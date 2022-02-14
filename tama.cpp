@@ -9,9 +9,10 @@
 #define STRMAX		   1024
 
 // フォント設定
-#define CHECK_TOOL_WCNAME "TamaWndClass"
-#define FONTFACE		  "Arial Unicode MS" /* universal unicodeフォント */
-#define FONTFACELEN		  16				 /* FONTFACEのstrlen */
+#define CHECK_TOOL_WCNAME  "TamaWndClass"
+#define CHECK_TOOL_WCNAMEW L"TamaWndClass"
+#define FONTFACE		   "Arial Unicode MS" /* universal unicodeフォント */
+#define FONTFACELEN		   16				  /* FONTFACEのstrlen */
 
 #define FONT_JAPANESE "ＭＳ ゴシック" /* 日本語フォント */
 #define FONT_CHINESE  "MingLiU"		  /* ハングルフォント */
@@ -55,28 +56,29 @@ struct SFface {
 };
 
 // グローバル変数
-HINSTANCE	   hInst;										// インスタンス
-HWND		   hWnd, hDlgWnd;								// ウィンドウハンドル、ダイヤログウィンドウハンドル
-HWND		   hEdit;										// リッチエディットコントロールのハンドル
-wstring		   szTitle;										// キャプション
-const wchar_t *szWindowClass = L"" CHECK_TOOL_WCNAME;		// ウィンドウクラス名
-SFShape		   fontshape[F_NUMBER];							// フォントシェープ
-COLORREF	   bkcol;										// 背景色
-string		   fontface;									// フォントフェース名
-int			   fontcharset;									// フォントの文字セット
-wstring		   dllpath;										// DLLパス
-wstring		   b_dllpath;									// 直前にunloadしたdllのパス
-int			   reqshow;										// リクエストダイヤログの表示状態
-wstring		   dlgtext;										// リクエストダイヤログテキスト
-char		   charset;										// 文字セット
-vector<SFface> fontarray;									// フォント一覧
-char		   receive;										// 受信フラグ
+HINSTANCE	   hInst;					  // インスタンス
+HWND		   hWnd, hDlgWnd;			  // ウィンドウハンドル、ダイヤログウィンドウハンドル
+HWND		   hEdit;					  // リッチエディットコントロールのハンドル
+wstring		   szTitle;					  // キャプション
+const wchar_t *szWindowClass;			  // ウィンドウクラス名
+const char *   szWindowClassA;			  // ウィンドウクラス名
+SFShape		   fontshape[F_NUMBER];		  // フォントシェープ
+COLORREF	   bkcol;					  // 背景色
+string		   fontface;				  // フォントフェース名
+int			   fontcharset;				  // フォントの文字セット
+wstring		   dllpath;					  // DLLパス
+wstring		   b_dllpath;				  // 直前にunloadしたdllのパス
+int			   reqshow;					  // リクエストダイヤログの表示状態
+wstring		   dlgtext;					  // リクエストダイヤログテキスト
+char		   charset;					  // 文字セット
+vector<SFface> fontarray;				  // フォント一覧
+char		   receive;					  // 受信フラグ
 
 Cshiori shiori;
 
 namespace args_info {
-	wstring		 ghost_link_to;
-	HWND		 ghost_hwnd = NULL;
+	wstring ghost_link_to;
+	HWND	ghost_hwnd = NULL;
 }		// namespace args_info
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
@@ -87,7 +89,7 @@ void			 SaveParameter(void);
 char			 Split(char *str, char *s0, char *s1, const char *sepstr);
 void			 CutSpace(char *str);
 int				 HexStrToInt(char *str);
-ATOM			 MyRegisterClass(HINSTANCE hInstance);
+ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -206,7 +208,7 @@ void GhostSelection(HINSTANCE hInstance) {
 			ShowWindow(gsui, SW_SHOW);
 			ShowWindow(hWnd, SW_HIDE);
 			for(auto &i: fmobj.info_map) {
-				HWND	tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
+				HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
 				if(!tmp_hwnd)
 					continue;
 				wstring name;
@@ -218,10 +220,10 @@ void GhostSelection(HINSTANCE hInstance) {
 					else
 						name = i.second[L"name"];
 				}
-				auto index		 = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)name.c_str());
+				auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)name.c_str());
 				SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)tmp_hwnd);
 			}
-			auto index		 = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST).c_str());
+			auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST).c_str());
 			SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)(HWND)-1);
 			while(GetMessage(&msg, NULL, 0, 0)) {
 				TranslateMessage(&msg);
@@ -235,8 +237,6 @@ link_to_ghost:
 	if(ghost_hwnd == (HWND)-1)
 		ghost_hwnd = NULL;
 	linker.link_to_ghost(ghost_hwnd);
-	if(ghost_hwnd)
-		SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
 }
 
 // Winmain
@@ -245,7 +245,12 @@ int APIENTRY WinMain(
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPSTR		   lpCmdLine,
 	_In_ int		   nShowCmd) {
-	hMutex = ::CreateMutex(NULL, FALSE, "scns_task");
+	ArgsHandling();
+
+	GhostSelection(hInstance);
+
+	using namespace args_info;
+	hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + to_wstring((long)ghost_hwnd)).c_str());
 	if(hMutex == NULL)
 		return FALSE;
 	if(GetLastError() == ERROR_ALREADY_EXISTS) {
@@ -253,29 +258,40 @@ int APIENTRY WinMain(
 		return FALSE;
 	}
 
+	if(ghost_hwnd) {
+		szWindowClass  = CHECK_TOOL_WCNAMEW "_Targeted";
+		szWindowClassA = CHECK_TOOL_WCNAME "_Targeted";
+	}
+	else {
+		szWindowClass  = CHECK_TOOL_WCNAMEW;
+		szWindowClassA = CHECK_TOOL_WCNAME;
+	}
+
 	MSG	   msg;
 	HACCEL hAccelTable;
 
 	szTitle = LoadStringFromResource(IDS_APP_TITLE, hInstance);
-	MyRegisterClass(hInstance);
+	TamaMainWindowClassRegister(hInstance);
 
 	if(!InitInstance(hInstance, nShowCmd))
 		return FALSE;
 
 	hAccelTable = LoadAcceleratorsW(hInstance, szWindowClass);
 
-	ArgsHandling();
-
-	GhostSelection(hInstance);
-
 	ShowWindow(hWnd, SW_SHOW);
+
 	On_tamaOpen(hWnd);
+	bool has_log = GetWindowTextLength(hEdit);
+	if(ghost_hwnd && !has_log)
+		SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
+
 	while(GetMessage(&msg, NULL, 0, 0)) {
 		if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 	}
+
 	On_tamaExit(hWnd);
 
 	if(hMutex != NULL)
@@ -611,7 +627,7 @@ int HexStrToInt(char *str) {
 	return result;
 }
 
-ATOM MyRegisterClass(HINSTANCE hInstance) {
+ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	// ウィンドウクラス登録
 
 	WNDCLASSEX wcex;
@@ -625,7 +641,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 	wcex.hCursor	   = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName  = NULL;
-	wcex.lpszClassName = CHECK_TOOL_WCNAME;
+	wcex.lpszClassName = szWindowClassA;
 	wcex.hIconSm	   = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_SMALL);
 
 	return RegisterClassEx(&wcex);
@@ -884,6 +900,8 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 		switch(LOWORD(wParam)) {
 		case IDOK: {
 			auto index = SendDlgItemMessage(hDlg, IDC_GHOST_SELECT_LIST, LB_GETCURSEL, 0, 0);
+			if(index == LB_ERR)
+				return TRUE;
 			ghost_hwnd = (HWND)SendDlgItemMessageW(hDlg, IDC_GHOST_SELECT_LIST, LB_GETITEMDATA, index, 0);
 			EndDialog(hDlg, TRUE);
 			if(!ghost_hwnd) {
