@@ -1089,8 +1089,8 @@ char *setlocaleauto(int category) {
 		return setlocale(category, "Sanskrit");
 	case LANG_FARSI:
 		return setlocale(category, "Farsi");
-		//		case LANG_SERBIAN:					// どこかと値が衝突している模様
-		//			return setlocale(category, "Serbian");
+	//case LANG_SERBIAN:					// どこかと値が衝突している模様
+		//return setlocale(category, "Serbian");
 	case LANG_FINNISH:
 		return setlocale(category, "Finnish");
 	case LANG_SINDHI:
@@ -1137,8 +1137,8 @@ char *setlocaleauto(int category) {
 		return setlocale(category, "Turkish");
 	case LANG_ITALIAN:
 		return setlocale(category, "Italian");
-		//		case LANG_UKRANIAN:					// 存在しない？
-		//			return setlocale(category, "Ukranian");
+	//case LANG_UKRANIAN:					// 存在しない？
+		//return setlocale(category, "Ukranian");
 	case LANG_JAPANESE:
 		return setlocale(category, "Japanese");
 	case LANG_URDU:
