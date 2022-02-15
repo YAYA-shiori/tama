@@ -250,7 +250,7 @@ int APIENTRY WinMain(
 	GhostSelection(hInstance);
 
 	using namespace args_info;
-	hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + to_wstring((long)ghost_hwnd)).c_str());
+	hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + to_wstring((size_t)ghost_hwnd)).c_str());
 	if(hMutex == NULL)
 		return FALSE;
 	if(GetLastError() == ERROR_ALREADY_EXISTS) {
