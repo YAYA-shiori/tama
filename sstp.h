@@ -1,5 +1,5 @@
-void On_tamaOpen(HWND hEdit);
-void On_tamaExit(HWND hEdit);
+void On_tamaOpen(HWND hEdit, wstring ghost_path);
+void On_tamaExit(HWND hEdit, wstring ghost_path);
 
 #define DONT_USE_SOCKET
 #include "my-gists/ukagaka/sstp.hpp"

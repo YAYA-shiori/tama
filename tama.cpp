@@ -79,16 +79,18 @@ Cshiori shiori;
 namespace args_info {
 	wstring ghost_link_to;
 	HWND	ghost_hwnd = NULL;
+	wstring ghost_path;
 }		// namespace args_info
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
 
 // 関数のプロトタイプ
 void			 SetParameter(POINT &wp, SIZE &ws);
+bool			 SetParameter(const char *s0, const char *s1, POINT &wp, SIZE &ws);
 void			 SaveParameter(void);
 char			 Split(char *str, char *s0, char *s1, const char *sepstr);
 void			 CutSpace(char *str);
-int				 HexStrToInt(char *str);
+int				 HexStrToInt(const char *str);
 ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -237,6 +239,14 @@ link_to_ghost:
 	if(ghost_hwnd == (HWND)-1)
 		ghost_hwnd = NULL;
 	linker.link_to_ghost(ghost_hwnd);
+	//get ghost path
+	fmobj.Update_info();
+	for(auto &i: fmobj.info_map) {
+		HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
+		if(tmp_hwnd != ghost_hwnd)
+			continue;
+		ghost_path = i.second[L"ghostpath"] + L"ghost\\master\\";
+	}
 }
 
 // Winmain
@@ -280,7 +290,7 @@ int APIENTRY WinMain(
 
 	ShowWindow(hWnd, SW_SHOW);
 
-	On_tamaOpen(hWnd);
+	On_tamaOpen(hWnd, ghost_path);
 	bool has_log = GetWindowTextLength(hEdit);
 	if(ghost_hwnd && !has_log)
 		SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
@@ -292,7 +302,7 @@ int APIENTRY WinMain(
 		}
 	}
 
-	On_tamaExit(hWnd);
+	On_tamaExit(hWnd, ghost_path);
 
 	if(hMutex != NULL)
 		::CloseHandle(hMutex);
@@ -364,81 +374,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 			if(!strlen(buf))
 				continue;
 			if(Split(buf, s0, s1, ",")) {
-				// default
-				if(!strcmp(s0, "default.pt"))
-					fontshape[F_DEFAULT].pt = atoi(s1);
-				else if(!strcmp(s0, "default.color")) {
-					int col					 = HexStrToInt(s1);
-					fontshape[F_DEFAULT].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				else if(!strcmp(s0, "default.bold"))
-					fontshape[F_DEFAULT].bold = (atoi(s1)) ? 1 : 0;
-				else if(!strcmp(s0, "default.italic"))
-					fontshape[F_DEFAULT].italic = (atoi(s1)) ? 1 : 0;
-				// fatal
-				else if(!strcmp(s0, "fatal.pt"))
-					fontshape[F_FATAL].pt = atoi(s1);
-				else if(!strcmp(s0, "fatal.color")) {
-					int col				   = HexStrToInt(s1);
-					fontshape[F_FATAL].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				else if(!strcmp(s0, "fatal.bold"))
-					fontshape[F_FATAL].bold = (atoi(s1)) ? 1 : 0;
-				else if(!strcmp(s0, "fatal.italic"))
-					fontshape[F_FATAL].italic = (atoi(s1)) ? 1 : 0;
-				// error
-				else if(!strcmp(s0, "error.pt"))
-					fontshape[F_ERROR].pt = atoi(s1);
-				else if(!strcmp(s0, "error.color")) {
-					int col				   = HexStrToInt(s1);
-					fontshape[F_ERROR].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				else if(!strcmp(s0, "error.bold"))
-					fontshape[F_ERROR].bold = (atoi(s1)) ? 1 : 0;
-				else if(!strcmp(s0, "error.italic"))
-					fontshape[F_ERROR].italic = (atoi(s1)) ? 1 : 0;
-				// warning
-				else if(!strcmp(s0, "warning.pt"))
-					fontshape[F_WARNING].pt = atoi(s1);
-				else if(!strcmp(s0, "warning.color")) {
-					int col					 = HexStrToInt(s1);
-					fontshape[F_WARNING].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				else if(!strcmp(s0, "warning.bold"))
-					fontshape[F_WARNING].bold = (atoi(s1)) ? 1 : 0;
-				else if(!strcmp(s0, "warning.italic"))
-					fontshape[F_WARNING].italic = (atoi(s1)) ? 1 : 0;
-				// note
-				else if(!strcmp(s0, "note.pt"))
-					fontshape[F_NOTE].pt = atoi(s1);
-				else if(!strcmp(s0, "note.color")) {
-					int col				  = HexStrToInt(s1);
-					fontshape[F_NOTE].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				else if(!strcmp(s0, "note.bold"))
-					fontshape[F_NOTE].bold = (atoi(s1)) ? 1 : 0;
-				else if(!strcmp(s0, "note.italic"))
-					fontshape[F_NOTE].italic = (atoi(s1)) ? 1 : 0;
-				// background
-				else if(!strcmp(s0, "background.color")) {
-					int col = HexStrToInt(s1);
-					bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-				}
-				// face
-				else if(!strcmp(s0, "face"))
-					fontface = s1;
-				// window.x
-				else if(!strcmp(s0, "window.x"))
-					wp.x = atoi(s1);
-				// window.y
-				else if(!strcmp(s0, "window.y"))
-					wp.y = atoi(s1);
-				// window.width
-				else if(!strcmp(s0, "window.width"))
-					ws.cx = atoi(s1);
-				// window.height
-				else if(!strcmp(s0, "window.height"))
-					ws.cy = atoi(s1);
+				SetParameter(s0, s1, wp, ws);
 			}
 		}
 		fclose(fp);
@@ -479,6 +415,87 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	// あきらめ。Arial/Default_charset
 	fontface	= FONT_ENGLISH;
 	fontcharset = DEFAULT_CHARSET;
+}
+
+bool SetParameter(const char *s0, const char *s1, POINT &wp, SIZE &ws) {
+	// default
+	if(!strcmp(s0, "default.pt"))
+		fontshape[F_DEFAULT].pt = atoi(s1);
+	else if(!strcmp(s0, "default.color")) {
+		int col					 = HexStrToInt(s1);
+		fontshape[F_DEFAULT].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	else if(!strcmp(s0, "default.bold"))
+		fontshape[F_DEFAULT].bold = (atoi(s1)) ? 1 : 0;
+	else if(!strcmp(s0, "default.italic"))
+		fontshape[F_DEFAULT].italic = (atoi(s1)) ? 1 : 0;
+	// fatal
+	else if(!strcmp(s0, "fatal.pt"))
+		fontshape[F_FATAL].pt = atoi(s1);
+	else if(!strcmp(s0, "fatal.color")) {
+		int col				   = HexStrToInt(s1);
+		fontshape[F_FATAL].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	else if(!strcmp(s0, "fatal.bold"))
+		fontshape[F_FATAL].bold = (atoi(s1)) ? 1 : 0;
+	else if(!strcmp(s0, "fatal.italic"))
+		fontshape[F_FATAL].italic = (atoi(s1)) ? 1 : 0;
+	// error
+	else if(!strcmp(s0, "error.pt"))
+		fontshape[F_ERROR].pt = atoi(s1);
+	else if(!strcmp(s0, "error.color")) {
+		int col				   = HexStrToInt(s1);
+		fontshape[F_ERROR].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	else if(!strcmp(s0, "error.bold"))
+		fontshape[F_ERROR].bold = (atoi(s1)) ? 1 : 0;
+	else if(!strcmp(s0, "error.italic"))
+		fontshape[F_ERROR].italic = (atoi(s1)) ? 1 : 0;
+	// warning
+	else if(!strcmp(s0, "warning.pt"))
+		fontshape[F_WARNING].pt = atoi(s1);
+	else if(!strcmp(s0, "warning.color")) {
+		int col					 = HexStrToInt(s1);
+		fontshape[F_WARNING].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	else if(!strcmp(s0, "warning.bold"))
+		fontshape[F_WARNING].bold = (atoi(s1)) ? 1 : 0;
+	else if(!strcmp(s0, "warning.italic"))
+		fontshape[F_WARNING].italic = (atoi(s1)) ? 1 : 0;
+	// note
+	else if(!strcmp(s0, "note.pt"))
+		fontshape[F_NOTE].pt = atoi(s1);
+	else if(!strcmp(s0, "note.color")) {
+		int col				  = HexStrToInt(s1);
+		fontshape[F_NOTE].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	else if(!strcmp(s0, "note.bold"))
+		fontshape[F_NOTE].bold = (atoi(s1)) ? 1 : 0;
+	else if(!strcmp(s0, "note.italic"))
+		fontshape[F_NOTE].italic = (atoi(s1)) ? 1 : 0;
+	// background
+	else if(!strcmp(s0, "background.color")) {
+		int col = HexStrToInt(s1);
+		bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+	}
+	// face
+	else if(!strcmp(s0, "face"))
+		fontface = s1;
+	// window.x
+	else if(!strcmp(s0, "window.x"))
+		wp.x = atoi(s1);
+	// window.y
+	else if(!strcmp(s0, "window.y"))
+		wp.y = atoi(s1);
+	// window.width
+	else if(!strcmp(s0, "window.width"))
+		ws.cx = atoi(s1);
+	// window.height
+	else if(!strcmp(s0, "window.height"))
+		ws.cy = atoi(s1);
+	else
+		return 0;
+	return 1;
 }
 
 void SaveParameter(void) {
@@ -608,7 +625,7 @@ void CutSpace(char *str) {
 	*(str + i - j + 1) = '\0';
 }
 
-int HexStrToInt(char *str) {
+int HexStrToInt(const char *str) {
 	// HEXのstrをintに変換
 
 	int len	   = strlen(str);
