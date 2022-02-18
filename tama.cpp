@@ -1,8 +1,11 @@
 ﻿#include "stdafx.h"
-#include "sstp.h"
 #include "my-gists/ukagaka/SFMO.hpp"
 #include "my-gists/ukagaka/shiori_loader.hpp"
+#define DONT_USE_SOCKET
+#include "my-gists/ukagaka/sstp.hpp"
 #include "my-gists/codepage.hpp"
+#include <dwmapi.h>
+#include "my-gists/windows/SetIcon.h"
 
 // 汎用
 #define MAX_LOADSTRING 100
@@ -62,6 +65,7 @@ wstring		   szTitle;									// キャプション
 const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;		// ウィンドウクラス名
 SFShape		   fontshape[F_NUMBER];						// フォントシェープ
 COLORREF	   bkcol;									// 背景色
+COLORREF	   bdcol;									// 标题栏色
 wstring		   fontface;								// フォントフェース名
 int			   fontcharset;								// フォントの文字セット
 wstring		   dllpath;									// DLLパス
@@ -72,7 +76,8 @@ wchar_t		   charset;									// 文字セット
 vector<SFface> fontarray;								// フォント一覧
 wchar_t		   receive;									// 受信フラグ
 
-Cshiori shiori;
+Cshiori							shiori;
+SSTP_link_n::SSTP_Direct_link_t linker(SSTP_link_n::SSTP_link_args_t{{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
 
 namespace args_info {
 	wstring ghost_link_to;
@@ -96,6 +101,9 @@ LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 int CALLBACK	 EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam);
 int				 GetFontCharSet(wstring name);
+
+void On_tamaOpen(HWND hWnd, wstring ghost_path);
+void On_tamaExit(HWND hWnd, wstring ghost_path);
 
 int	 ExecLoad(void);
 void ExecRequest(const wchar_t *str);
@@ -302,6 +310,38 @@ int APIENTRY WinMain(
 	return msg.wParam;
 }
 
+void On_tamaOpen(HWND hWnd, wstring ghost_path) {
+	linker.setReplayHwnd(hWnd);
+	WCHAR selfpath[MAX_PATH];
+	GetModuleFileNameW(NULL, selfpath, MAX_PATH);
+	auto info = linker.NOTYFY({{L"Event", L"tamaOpen"},
+							   {L"Reference0", std::to_wstring((size_t)hWnd)},
+							   {L"Reference1", selfpath}});
+	if(info.has(L"Icon"))
+		if(!SetIcon(hWnd, info[L"Icon"].c_str())) {
+			wstring icofullpath = ghost_path + info[L"Icon"];
+			SetIcon(hWnd, icofullpath.c_str());
+		}
+	if(info.has(L"Tittle"))
+		SetWindowTextW(hWnd, info[L"Tittle"].c_str());
+
+	auto &info_map = info.to_str_map();
+	POINT wpos{};
+	SIZE  wsz{};
+	for(auto &pair: info_map) {
+		if(pair.first.starts_with(L"X-SSTP-PassThru-"))
+			SetParameter(pair.first.substr(16), pair.second, wpos, wsz);
+	}
+	if(wsz.cx)
+		MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
+	ShowWindow(hWnd, SW_HIDE);
+	ShowWindow(hWnd, SW_SHOW);
+}
+
+void On_tamaExit(HWND hWnd, wstring ghost_path) {
+	auto info = linker.NOTYFY({{L"Event", L"tamaExit"}});
+}
+
 void SetParameter(POINT &wp, SIZE &ws) {
 	// 各種パラメータ設定
 
@@ -472,6 +512,12 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 		int col = HexStrToInt(s1.c_str());
 		bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
+	// To change border color
+	else if(s0 == L"border.color") {
+		int col = HexStrToInt(s1.c_str());
+		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+		DwmSetWindowAttribute(hWnd, 20, &bdcol, sizeof(bdcol));
+	}
 	// face
 	else if(s0 == L"face")
 		fontface = s1;
@@ -533,6 +579,8 @@ void SaveParameter(void) {
 		fwprintf(fp, L"note.italic,%d\n", fontshape[F_NOTE].italic);
 
 		fwprintf(fp, L"background.color,%x\n", ((bkcol & 0xff) << 16) + (bkcol & 0xff00) + ((bkcol >> 16) & 0xff));
+
+		fwprintf(fp, L"border.color,%x\n", ((bdcol & 0xff) << 16) + (bdcol & 0xff00) + ((bdcol >> 16) & 0xff));
 
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
 
@@ -823,7 +871,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_CLOSE:
 		if(dllpath.c_str())
 			ExecUnload();
-		SaveParameter();
+		if(!args_info::ghost_hwnd)
+			SaveParameter();
 		DestroyWindow(hEdit);
 		DestroyWindow(hDlgWnd);
 		DestroyWindow(hWnd);
