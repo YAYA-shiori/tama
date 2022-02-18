@@ -9,15 +9,14 @@
 #define STRMAX		   1024
 
 // フォント設定
-#define CHECK_TOOL_WCNAME  "TamaWndClass"
-#define CHECK_TOOL_WCNAMEW L"TamaWndClass"
-#define FONTFACE		   "Arial Unicode MS" /* universal unicodeフォント */
-#define FONTFACELEN		   16				  /* FONTFACEのstrlen */
+#define CHECK_TOOL_WCNAME L"TamaWndClass"
+#define FONTFACE		  L"Arial Unicode MS" /* universal unicodeフォント */
+#define FONTFACELEN		  16				  /* FONTFACEのlstrlenW */
 
-#define FONT_JAPANESE "ＭＳ ゴシック" /* 日本語フォント */
-#define FONT_CHINESE  "MingLiU"		  /* ハングルフォント */
-#define FONT_KOREAN	  "Gulim"		  /* 中国（繁体）フォント */
-#define FONT_ENGLISH  "Arial"		  /* 上記以外（英語） */
+#define FONT_JAPANESE L"ＭＳ ゴシック" /* 日本語フォント */
+#define FONT_CHINESE  L"MingLiU"	   /* ハングルフォント */
+#define FONT_KOREAN	  L"Gulim"		   /* 中国（繁体）フォント */
+#define FONT_ENGLISH  L"Arial"		   /* 上記以外（英語） */
 
 // WM_COPYDATA dwData送信コマンド
 #define F_DEFAULT 0	 /* 文字列 */
@@ -51,28 +50,27 @@ struct SFShape {
 };
 
 struct SFface {
-	string face;
-	int	   charset;
+	wstring face;
+	int		charset;
 };
 
 // グローバル変数
-HINSTANCE	   hInst;					  // インスタンス
-HWND		   hWnd, hDlgWnd;			  // ウィンドウハンドル、ダイヤログウィンドウハンドル
-HWND		   hEdit;					  // リッチエディットコントロールのハンドル
-wstring		   szTitle;					  // キャプション
-const wchar_t *szWindowClass;			  // ウィンドウクラス名
-const char *   szWindowClassA;			  // ウィンドウクラス名
-SFShape		   fontshape[F_NUMBER];		  // フォントシェープ
-COLORREF	   bkcol;					  // 背景色
-string		   fontface;				  // フォントフェース名
-int			   fontcharset;				  // フォントの文字セット
-wstring		   dllpath;					  // DLLパス
-wstring		   b_dllpath;				  // 直前にunloadしたdllのパス
-int			   reqshow;					  // リクエストダイヤログの表示状態
-wstring		   dlgtext;					  // リクエストダイヤログテキスト
-char		   charset;					  // 文字セット
-vector<SFface> fontarray;				  // フォント一覧
-char		   receive;					  // 受信フラグ
+HINSTANCE	   hInst;									// インスタンス
+HWND		   hWnd, hDlgWnd;							// ウィンドウハンドル、ダイヤログウィンドウハンドル
+HWND		   hEdit;									// リッチエディットコントロールのハンドル
+wstring		   szTitle;									// キャプション
+const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;		// ウィンドウクラス名
+SFShape		   fontshape[F_NUMBER];						// フォントシェープ
+COLORREF	   bkcol;									// 背景色
+wstring		   fontface;								// フォントフェース名
+int			   fontcharset;								// フォントの文字セット
+wstring		   dllpath;									// DLLパス
+wstring		   b_dllpath;								// 直前にunloadしたdllのパス
+int			   reqshow;									// リクエストダイヤログの表示状態
+wstring		   dlgtext;									// リクエストダイヤログテキスト
+wchar_t		   charset;									// 文字セット
+vector<SFface> fontarray;								// フォント一覧
+wchar_t		   receive;									// 受信フラグ
 
 Cshiori shiori;
 
@@ -86,18 +84,18 @@ HANDLE hMutex;		 // ミューテックスオブジェクト
 
 // 関数のプロトタイプ
 void			 SetParameter(POINT &wp, SIZE &ws);
-bool			 SetParameter(const char *s0, const char *s1, POINT &wp, SIZE &ws);
+bool			 SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws);
 void			 SaveParameter(void);
-char			 Split(char *str, char *s0, char *s1, const char *sepstr);
-void			 CutSpace(char *str);
-int				 HexStrToInt(const char *str);
+bool			 Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr);
+void			 CutSpace(wstring &str);
+int				 HexStrToInt(const wchar_t *str);
 ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 int CALLBACK	 EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam);
-int				 GetFontCharSet(string name);
+int				 GetFontCharSet(wstring name);
 
 int	 ExecLoad(void);
 void ExecRequest(const wchar_t *str);
@@ -107,12 +105,12 @@ void EOS(int newaddsz);
 
 BOOL SetFontShape(int shapeid);
 BOOL SetFontShapeInit(int shapeid);
-BOOL SetMyFont(const char *facename, int shapeid, int scf);
+BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf);
 BOOL SetMyBkColor(COLORREF col);
 BOOL SetDlgFont(HWND hDlgEdit);
 BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col);
 
-char *setlocaleauto(int category);
+wchar_t *setlocaleauto(int category);
 
 bool (*loadlib)(HGLOBAL h, long len);
 bool (*unloadlib)(void);
@@ -133,7 +131,7 @@ wstring LoadStringFromResource(
 		reinterpret_cast<LPSTR>(&pBuf), 0);
 
 	if(len)
-		return string(pBuf, pBuf + len);
+		return wstring(pBuf, pBuf + len);
 	else
 		return "";
 	*/
@@ -268,14 +266,8 @@ int APIENTRY WinMain(
 		return FALSE;
 	}
 
-	if(ghost_hwnd) {
-		szWindowClass  = CHECK_TOOL_WCNAMEW "_Targeted";
-		szWindowClassA = CHECK_TOOL_WCNAME "_Targeted";
-	}
-	else {
-		szWindowClass  = CHECK_TOOL_WCNAMEW;
-		szWindowClassA = CHECK_TOOL_WCNAME;
-	}
+	if(ghost_hwnd)
+		szWindowClass = CHECK_TOOL_WCNAME "_Targeted";
 
 	MSG	   msg;
 	HACCEL hAccelTable;
@@ -351,29 +343,31 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	EnumFontFamiliesEx(hDC, &logFont, (FONTENUMPROC)EnumFontFamExProc, NULL, 0);
 	ReleaseDC(hWnd, hDC);
 	// ファイルから取得
-	string filename;
+	wstring filename;
 	filename.resize(MAX_PATH);
 	GetModuleFileName(NULL, filename.data(), MAX_PATH);
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_splitpath(filename.c_str(), drive, dir, fname, ext);
-	filename = string() + drive + dir + "tama.txt";
-	FILE *fp = fopen(filename.c_str(), "rt");
+	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
+	filename = wstring() + drive + dir + L"tama.txt";
+	FILE *fp = _wfopen(filename.c_str(), L"rt");
 	if(fp != NULL) {
-		char buf[STRMAX];
-		char s0[STRMAX], s1[STRMAX];
+		wstring buf;
+		wstring s0, s1;
 		for(;;) {
-			if(fgets(buf, STRMAX, fp) == NULL)
+			buf.resize(STRMAX);
+			if(fgetws(buf.data(), STRMAX, fp) == NULL)
 				break;
-			int len = strlen(buf);
+			size_t len = lstrlenW(buf.data());
+			buf.resize(len);
 			if(len < 2)
 				continue;
 			if(buf[len - 1] == '\n')
-				buf[len - 1] = '\0';
+				buf.resize(len - 1);
 			if(buf[len - 2] == '\r')
-				buf[len - 2] = '\0';
-			if(!strlen(buf))
+				buf.resize(len - 2);
+			if(buf.empty())
 				continue;
-			if(Split(buf, s0, s1, ",")) {
+			if(Split(buf, s0, s1, L",")) {
 				SetParameter(s0, s1, wp, ws);
 			}
 		}
@@ -417,82 +411,82 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	fontcharset = DEFAULT_CHARSET;
 }
 
-bool SetParameter(const char *s0, const char *s1, POINT &wp, SIZE &ws) {
+bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 	// default
-	if(!strcmp(s0, "default.pt"))
-		fontshape[F_DEFAULT].pt = atoi(s1);
-	else if(!strcmp(s0, "default.color")) {
-		int col					 = HexStrToInt(s1);
+	if(s0 == L"default.pt")
+		fontshape[F_DEFAULT].pt = _wtoi(s1.c_str());
+	else if(s0 == L"default.color") {
+		int col					 = HexStrToInt(s1.c_str());
 		fontshape[F_DEFAULT].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
-	else if(!strcmp(s0, "default.bold"))
-		fontshape[F_DEFAULT].bold = (atoi(s1)) ? 1 : 0;
-	else if(!strcmp(s0, "default.italic"))
-		fontshape[F_DEFAULT].italic = (atoi(s1)) ? 1 : 0;
+	else if(s0 == L"default.bold")
+		fontshape[F_DEFAULT].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+	else if(s0 == L"default.italic")
+		fontshape[F_DEFAULT].italic = (_wtoi(s1.c_str())) ? 1 : 0;
 	// fatal
-	else if(!strcmp(s0, "fatal.pt"))
-		fontshape[F_FATAL].pt = atoi(s1);
-	else if(!strcmp(s0, "fatal.color")) {
-		int col				   = HexStrToInt(s1);
+	else if(s0 == L"fatal.pt")
+		fontshape[F_FATAL].pt = _wtoi(s1.c_str());
+	else if(s0 == L"fatal.color") {
+		int col				   = HexStrToInt(s1.c_str());
 		fontshape[F_FATAL].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
-	else if(!strcmp(s0, "fatal.bold"))
-		fontshape[F_FATAL].bold = (atoi(s1)) ? 1 : 0;
-	else if(!strcmp(s0, "fatal.italic"))
-		fontshape[F_FATAL].italic = (atoi(s1)) ? 1 : 0;
+	else if(s0 == L"fatal.bold")
+		fontshape[F_FATAL].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+	else if(s0 == L"fatal.italic")
+		fontshape[F_FATAL].italic = (_wtoi(s1.c_str())) ? 1 : 0;
 	// error
-	else if(!strcmp(s0, "error.pt"))
-		fontshape[F_ERROR].pt = atoi(s1);
-	else if(!strcmp(s0, "error.color")) {
-		int col				   = HexStrToInt(s1);
+	else if(s0 == L"error.pt")
+		fontshape[F_ERROR].pt = _wtoi(s1.c_str());
+	else if(s0 == L"error.color") {
+		int col				   = HexStrToInt(s1.c_str());
 		fontshape[F_ERROR].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
-	else if(!strcmp(s0, "error.bold"))
-		fontshape[F_ERROR].bold = (atoi(s1)) ? 1 : 0;
-	else if(!strcmp(s0, "error.italic"))
-		fontshape[F_ERROR].italic = (atoi(s1)) ? 1 : 0;
+	else if(s0 == L"error.bold")
+		fontshape[F_ERROR].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+	else if(s0 == L"error.italic")
+		fontshape[F_ERROR].italic = (_wtoi(s1.c_str())) ? 1 : 0;
 	// warning
-	else if(!strcmp(s0, "warning.pt"))
-		fontshape[F_WARNING].pt = atoi(s1);
-	else if(!strcmp(s0, "warning.color")) {
-		int col					 = HexStrToInt(s1);
+	else if(s0 == L"warning.pt")
+		fontshape[F_WARNING].pt = _wtoi(s1.c_str());
+	else if(s0 == L"warning.color") {
+		int col					 = HexStrToInt(s1.c_str());
 		fontshape[F_WARNING].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
-	else if(!strcmp(s0, "warning.bold"))
-		fontshape[F_WARNING].bold = (atoi(s1)) ? 1 : 0;
-	else if(!strcmp(s0, "warning.italic"))
-		fontshape[F_WARNING].italic = (atoi(s1)) ? 1 : 0;
+	else if(s0 == L"warning.bold")
+		fontshape[F_WARNING].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+	else if(s0 == L"warning.italic")
+		fontshape[F_WARNING].italic = (_wtoi(s1.c_str())) ? 1 : 0;
 	// note
-	else if(!strcmp(s0, "note.pt"))
-		fontshape[F_NOTE].pt = atoi(s1);
-	else if(!strcmp(s0, "note.color")) {
-		int col				  = HexStrToInt(s1);
+	else if(s0 == L"note.pt")
+		fontshape[F_NOTE].pt = _wtoi(s1.c_str());
+	else if(s0 == L"note.color") {
+		int col				  = HexStrToInt(s1.c_str());
 		fontshape[F_NOTE].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
-	else if(!strcmp(s0, "note.bold"))
-		fontshape[F_NOTE].bold = (atoi(s1)) ? 1 : 0;
-	else if(!strcmp(s0, "note.italic"))
-		fontshape[F_NOTE].italic = (atoi(s1)) ? 1 : 0;
+	else if(s0 == L"note.bold")
+		fontshape[F_NOTE].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+	else if(s0 == L"note.italic")
+		fontshape[F_NOTE].italic = (_wtoi(s1.c_str())) ? 1 : 0;
 	// background
-	else if(!strcmp(s0, "background.color")) {
-		int col = HexStrToInt(s1);
+	else if(s0 == L"background.color") {
+		int col = HexStrToInt(s1.c_str());
 		bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	// face
-	else if(!strcmp(s0, "face"))
+	else if(s0 == L"face")
 		fontface = s1;
 	// window.x
-	else if(!strcmp(s0, "window.x"))
-		wp.x = atoi(s1);
+	else if(s0 == L"window.x")
+		wp.x = _wtoi(s1.c_str());
 	// window.y
-	else if(!strcmp(s0, "window.y"))
-		wp.y = atoi(s1);
+	else if(s0 == L"window.y")
+		wp.y = _wtoi(s1.c_str());
 	// window.width
-	else if(!strcmp(s0, "window.width"))
-		ws.cx = atoi(s1);
+	else if(s0 == L"window.width")
+		ws.cx = _wtoi(s1.c_str());
 	// window.height
-	else if(!strcmp(s0, "window.height"))
-		ws.cy = atoi(s1);
+	else if(s0 == L"window.height")
+		ws.cy = _wtoi(s1.c_str());
 	else
 		return 0;
 	return 1;
@@ -500,61 +494,61 @@ bool SetParameter(const char *s0, const char *s1, POINT &wp, SIZE &ws) {
 
 void SaveParameter(void) {
 	// ファイルへ設定を書き出し
-	string filename;
+	wstring filename;
 	filename.resize(MAX_PATH);
 	GetModuleFileName(NULL, filename.data(), MAX_PATH);
-	char drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_splitpath(filename.c_str(), drive, dir, fname, ext);
-	filename = string() + drive + dir + "tama.txt";
-	FILE *fp = fopen(filename.c_str(), "wt");
+	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
+	filename = wstring() + drive + dir + L"tama.txt";
+	FILE *fp = _wfopen(filename.c_str(), L"wt");
 	if(fp != NULL) {
-		fprintf(fp, "default.pt,%d\n", fontshape[F_DEFAULT].pt);
-		fprintf(fp, "default.color,%x\n",
-				((fontshape[F_DEFAULT].col & 0xff) << 16) + (fontshape[F_DEFAULT].col & 0xff00) + ((fontshape[F_DEFAULT].col >> 16) & 0xff));
-		fprintf(fp, "default.bold,%d\n", fontshape[F_DEFAULT].bold);
-		fprintf(fp, "default.italic,%d\n", fontshape[F_DEFAULT].italic);
+		fwprintf(fp, L"default.pt,%d\n", fontshape[F_DEFAULT].pt);
+		fwprintf(fp, L"default.color,%x\n",
+				 ((fontshape[F_DEFAULT].col & 0xff) << 16) + (fontshape[F_DEFAULT].col & 0xff00) + ((fontshape[F_DEFAULT].col >> 16) & 0xff));
+		fwprintf(fp, L"default.bold,%d\n", fontshape[F_DEFAULT].bold);
+		fwprintf(fp, L"default.italic,%d\n", fontshape[F_DEFAULT].italic);
 
-		fprintf(fp, "fatal.pt,%d\n", fontshape[F_FATAL].pt);
-		fprintf(fp, "fatal.color,%x\n",
-				((fontshape[F_FATAL].col & 0xff) << 16) + (fontshape[F_FATAL].col & 0xff00) + ((fontshape[F_FATAL].col >> 16) & 0xff));
-		fprintf(fp, "fatal.bold,%d\n", fontshape[F_FATAL].bold);
-		fprintf(fp, "fatal.italic,%d\n", fontshape[F_FATAL].italic);
+		fwprintf(fp, L"fatal.pt,%d\n", fontshape[F_FATAL].pt);
+		fwprintf(fp, L"fatal.color,%x\n",
+				 ((fontshape[F_FATAL].col & 0xff) << 16) + (fontshape[F_FATAL].col & 0xff00) + ((fontshape[F_FATAL].col >> 16) & 0xff));
+		fwprintf(fp, L"fatal.bold,%d\n", fontshape[F_FATAL].bold);
+		fwprintf(fp, L"fatal.italic,%d\n", fontshape[F_FATAL].italic);
 
-		fprintf(fp, "error.pt,%d\n", fontshape[F_ERROR].pt);
-		fprintf(fp, "error.color,%x\n",
-				((fontshape[F_ERROR].col & 0xff) << 16) + (fontshape[F_ERROR].col & 0xff00) + ((fontshape[F_ERROR].col >> 16) & 0xff));
-		fprintf(fp, "error.bold,%d\n", fontshape[F_ERROR].bold);
-		fprintf(fp, "error.italic,%d\n", fontshape[F_ERROR].italic);
+		fwprintf(fp, L"error.pt,%d\n", fontshape[F_ERROR].pt);
+		fwprintf(fp, L"error.color,%x\n",
+				 ((fontshape[F_ERROR].col & 0xff) << 16) + (fontshape[F_ERROR].col & 0xff00) + ((fontshape[F_ERROR].col >> 16) & 0xff));
+		fwprintf(fp, L"error.bold,%d\n", fontshape[F_ERROR].bold);
+		fwprintf(fp, L"error.italic,%d\n", fontshape[F_ERROR].italic);
 
-		fprintf(fp, "warning.pt,%d\n", fontshape[F_WARNING].pt);
-		fprintf(fp, "warning.color,%x\n",
-				((fontshape[F_WARNING].col & 0xff) << 16) + (fontshape[F_WARNING].col & 0xff00) + ((fontshape[F_WARNING].col >> 16) & 0xff));
-		fprintf(fp, "warning.bold,%d\n", fontshape[F_WARNING].bold);
-		fprintf(fp, "warning.italic,%d\n", fontshape[F_WARNING].italic);
+		fwprintf(fp, L"warning.pt,%d\n", fontshape[F_WARNING].pt);
+		fwprintf(fp, L"warning.color,%x\n",
+				 ((fontshape[F_WARNING].col & 0xff) << 16) + (fontshape[F_WARNING].col & 0xff00) + ((fontshape[F_WARNING].col >> 16) & 0xff));
+		fwprintf(fp, L"warning.bold,%d\n", fontshape[F_WARNING].bold);
+		fwprintf(fp, L"warning.italic,%d\n", fontshape[F_WARNING].italic);
 
-		fprintf(fp, "note.pt,%d\n", fontshape[F_NOTE].pt);
-		fprintf(fp, "note.color,%x\n",
-				((fontshape[F_NOTE].col & 0xff) << 16) + (fontshape[F_NOTE].col & 0xff00) + ((fontshape[F_NOTE].col >> 16) & 0xff));
-		fprintf(fp, "note.bold,%d\n", fontshape[F_NOTE].bold);
-		fprintf(fp, "note.italic,%d\n", fontshape[F_NOTE].italic);
+		fwprintf(fp, L"note.pt,%d\n", fontshape[F_NOTE].pt);
+		fwprintf(fp, L"note.color,%x\n",
+				 ((fontshape[F_NOTE].col & 0xff) << 16) + (fontshape[F_NOTE].col & 0xff00) + ((fontshape[F_NOTE].col >> 16) & 0xff));
+		fwprintf(fp, L"note.bold,%d\n", fontshape[F_NOTE].bold);
+		fwprintf(fp, L"note.italic,%d\n", fontshape[F_NOTE].italic);
 
-		fprintf(fp, "background.color,%x\n", ((bkcol & 0xff) << 16) + (bkcol & 0xff00) + ((bkcol >> 16) & 0xff));
+		fwprintf(fp, L"background.color,%x\n", ((bkcol & 0xff) << 16) + (bkcol & 0xff00) + ((bkcol >> 16) & 0xff));
 
-		fprintf(fp, "face,%s\n", fontface.c_str());
+		fwprintf(fp, L"face,%s\n", fontface.c_str());
 
 		RECT rect;
 		GetWindowRect(hWnd, &rect);
 
-		fprintf(fp, "window.x,%ld\n", rect.left);
-		fprintf(fp, "window.y,%ld\n", rect.top);
-		fprintf(fp, "window.width,%ld\n", rect.right - rect.left + 1);
-		fprintf(fp, "window.height,%ld\n", rect.bottom - rect.top + 1);
+		fwprintf(fp, L"window.x,%ld\n", rect.left);
+		fwprintf(fp, L"window.y,%ld\n", rect.top);
+		fwprintf(fp, L"window.width,%ld\n", rect.right - rect.left + 1);
+		fwprintf(fp, L"window.height,%ld\n", rect.bottom - rect.top + 1);
 
 		fclose(fp);
 	}
 }
 
-int GetFontCharSet(string name) {
+int GetFontCharSet(wstring name) {
 	// name名のフォントのcharsetを返す
 
 	for(vector<SFface>::iterator it = fontarray.begin(); it != fontarray.end(); it++) {
@@ -575,70 +569,37 @@ int CALLBACK EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, i
 	return 1;
 }
 
-char Split(char *str, char *s0, char *s1, const char *sepstr) {
+bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
 	// strをs0とs1に分解
-
-	unsigned char *seppoint = _mbsstr((unsigned char *)str, (unsigned char *)sepstr);
-	if(seppoint == NULL)
-		return 0;
-	strcpy(s0, str);
-	*(s0 + ((int)seppoint - (int)str)) = '\0';
-	strcpy(s1, (char *)((int)seppoint + strlen(sepstr)));
+	auto begin = str.find(sepstr);
+	s0		   = str.substr(0, begin);
+	s1		   = str.substr(begin + sepstr.size());
 	CutSpace(s0);
 	CutSpace(s1);
 
-	return 1;
+	return begin != wstring::npos;
 }
 
-void CutSpace(char *str) {
+void CutSpace(wstring &str) {
 	// str前後の空白とタブを削る
 
-	if(str == NULL)
-		return;
-	int i, j;
-	i = strlen(str) - 1;
-	if(i < 0)
-		return;
-	for(j = i; j >= 0;) {
-		unsigned char *_searchpoint = (unsigned char *)str + j;
-		if(_mbsstr(_searchpoint, (unsigned char *)" ") == _searchpoint ||
-		   _mbsstr(_searchpoint, (unsigned char *)"\t") == _searchpoint) {
-			j--;
-			continue;
-		}
-		break;
-	}
-	*(str + j + 1) = '\0';
-	if(*str == '\0')
-		return;
-	i = j;
-	for(j = 0; j <= i;) {
-		unsigned char *_searchpoint = (unsigned char *)str + j;
-		if(_mbsstr(_searchpoint, (unsigned char *)" ") == _searchpoint ||
-		   _mbsstr(_searchpoint, (unsigned char *)"\t") == _searchpoint) {
-			j++;
-			continue;
-		}
-		break;
-	}
-	memmove(str, str + j, i - j + 1);
-	*(str + i - j + 1) = '\0';
+	str = str.substr(str.find_first_not_of(L" \t\n"), str.find_last_of(L" \t\n"));
 }
 
-int HexStrToInt(const char *str) {
+int HexStrToInt(const wchar_t *str) {
 	// HEXのstrをintに変換
 
-	int len	   = strlen(str);
+	int len	   = lstrlenW(str);
 	int result = 0;
 	for(int i = 0; i < len; i++) {
 		int digit = (int)*(str + i);
 
-		if(digit <= '9')
-			digit -= '0';
-		else if(digit <= 'Z')
-			digit = digit - 'A' + 10;
+		if(digit <= L'9')
+			digit -= L'0';
+		else if(digit <= L'Z')
+			digit = digit - L'A' + 10;
 		else
-			digit = digit - 'a' + 10;
+			digit = digit - L'a' + 10;
 		result = (result << 4) + digit;
 	}
 	return result;
@@ -658,7 +619,7 @@ ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	wcex.hCursor	   = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName  = NULL;
-	wcex.lpszClassName = szWindowClassA;
+	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm	   = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_SMALL);
 
 	return RegisterClassEx(&wcex);
@@ -700,9 +661,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	static wstring	 tmpdllpath;
 
 	int					 wmId, wmEvent;
-	MSGFILTER *			 pmf;
+	MSGFILTER			  *pmf;
 	DWORD				 dwEvent;
-	COPYDATASTRUCT *	 cds;
+	COPYDATASTRUCT	   *cds;
 	HDROP				 hDrop;
 	HMENU				 hMenu, hSubMenu;
 	POINT				 pt;
@@ -718,8 +679,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		if(wsz.cx)
 			MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
 		// リッチエディットコントロール作成
-		hRtLib	= LoadLibrary("RICHED32.DLL");
-		hEdit	= CreateWindowEx(WS_EX_CLIENTEDGE, "RICHEDIT", "",
+		hRtLib	= LoadLibrary(L"RICHED32.DLL");
+		hEdit	= CreateWindowEx(WS_EX_CLIENTEDGE, L"RICHEDIT", L"",
 								 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE |
 									 WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY,
 								 0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
@@ -748,7 +709,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					string mstr = CODEPAGE_n::UnicodeToMultiByte(logbuf, CODEPAGE_n::CP_ACP);
 					if(!mstr.empty()) {
 						EOS(mstr.size());
-						SendMessage(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
+						SendMessageA(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
 					}
 				}
 			}
@@ -786,7 +747,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			pmf = (MSGFILTER *)lParam;
 			if(pmf->msg == WM_RBUTTONDOWN) {
 				// ポップアップメニュー表示
-				hMenu	 = LoadMenu(hInst, "IDR_POPUP");
+				hMenu	 = LoadMenu(hInst, L"IDR_POPUP");
 				hSubMenu = GetSubMenu(hMenu, 0);
 				pt.x	 = (long)LOWORD(pmf->lParam);
 				pt.y	 = (long)HIWORD(pmf->lParam);
@@ -940,7 +901,7 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 
 int ExecLoad(void) {
 	// テキスト全クリア
-	SetWindowText(hEdit, "");
+	SetWindowText(hEdit, L"");
 	SetFontShapeInit(F_DEFAULT);
 
 
@@ -986,7 +947,7 @@ BOOL SetFontShapeInit(int shapeid) {
 	return SetMyFont(fontface.c_str(), shapeid, SCF_ALL);
 }
 
-BOOL SetMyFont(const char *facename, int shapeid, int scf) {
+BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf) {
 	// フォントフェース、ポイント、色、ボールドを設定
 
 	CHARFORMAT cfm;
@@ -997,7 +958,7 @@ BOOL SetMyFont(const char *facename, int shapeid, int scf) {
 				 CFM_UNDERLINE;
 	cfm.yHeight	 = 20 * fontshape[shapeid].pt;		 // pt to twips
 	cfm.bCharSet = fontcharset;
-	strcpy_s(cfm.szFaceName, sizeof(cfm.szFaceName), facename);
+	wcscpy_s(cfm.szFaceName, sizeof(cfm.szFaceName) / sizeof(TCHAR), facename);
 	cfm.dwEffects = (fontshape[shapeid].bold) ? CFE_BOLD : 0;
 	cfm.dwEffects |= (fontshape[shapeid].italic) ? CFE_ITALIC : 0;
 	cfm.crTextColor = fontshape[shapeid].col;
@@ -1019,7 +980,7 @@ BOOL SetDlgFont(HWND hDlgEdit) {
 				 CFM_UNDERLINE;
 	cfm.yHeight	 = 20 * fontshape[F_DEFAULT].pt;	   // pt to twips
 	cfm.bCharSet = fontcharset;
-	strcpy_s(cfm.szFaceName, sizeof(cfm.szFaceName), fontface.c_str());
+	wcscpy_s(cfm.szFaceName, sizeof(cfm.szFaceName) / sizeof(TCHAR), fontface.c_str());
 	cfm.dwEffects = (fontshape[F_DEFAULT].bold) ? CFE_BOLD : 0;
 	cfm.dwEffects |= (fontshape[F_DEFAULT].italic) ? CFE_ITALIC : 0;
 	cfm.crTextColor = fontshape[F_DEFAULT].col;
@@ -1046,154 +1007,154 @@ BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col) {
 	return TRUE;
 }
 
-char *setlocaleauto(int category) {
+wchar_t *setlocaleauto(int category) {
 	// OSデフォルトの言語IDでロケール設定する
 
 	switch(PRIMARYLANGID(GetSystemDefaultLangID())) {
 	case LANG_AFRIKAANS:
-		return setlocale(category, "Afrikaans");
+		return _wsetlocale(category, L"Afrikaans");
 	case LANG_KONKANI:
-		return setlocale(category, "Konkani");
+		return _wsetlocale(category, L"Konkani");
 	case LANG_ALBANIAN:
-		return setlocale(category, "Albanian");
+		return _wsetlocale(category, L"Albanian");
 	case LANG_KOREAN:
-		return setlocale(category, "Korean");
+		return _wsetlocale(category, L"Korean");
 	case LANG_ARABIC:
-		return setlocale(category, "Arabic");
+		return _wsetlocale(category, L"Arabic");
 	case LANG_LATVIAN:
-		return setlocale(category, "Latvian");
+		return _wsetlocale(category, L"Latvian");
 	case LANG_ARMENIAN:
-		return setlocale(category, "Armenian");
+		return _wsetlocale(category, L"Armenian");
 	case LANG_LITHUANIAN:
-		return setlocale(category, "Lithuanian");
+		return _wsetlocale(category, L"Lithuanian");
 	case LANG_ASSAMESE:
-		return setlocale(category, "Assamese");
+		return _wsetlocale(category, L"Assamese");
 	case LANG_MACEDONIAN:
-		return setlocale(category, "Macedonian");
+		return _wsetlocale(category, L"Macedonian");
 	case LANG_AZERI:
-		return setlocale(category, "Azeri");
+		return _wsetlocale(category, L"Azeri");
 	case LANG_MALAY:
-		return setlocale(category, "Malay");
+		return _wsetlocale(category, L"Malay");
 	case LANG_BASQUE:
-		return setlocale(category, "Basque");
+		return _wsetlocale(category, L"Basque");
 	case LANG_MALAYALAM:
-		return setlocale(category, "Malayalam");
+		return _wsetlocale(category, L"Malayalam");
 	case LANG_BELARUSIAN:
-		return setlocale(category, "Belarusian");
+		return _wsetlocale(category, L"Belarusian");
 	case LANG_MANIPURI:
-		return setlocale(category, "Manipuri");
+		return _wsetlocale(category, L"Manipuri");
 	case LANG_BENGALI:
-		return setlocale(category, "Bengali");
+		return _wsetlocale(category, L"Bengali");
 	case LANG_MARATHI:
-		return setlocale(category, "Marathi");
+		return _wsetlocale(category, L"Marathi");
 	case LANG_BULGARIAN:
-		return setlocale(category, "Bulgarian");
+		return _wsetlocale(category, L"Bulgarian");
 	case LANG_NEPALI:
-		return setlocale(category, "Nepali");
+		return _wsetlocale(category, L"Nepali");
 	case LANG_CATALAN:
-		return setlocale(category, "Catalan");
+		return _wsetlocale(category, L"Catalan");
 	case LANG_NEUTRAL:
-		return setlocale(category, "Neutral");
+		return _wsetlocale(category, L"Neutral");
 	case LANG_CHINESE:
-		return setlocale(category, "Chinese");
+		return _wsetlocale(category, L"Chinese");
 	case LANG_NORWEGIAN:
-		return setlocale(category, "Norwegian");
+		return _wsetlocale(category, L"Norwegian");
 	case LANG_CROATIAN:
-		return setlocale(category, "Croatian");
+		return _wsetlocale(category, L"Croatian");
 	case LANG_ORIYA:
-		return setlocale(category, "Oriya");
+		return _wsetlocale(category, L"Oriya");
 	case LANG_CZECH:
-		return setlocale(category, "Czech");
+		return _wsetlocale(category, L"Czech");
 	case LANG_POLISH:
-		return setlocale(category, "Polish");
+		return _wsetlocale(category, L"Polish");
 	case LANG_DANISH:
-		return setlocale(category, "Danish");
+		return _wsetlocale(category, L"Danish");
 	case LANG_PORTUGUESE:
-		return setlocale(category, "Portuguese");
+		return _wsetlocale(category, L"Portuguese");
 	case LANG_DUTCH:
-		return setlocale(category, "Dutch");
+		return _wsetlocale(category, L"Dutch");
 	case LANG_PUNJABI:
-		return setlocale(category, "Punjabi");
+		return _wsetlocale(category, L"Punjabi");
 	case LANG_ENGLISH:
-		return setlocale(category, "English");
+		return _wsetlocale(category, L"English");
 	case LANG_ROMANIAN:
-		return setlocale(category, "Romanian");
+		return _wsetlocale(category, L"Romanian");
 	case LANG_ESTONIAN:
-		return setlocale(category, "Estonian");
+		return _wsetlocale(category, L"Estonian");
 	case LANG_RUSSIAN:
-		return setlocale(category, "Russian");
+		return _wsetlocale(category, L"Russian");
 	case LANG_FAEROESE:
-		return setlocale(category, "Faeroese");
+		return _wsetlocale(category, L"Faeroese");
 	case LANG_SANSKRIT:
-		return setlocale(category, "Sanskrit");
+		return _wsetlocale(category, L"Sanskrit");
 	case LANG_FARSI:
-		return setlocale(category, "Farsi");
+		return _wsetlocale(category, L"Farsi");
 	//case LANG_SERBIAN:					// どこかと値が衝突している模様
-		//return setlocale(category, "Serbian");
+		//return _wsetlocale(category, L"Serbian");
 	case LANG_FINNISH:
-		return setlocale(category, "Finnish");
+		return _wsetlocale(category, L"Finnish");
 	case LANG_SINDHI:
-		return setlocale(category, "Sindhi");
+		return _wsetlocale(category, L"Sindhi");
 	case LANG_FRENCH:
-		return setlocale(category, "French");
+		return _wsetlocale(category, L"French");
 	case LANG_SLOVAK:
-		return setlocale(category, "Slovak");
+		return _wsetlocale(category, L"Slovak");
 	case LANG_GEORGIAN:
-		return setlocale(category, "Georgian");
+		return _wsetlocale(category, L"Georgian");
 	case LANG_SLOVENIAN:
-		return setlocale(category, "Slovenian");
+		return _wsetlocale(category, L"Slovenian");
 	case LANG_GERMAN:
-		return setlocale(category, "German");
+		return _wsetlocale(category, L"German");
 	case LANG_SPANISH:
-		return setlocale(category, "Spanish");
+		return _wsetlocale(category, L"Spanish");
 	case LANG_GREEK:
-		return setlocale(category, "Greek");
+		return _wsetlocale(category, L"Greek");
 	case LANG_SWAHILI:
-		return setlocale(category, "Swahili");
+		return _wsetlocale(category, L"Swahili");
 	case LANG_GUJARATI:
-		return setlocale(category, "Gujarati");
+		return _wsetlocale(category, L"Gujarati");
 	case LANG_SWEDISH:
-		return setlocale(category, "Swedish");
+		return _wsetlocale(category, L"Swedish");
 	case LANG_HEBREW:
-		return setlocale(category, "Hebrew");
+		return _wsetlocale(category, L"Hebrew");
 	case LANG_TAMIL:
-		return setlocale(category, "Tamil");
+		return _wsetlocale(category, L"Tamil");
 	case LANG_HINDI:
-		return setlocale(category, "Hindi");
+		return _wsetlocale(category, L"Hindi");
 	case LANG_TATAR:
-		return setlocale(category, "Tatar");
+		return _wsetlocale(category, L"Tatar");
 	case LANG_HUNGARIAN:
-		return setlocale(category, "Hungarian");
+		return _wsetlocale(category, L"Hungarian");
 	case LANG_TELUGU:
-		return setlocale(category, "Telugu");
+		return _wsetlocale(category, L"Telugu");
 	case LANG_ICELANDIC:
-		return setlocale(category, "Icelandic");
+		return _wsetlocale(category, L"Icelandic");
 	case LANG_THAI:
-		return setlocale(category, "Thai");
+		return _wsetlocale(category, L"Thai");
 	case LANG_INDONESIAN:
-		return setlocale(category, "Indonesian");
+		return _wsetlocale(category, L"Indonesian");
 	case LANG_TURKISH:
-		return setlocale(category, "Turkish");
+		return _wsetlocale(category, L"Turkish");
 	case LANG_ITALIAN:
-		return setlocale(category, "Italian");
+		return _wsetlocale(category, L"Italian");
 	//case LANG_UKRANIAN:					// 存在しない？
-		//return setlocale(category, "Ukranian");
+		//return _wsetlocale(category, L"Ukranian");
 	case LANG_JAPANESE:
-		return setlocale(category, "Japanese");
+		return _wsetlocale(category, L"Japanese");
 	case LANG_URDU:
-		return setlocale(category, "Urdu");
+		return _wsetlocale(category, L"Urdu");
 	case LANG_KANNADA:
-		return setlocale(category, "Kannada");
+		return _wsetlocale(category, L"Kannada");
 	case LANG_UZBEK:
-		return setlocale(category, "Uzbek");
+		return _wsetlocale(category, L"Uzbek");
 	case LANG_KASHMIRI:
-		return setlocale(category, "Kashmiri");
+		return _wsetlocale(category, L"Kashmiri");
 	case LANG_VIETNAMESE:
-		return setlocale(category, "Vietnamese");
+		return _wsetlocale(category, L"Vietnamese");
 	case LANG_KAZAK:
-		return setlocale(category, "Kazak");
+		return _wsetlocale(category, L"Kazak");
 	default:
-		return setlocale(category, "English");
+		return _wsetlocale(category, L"English");
 	};
 }
 
