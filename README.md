@@ -12,10 +12,13 @@ tama.exe -gh ghost_hwnd
 - you can make your ghosts react to yatama by using the `tamaOpen` and `tamaExit` events, the example code as follows  
 ```c
 On_tamaOpen{
-    SETTAMAHWND(reference0)
-    SHIORI_FW.Make_X_SSTP_PassThru('Tittle','tama test: Taromati2')//set tittle
-    //SHIORI_FW.Make_X_SSTP_PassThru('Icon',GetSelfIconFullPath)//set icon if y want
-    'tama打开了'
+	SETTAMAHWND(reference0)
+	SHIORI_FW.Make_X_SSTP_PassThru('Tittle','tama test: Taromati2')//These settings are all optional
+	SHIORI_FW.Make_X_SSTP_PassThru('Icon','IMG_PATH/ico/tama.ico')
+	SHIORI_FW.Make_X_SSTP_PassThru('border.color','626262')
+	SHIORI_FW.Make_X_SSTP_PassThru('background.color','1e1e1e')
+	SHIORI_FW.Make_X_SSTP_PassThru('default.color','4ec9b0')//and any other settings you can find in tama.txt
+	'tama打开了'
 }
 On_tamaExit{
     'tama结束了'
