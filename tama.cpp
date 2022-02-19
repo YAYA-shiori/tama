@@ -368,6 +368,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	fontshape[F_NOTE].bold		= 0;
 	fontshape[F_NOTE].italic	= 0;
 	bkcol						= 0xffffff;
+	bdcol						= 0xffffff;
 	fontcharset					= DEFAULT_CHARSET;
 	receive						= 1;
 	wp.x						= -1024;
