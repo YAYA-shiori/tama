@@ -391,7 +391,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
 	filename = wstring() + drive + dir + L"tama.txt";
-	FILE *fp = _wfopen(filename.c_str(), L"rt");
+	FILE *fp = _wfopen(filename.c_str(), L"rt, ccs=UTF-8");
 	if(fp != NULL) {
 		wstring buf;
 		wstring s0, s1;
@@ -548,7 +548,7 @@ void SaveParameter(void) {
 	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
 	filename = wstring() + drive + dir + L"tama.txt";
-	FILE *fp = _wfopen(filename.c_str(), L"wt");
+	FILE *fp = _wfopen(filename.c_str(), L"wt, ccs=UTF-8");
 	if(fp != NULL) {
 		fwprintf(fp, L"default.pt,%d\n", fontshape[F_DEFAULT].pt);
 		fwprintf(fp, L"default.color,%x\n",
