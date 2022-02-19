@@ -334,6 +334,7 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	}
 	if(wsz.cx)
 		MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
+	SetMyBkColor(bkcol);
 	ShowWindow(hWnd, SW_HIDE);
 	ShowWindow(hWnd, SW_SHOW);
 }
