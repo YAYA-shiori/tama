@@ -1,9 +1,3 @@
-- [cn](./README_CN.md)
-- [jp](./README_JP.md)
-- [en](./README_EN.md)
-
-_____
-
 Tama can be used as a basic operation check tool for [AYA](http://umeici.onjn.jp/) / [YAYA](https://github.com/ponapalt/yaya-shiori) and as a real-time viewer of AYA / YAYA execution logs.  
 Originally written by [umeici](http://umeici.onjn.jp/)  
 New features:  
