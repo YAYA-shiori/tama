@@ -48,13 +48,13 @@ typedef struct _settextex {
 struct SFShape {
 	int		 pt;
 	COLORREF col;
-	int		 bold;
-	int		 italic;
+	bool	 bold;
+	bool	 italic;
 };
 
 struct SFface {
 	wstring face;
-	int		charset;
+	BYTE	charset;
 };
 
 // グローバル変数
