@@ -62,7 +62,7 @@ HINSTANCE	   hInst;									// インスタンス
 HWND		   hWnd, hDlgWnd;							// ウィンドウハンドル、ダイヤログウィンドウハンドル
 HWND		   hEdit;									// リッチエディットコントロールのハンドル
 wstring		   szTitle;									// キャプション
-const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;		// ウィンドウクラス名
+wstring		   szWindowClass = CHECK_TOOL_WCNAME;		// ウィンドウクラス名
 SFShape		   fontshape[F_NUMBER];						// フォントシェープ
 COLORREF	   bkcol;									// 背景色
 COLORREF	   bdcol;									// 标题栏色
@@ -275,7 +275,7 @@ int APIENTRY WinMain(
 	}
 
 	if(ghost_hwnd)
-		szWindowClass = CHECK_TOOL_WCNAME "_Targeted";
+		szWindowClass = CHECK_TOOL_WCNAME "_Targeted" + to_wstring((size_t)ghost_hwnd);
 
 	MSG	   msg;
 	HACCEL hAccelTable;
@@ -286,7 +286,7 @@ int APIENTRY WinMain(
 	if(!InitInstance(hInstance, nShowCmd))
 		return FALSE;
 
-	hAccelTable = LoadAcceleratorsW(hInstance, szWindowClass);
+	hAccelTable = LoadAcceleratorsW(hInstance, szWindowClass.c_str());
 
 	ShowWindow(hWnd, SW_SHOW);
 
@@ -669,7 +669,7 @@ ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	wcex.hCursor	   = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName  = NULL;
-	wcex.lpszClassName = szWindowClass;
+	wcex.lpszClassName = szWindowClass.c_str();
 	wcex.hIconSm	   = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_SMALL);
 
 	return RegisterClassEx(&wcex);
@@ -681,7 +681,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	hInst = hInstance;
 	RECT rect;
 	GetWindowRect(::GetDesktopWindow(), &rect);
-	hWnd = CreateWindowW(szWindowClass, szTitle.c_str(),
+	hWnd = CreateWindowW(szWindowClass.c_str(), szTitle.c_str(),
 						 WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
 						 rect.right >> 1, rect.bottom >> 1, rect.right >> 1, rect.bottom >> 1, NULL, NULL, NULL /*hInstance*/, NULL);
 	if(!hWnd)
