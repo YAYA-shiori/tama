@@ -595,7 +595,7 @@ void SaveParameter(void) {
 
 		fwprintf(fp, L"border.color,%x\n", ((bdcol & 0xff) << 16) + (bdcol & 0xff00) + ((bdcol >> 16) & 0xff));
 
-		fwprintf(fp, L"dialogbox.color,%x\n", ((bdcol & 0xff) << 16) + (bdcol & 0xff00) + ((bdcol >> 16) & 0xff));
+		fwprintf(fp, L"dialogbox.color,%x\n", ((dlgcol & 0xff) << 16) + (dlgcol & 0xff00) + ((dlgcol >> 16) & 0xff));
 
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
 
