@@ -25,3 +25,8 @@ On_tamaExit{
 	'tama关闭了'
 }
 ```
+一些进阶技巧：  
+你还可以将tama的hwnd保存在变量中并在shiori重载过后重新调用`SETTAMAHWND`来使得ghost与tama保持联系  
+这需要一些更为复杂的改动，尽管我实现了这个功能但我用到了一些taromati2的dic特有的东西（`OnShioriReloaded`），所以我就不在此贴出参考代码了  
+对于那些有兴趣的人，这里是改动链接以供参考：  
+https://github.com/Taromati2/ghost/compare/c6ac682b4a7039e6801d36c83dccdefdaf946cee...ad652766efa09b0b582b9e9a5f9e42ad9156137e  

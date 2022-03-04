@@ -1,4 +1,4 @@
-AYA](http://umeici.onjn.jp/) / [YAYA](https://github.com/ponapalt/yaya-shiori) の基本動作確認ツール、およびAYA / YAYA実行ログのリアルタイムビューアとして使用できます。  
+[AYA](http://umeici.onjn.jp/) / [YAYA](https://github.com/ponapalt/yaya-shiori) の基本動作確認ツール、およびAYA / YAYA実行ログのリアルタイムビューアとして使用できます。  
 原作者：[umeici](http://umeici.onjn.jp/)  
 新機能を追加しました：  
 - ゴースト選択ui: 複数のゴーストが同時に動作している場合  
@@ -25,3 +25,8 @@ On_tamaExit{
 	'tamaが閉じた'
 }
 ```
+先進的なヒントも。  
+また、tamaのhwndを変数に保持し、shioriがリロードされた後に`SETTAMAHWND`を再コールすれば、ghostがtamaと連絡を取り続けることができるようになります  
+これにはもう少し複雑な変更が必要で、私も実装しましたが、taromati2のdicに特有のもの（`OnShioriReloaded`）を使用したので、参考コードはここに掲載しないことにします。  
+ご興味のある方は、参考までに変更点のリンクを貼っておきます。  
+https://github.com/Taromati2/ghost/compare/c6ac682b4a7039e6801d36c83dccdefdaf946cee...ad652766efa09b0b582b9e9a5f9e42ad9156137e  
