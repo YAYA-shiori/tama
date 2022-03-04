@@ -646,7 +646,7 @@ bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
 void CutSpace(wstring &str) {
 	// str前後の空白とタブを削る
 
-	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_of(L" \t"));
+	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_not_of(L" \t")+1);
 }
 
 int HexStrToInt(const wchar_t *str) {
