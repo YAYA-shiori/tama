@@ -12,6 +12,8 @@
 
 #define WIN32_LEAN_AND_MEAN		// Windows ヘッダーから殆ど使用されないスタッフを除外します
 
+#define _CRT_SECURE_NO_WARNINGS
+
 // Windows ヘッダー ファイル:
 #include <windows.h>
 

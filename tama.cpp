@@ -54,27 +54,28 @@ struct SFShape {
 
 struct SFface {
 	wstring face;
-	BYTE	charset;
+	BYTE	charset = DEFAULT_CHARSET;
 };
 
 // グローバル変数
-HINSTANCE	   hInst;									// インスタンス
-HWND		   hWnd, hDlgWnd;							// ウィンドウハンドル、ダイヤログウィンドウハンドル
-HWND		   hEdit;									// リッチエディットコントロールのハンドル
-wstring		   szTitle;									// キャプション
-const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;		// ウィンドウクラス名
-SFShape		   fontshape[F_NUMBER];						// フォントシェープ
-COLORREF	   bkcol;									// 背景色
-COLORREF	   bdcol;									// 标题栏色
-wstring		   fontface;								// フォントフェース名
-int			   fontcharset;								// フォントの文字セット
-wstring		   dllpath;									// DLLパス
-wstring		   b_dllpath;								// 直前にunloadしたdllのパス
-int			   reqshow;									// リクエストダイヤログの表示状態
-wstring		   dlgtext;									// リクエストダイヤログテキスト
-wchar_t		   charset;									// 文字セット
-vector<SFface> fontarray;								// フォント一覧
-wchar_t		   receive;									// 受信フラグ
+HINSTANCE	   hInst;										// インスタンス
+HWND		   hWnd, hDlgWnd;								// ウィンドウハンドル、ダイヤログウィンドウハンドル
+HWND		   hEdit;										// リッチエディットコントロールのハンドル
+wstring		   szTitle;										// キャプション
+const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;			// ウィンドウクラス名
+SFShape		   fontshape[F_NUMBER];							// フォントシェープ
+COLORREF	   bkcol;										// 背景色
+COLORREF	   bdcol;										// 标题栏色
+COLORREF	   dlgcol;										// 对话框控件色
+wstring		   fontface;									// フォントフェース名
+BYTE		   fontcharset;									// フォントの文字セット
+wstring		   dllpath;										// DLLパス
+wstring		   b_dllpath;									// 直前にunloadしたdllのパス
+int			   reqshow;										// リクエストダイヤログの表示状態
+wstring		   dlgtext;										// リクエストダイヤログテキスト
+vector<SFface> fontarray;									// フォント一覧
+bool		   receive;										// 受信フラグ
+HBRUSH		   DlgBrush = CreateSolidBrush(0xffffff);		// 对话框控件画刷
 
 Cshiori							shiori;
 SSTP_link_n::SSTP_Direct_link_t linker(SSTP_link_n::SSTP_link_args_t{{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
@@ -96,6 +97,7 @@ void			 CutSpace(wstring &str);
 int				 HexStrToInt(const wchar_t *str);
 ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
+BOOL			 InitSendRequestDlg(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -119,12 +121,6 @@ BOOL SetDlgFont(HWND hDlgEdit);
 BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col);
 
 wchar_t *setlocaleauto(int category);
-
-bool (*loadlib)(HGLOBAL h, long len);
-bool (*unloadlib)(void);
-bool (*logsend)(long hwnd);
-HGLOBAL(*requestlib)
-(HGLOBAL h, long *len);
 
 wstring LoadStringFromResource(
 	__in UINT		   stringID,
@@ -161,10 +157,12 @@ wstring LoadStringFromResource(
 
 void ArgsHandling() {
 	LPWSTR *argv;
-	int		argc;
+	int		_targc;
 	using namespace args_info;
 
-	argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	argv		= CommandLineToArgvW(GetCommandLineW(), &_targc);
+	size_t argc = _targc;
+
 	if(argc != 1) {
 		size_t i = 1;
 		while(i < argc) {
@@ -285,6 +283,8 @@ int APIENTRY WinMain(
 
 	if(!InitInstance(hInstance, nShowCmd))
 		return FALSE;
+	if(!InitSendRequestDlg(hInstance))
+		return FALSE;
 
 	hAccelTable = LoadAcceleratorsW(hInstance, szWindowClass);
 
@@ -335,8 +335,11 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	if(wsz.cx)
 		MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
 	SetMyBkColor(bkcol);
+	SetDlgFont(GetDlgItem(hDlgWnd, IDC_SEND_REQUEST_RICHEDIT));
+	SetDlgBkColor(GetDlgItem(hDlgWnd, IDC_SEND_REQUEST_RICHEDIT), bkcol);
 	ShowWindow(hWnd, SW_HIDE);
 	ShowWindow(hWnd, SW_SHOW);
+	SetFontShapeInit(F_DEFAULT);
 }
 
 void On_tamaExit(HWND hWnd, wstring ghost_path) {
@@ -369,6 +372,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	fontshape[F_NOTE].italic	= 0;
 	bkcol						= 0xffffff;
 	bdcol						= 0xffffff;
+	dlgcol						= 0xffffff;
 	fontcharset					= DEFAULT_CHARSET;
 	receive						= 1;
 	wp.x						= -1024;
@@ -520,6 +524,13 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DwmSetWindowAttribute(hWnd, 20, &bdcol, sizeof(bdcol));
 	}
+	// To change border color
+	else if(s0 == L"dialogbox.color") {
+		int col = HexStrToInt(s1.c_str());
+		dlgcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
+		DeleteObject(DlgBrush);
+		DlgBrush = CreateSolidBrush(dlgcol);
+	}
 	// face
 	else if(s0 == L"face")
 		fontface = s1;
@@ -584,6 +595,8 @@ void SaveParameter(void) {
 
 		fwprintf(fp, L"border.color,%x\n", ((bdcol & 0xff) << 16) + (bdcol & 0xff00) + ((bdcol >> 16) & 0xff));
 
+		fwprintf(fp, L"dialogbox.color,%x\n", ((bdcol & 0xff) << 16) + (bdcol & 0xff00) + ((bdcol >> 16) & 0xff));
+
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
 
 		RECT rect;
@@ -633,7 +646,7 @@ bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
 void CutSpace(wstring &str) {
 	// str前後の空白とタブを削る
 
-	str = str.substr(str.find_first_not_of(L" \t\n"), str.find_last_of(L" \t\n"));
+	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_of(L" \t"));
 }
 
 int HexStrToInt(const wchar_t *str) {
@@ -658,7 +671,7 @@ int HexStrToInt(const wchar_t *str) {
 ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	// ウィンドウクラス登録
 
-	WNDCLASSEX wcex;
+	WNDCLASSEX wcex{};
 	wcex.cbSize		   = sizeof(wcex);
 	wcex.style		   = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc   = (WNDPROC)WndProc;
@@ -679,27 +692,34 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	// ウィンドウ作成と表示
 
 	hInst = hInstance;
-	RECT rect;
-	GetWindowRect(::GetDesktopWindow(), &rect);
+	RECT WindowRect;
+	GetWindowRect(::GetDesktopWindow(), &WindowRect);
 	hWnd = CreateWindowW(szWindowClass, szTitle.c_str(),
 						 WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX,
-						 rect.right >> 1, rect.bottom >> 1, rect.right >> 1, rect.bottom >> 1, NULL, NULL, NULL /*hInstance*/, NULL);
+						 WindowRect.right >> 1, WindowRect.bottom >> 1, WindowRect.right >> 1, WindowRect.bottom >> 1, NULL, NULL, NULL /*hInstance*/, NULL);
 	if(!hWnd)
 		return FALSE;
 	shiori.set_logsend_hwnd(hWnd);
+
+	ShowWindow(hWnd, SW_SHOW);
+	UpdateWindow(hWnd);
+	DragAcceptFiles(hWnd, TRUE);
+
+	return TRUE;
+}
+
+BOOL InitSendRequestDlg(HINSTANCE hInstance) {
+	reqshow = SW_HIDE;
 	hDlgWnd = CreateDialog(hInstance, (LPCTSTR)IDD_SEND_REQUEST, hWnd, (DLGPROC)SendRequestDlgProc);
 	if(hDlgWnd == NULL)
 		return FALSE;
-
-	ShowWindow(hWnd, SW_SHOW);
-	reqshow = SW_HIDE;
 	ShowWindow(hDlgWnd, reqshow);
+	RECT WindowRect;
+	GetWindowRect(::GetDesktopWindow(), &WindowRect);
 	RECT drect;
 	GetWindowRect(hDlgWnd, &drect);
-	MoveWindow(hDlgWnd, (rect.right >> 1) - 32, (rect.bottom >> 1) + 64,
+	MoveWindow(hDlgWnd, (WindowRect.right >> 1) - 32, (WindowRect.bottom >> 1) + 64,
 			   drect.right - drect.left, drect.bottom - drect.top, TRUE);
-	UpdateWindow(hWnd);
-	DragAcceptFiles(hWnd, TRUE);
 
 	return TRUE;
 }
@@ -716,13 +736,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	COPYDATASTRUCT	   *cds;
 	HDROP				 hDrop;
 	HMENU				 hMenu, hSubMenu;
-	POINT				 pt;
+	POINT				 pt{};
 	static OSVERSIONINFO osi	   = {sizeof(osi)};
 	static bool			 osiiniter = GetVersionEx(&osi);
 	POINT				 wpos;
 	SIZE				 wsz;
 
 	switch(message) {
+	case WM_CTLCOLORDLG:
+		return (INT_PTR)DlgBrush;
 	case WM_CREATE:
 		// パラメータ設定
 		SetParameter(wpos, wsz);
@@ -745,8 +767,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		cds = (COPYDATASTRUCT *)lParam;
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
 			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
-			SetFontShape(cds->dwData);
 			if(cds->cbData > 0) {
+				SetFontShape(cds->dwData);
 				// 更新
 				wstring logbuf;
 				logbuf.resize(cds->cbData);
@@ -894,6 +916,8 @@ LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	hParent = GetParent(hWnd);
 
 	switch(msg) {
+	case WM_CTLCOLORDLG:
+		return (INT_PTR)DlgBrush;
 	case WM_INITDIALOG:
 		SetDlgFont(GetDlgItem(hWnd, IDC_SEND_REQUEST_RICHEDIT));
 		SetDlgBkColor(GetDlgItem(hWnd, IDC_SEND_REQUEST_RICHEDIT), bkcol);
@@ -922,6 +946,8 @@ LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lp) {
 	using namespace args_info;
 	switch(message) {
+	case WM_CTLCOLORDLG:
+		return (INT_PTR)DlgBrush;
 	case WM_INITDIALOG:
 		SetFocus(GetDlgItem(hDlg, IDC_GHOST_SELECT_LIST));
 		return FALSE;
@@ -1000,19 +1026,18 @@ BOOL SetFontShapeInit(int shapeid) {
 
 BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf) {
 	// フォントフェース、ポイント、色、ボールドを設定
-
-	CHARFORMAT cfm;
-	memset(&cfm, 0, sizeof(cfm));
-	cfm.cbSize = sizeof(cfm);
-	cfm.dwMask = CFM_BOLD | CFM_CHARSET | CFM_COLOR |
-				 CFM_FACE | CFM_ITALIC | CFM_SIZE | CFM_STRIKEOUT |
-				 CFM_UNDERLINE;
-	cfm.yHeight	 = 20 * fontshape[shapeid].pt;		 // pt to twips
-	cfm.bCharSet = fontcharset;
-	wcscpy_s(cfm.szFaceName, sizeof(cfm.szFaceName) / sizeof(TCHAR), facename);
-	cfm.dwEffects = (fontshape[shapeid].bold) ? CFE_BOLD : 0;
-	cfm.dwEffects |= (fontshape[shapeid].italic) ? CFE_ITALIC : 0;
+	static CHARFORMAT cfm{sizeof(cfm), CFM_BOLD | CFM_CHARSET | CFM_COLOR |
+										   CFM_FACE | CFM_ITALIC | CFM_SIZE | CFM_STRIKEOUT |
+										   CFM_UNDERLINE};
+	cfm.bCharSet						   = fontcharset;
+	static const wchar_t *facename_setting = NULL;
+	if(facename_setting != facename) {
+		facename_setting = facename;
+		wcscpy_s(cfm.szFaceName, sizeof(cfm.szFaceName) / sizeof(TCHAR), facename);
+	}
+	cfm.yHeight		= 20 * fontshape[shapeid].pt;		// pt to twips
 	cfm.crTextColor = fontshape[shapeid].col;
+	cfm.dwEffects	= ((fontshape[shapeid].bold) ? CFE_BOLD : 0) | ((fontshape[shapeid].italic) ? CFE_ITALIC : 0);
 	if(SendMessage(hEdit, EM_SETCHARFORMAT, (WPARAM)scf, (LPARAM)&cfm) == 0)
 		return FALSE;
 
