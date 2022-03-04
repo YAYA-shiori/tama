@@ -826,8 +826,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				ClientToScreen(hEdit, &pt);
 				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
-				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size()) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size()) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (dllpath.size()) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size() || linker.was_linked_to_ghost()) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size() || linker.was_linked_to_ghost()) ? MF_ENABLED : MF_GRAYED);
 				TrackPopupMenu(hSubMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 				DestroyMenu(hMenu);
 			}
@@ -870,6 +871,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				dllpath = b_dllpath;
 				ExecLoad();
 			}
+			else if(linker.was_linked_to_ghost()) {
+				linker.SEND({{L"Script", L"\\![reload,shiori]"}});
+			}
 			break;
 		case ID_TAMA_UNLOAD:
 			// unload
@@ -877,6 +881,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				ExecUnload();
 				b_dllpath = dllpath;
 				dllpath.clear();
+			}
+			else if(linker.was_linked_to_ghost()) {
+				linker.SEND({{L"Script", L"\\![unload,shiori]"}});
 			}
 			break;
 		case ID_TAMA_COPY:
