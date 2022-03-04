@@ -421,7 +421,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	}
 
 	// フォント設定
-	// ファイル指定→unicode→システムデフォルト→Arial、の順に検索して設定
+	// ファイル指定→システムデフォルト→unicode→Arial、の順に検索して設定
 
 	// ファイル指定
 	if(fontface.size()) {
@@ -429,11 +429,6 @@ void SetParameter(POINT &wp, SIZE &ws) {
 		if(fontcharset != -1)
 			return;
 	}
-	// unicode
-	fontface	= FONTFACE;
-	fontcharset = GetFontCharSet(fontface);
-	if(fontcharset != -1)
-		return;
 	// システムデフォルト
 	switch(PRIMARYLANGID(GetSystemDefaultLangID())) {
 	case LANG_KOREAN:
@@ -449,6 +444,11 @@ void SetParameter(POINT &wp, SIZE &ws) {
 		fontface = FONT_ENGLISH;
 		break;
 	};
+	fontcharset = GetFontCharSet(fontface);
+	if(fontcharset != -1)
+		return;
+	// unicode
+	fontface	= FONTFACE;
 	fontcharset = GetFontCharSet(fontface);
 	if(fontcharset != -1)
 		return;
