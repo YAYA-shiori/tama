@@ -78,7 +78,7 @@ bool		   receive;										// 受信フラグ
 HBRUSH		   DlgBrush = CreateSolidBrush(0xffffff);		// 对话框控件画刷
 
 Cshiori							shiori;
-SSTP_link_n::SSTP_Direct_link_t linker(SSTP_link_n::SSTP_link_args_t{{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
+SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
 
 namespace args_info {
 	wstring ghost_link_to;
