@@ -83,8 +83,9 @@ SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"ta
 namespace args_info {
 	wstring ghost_link_to;
 	HWND	ghost_hwnd = NULL;
-	wstring ghost_path;
 }		// namespace args_info
+wstring ghost_path;
+wstring ghost_uid;
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
 
@@ -250,6 +251,7 @@ link_to_ghost:
 		if(tmp_hwnd != ghost_hwnd)
 			continue;
 		ghost_path = i.second[L"ghostpath"] + L"ghost\\master\\";
+		ghost_uid  = i.second.ID;
 	}
 }
 
@@ -344,6 +346,11 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 
 void On_tamaExit(HWND hWnd, wstring ghost_path) {
 	auto info = linker.NOTYFY({{L"Event", L"tamaExit"}});
+}
+
+void LostGhostLink() {
+	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+	exit(EXIT_FAILURE);
 }
 
 void SetParameter(POINT &wp, SIZE &ws) {
@@ -827,8 +834,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
 				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (dllpath.size()) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size() || linker.was_linked_to_ghost()) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size() || linker.was_linked_to_ghost()) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
 				TrackPopupMenu(hSubMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 				DestroyMenu(hMenu);
 			}
@@ -872,7 +879,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				ExecLoad();
 			}
 			else if(linker.was_linked_to_ghost()) {
-				linker.SEND({{L"Script", L"\\![reload,shiori]"}});
+				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
+				switch(info.get_code()) {
+				case -1:		//ssp exit
+					[[fallthrough]];
+				case 404:		//Not Found
+					LostGhostLink();
+				case 204:		//No Content
+					[[fallthrough]];
+				case 400:		//Bad Request
+					linker.SEND({{L"ID", ghost_uid},
+								 {L"Script", L"\\![reload,shiori]"}});
+				}
 			}
 			break;
 		case ID_TAMA_UNLOAD:
@@ -883,7 +901,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				dllpath.clear();
 			}
 			else if(linker.was_linked_to_ghost()) {
-				linker.SEND({{L"Script", L"\\![unload,shiori]"}});
+				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
+				switch(info.get_code()) {
+				case -1:		//ssp exit
+					[[fallthrough]];
+				case 404:		//Not Found
+					LostGhostLink();
+				case 204:		//No Content
+					[[fallthrough]];
+				case 400:		//Bad Request
+					linker.SEND({{L"ID", ghost_uid},
+								 {L"Script", L"\\![unload,shiori]"}});
+				}
 			}
 			break;
 		case ID_TAMA_COPY:
