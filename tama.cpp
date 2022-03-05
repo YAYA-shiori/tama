@@ -348,7 +348,7 @@ void On_tamaExit(HWND hWnd, wstring ghost_path) {
 	auto info = linker.NOTYFY({{L"Event", L"tamaExit"}});
 }
 
-void LostGhostLink() {
+[[noreturn]]void LostGhostLink() {
 	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 	exit(EXIT_FAILURE);
 }
@@ -735,43 +735,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	// メッセージプロシージャ
 
 	static HINSTANCE hRtLib;
-	static wstring	 tmpdllpath;
-
-	int					 wmId, wmEvent;
-	MSGFILTER			  *pmf;
-	DWORD				 dwEvent;
-	COPYDATASTRUCT	   *cds;
-	HDROP				 hDrop;
-	HMENU				 hMenu, hSubMenu;
-	POINT				 pt{};
-	static OSVERSIONINFO osi	   = {sizeof(osi)};
-	static bool			 osiiniter = GetVersionEx(&osi);
-	POINT				 wpos;
-	SIZE				 wsz;
 
 	switch(message) {
 	case WM_CTLCOLORDLG:
 		return (INT_PTR)DlgBrush;
-	case WM_CREATE:
+	case WM_CREATE: {
+		POINT wpos;
+		SIZE  wsz;
 		// パラメータ設定
 		SetParameter(wpos, wsz);
 		if(wsz.cx)
 			MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
 		// リッチエディットコントロール作成
-		hRtLib	= LoadLibrary(L"RICHED32.DLL");
-		hEdit	= CreateWindowEx(WS_EX_CLIENTEDGE, L"RICHEDIT", L"",
-								 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE |
-									 WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY,
-								 0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
-		dwEvent = SendMessage(hEdit, EM_GETEVENTMASK, 0, 0) | ENM_KEYEVENTS | ENM_MOUSEEVENTS;
+		hRtLib		  = LoadLibrary(L"RICHED32.DLL");
+		hEdit		  = CreateWindowEx(WS_EX_CLIENTEDGE, L"RICHEDIT", L"",
+									   WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE |
+										   WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY,
+									   0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
+		DWORD dwEvent = SendMessage(hEdit, EM_GETEVENTMASK, 0, 0) | ENM_KEYEVENTS | ENM_MOUSEEVENTS;
 		SendMessage(hEdit, EM_SETEVENTMASK, 0, (LPARAM)dwEvent);
 		SendMessage(hEdit, EM_EXLIMITTEXT, 0, (LPARAM)TEXTMAX);
 		// フォントシェープ設定
 		SetMyBkColor(bkcol);
 		SetFontShapeInit(F_DEFAULT);
 		break;
-	case WM_COPYDATA:
-		cds = (COPYDATASTRUCT *)lParam;
+	}
+	case WM_COPYDATA:{
+		COPYDATASTRUCT *cds = (COPYDATASTRUCT *)lParam;
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
 			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
 			if(cds->cbData > 0) {
@@ -780,6 +770,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				wstring logbuf;
 				logbuf.resize(cds->cbData);
 				wcscpy(logbuf.data(), (wchar_t *)cds->lpData);
+
+				static OSVERSIONINFO osi	   = {sizeof(osi)};
+				static bool			 osiiniter = GetVersionEx(&osi);
+
 				if(osi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
 					EOS(logbuf.size());
 					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.c_str());
@@ -806,8 +800,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		else if(cds->dwData == dwDataOfDirectSSTP)
 			linker.DirectSSTPprocess(cds);
 		break;
-	case WM_DROPFILES:
-		hDrop = (HDROP)wParam;
+	}
+	case WM_DROPFILES: {
+		wstring tmpdllpath;
+		HDROP	hDrop = (HDROP)wParam;
 		tmpdllpath.resize(MAX_PATH);
 		if(::DragQueryFileW(hDrop, 0xFFFFFFFF, tmpdllpath.data(), MAX_PATH)) {
 			// ドロップされたファイル名を取得
@@ -820,11 +816,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 		::DragFinish(hDrop);
 		break;
+	}
 	case WM_NOTIFY:
 		switch(((NMHDR *)lParam)->code) {
-		case EN_MSGFILTER:
-			pmf = (MSGFILTER *)lParam;
+		case EN_MSGFILTER: {
+			MSGFILTER *pmf = (MSGFILTER *)lParam;
 			if(pmf->msg == WM_RBUTTONDOWN) {
+				HMENU hMenu, hSubMenu;
+				POINT pt{};
 				// ポップアップメニュー表示
 				hMenu	 = LoadMenu(hInst, L"IDR_POPUP");
 				hSubMenu = GetSubMenu(hMenu, 0);
@@ -840,6 +839,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				DestroyMenu(hMenu);
 			}
 			break;
+		}
 		default:
 			break;
 		};
@@ -847,9 +847,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_SIZE:
 		MoveWindow(hEdit, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
 		break;
-	case WM_COMMAND:
-		wmId	= LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
+	case WM_COMMAND: {
+		WORD wmId	= LOWORD(wParam);
+		WORD wmEvent = HIWORD(wParam);
 		switch(wmId) {
 		case ID_TAMA_JUMPTOP:
 			//　先頭へジャンプ
@@ -881,10 +881,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			else if(linker.was_linked_to_ghost()) {
 				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 				switch(info.get_code()) {
-				case -1:		//ssp exit
+				case -1:	   //ssp exit
 					[[fallthrough]];
 				case 404:		//Not Found
 					LostGhostLink();
+					break;
 				case 204:		//No Content
 					[[fallthrough]];
 				case 400:		//Bad Request
@@ -903,10 +904,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			else if(linker.was_linked_to_ghost()) {
 				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 				switch(info.get_code()) {
-				case -1:		//ssp exit
+				case -1:	   //ssp exit
 					[[fallthrough]];
 				case 404:		//Not Found
 					LostGhostLink();
+					break;
 				case 204:		//No Content
 					[[fallthrough]];
 				case 400:		//Bad Request
@@ -919,7 +921,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			// クリップボードへコピー
 			SendMessage(hEdit, WM_COPY, 0, 0);
 			break;
-			break;
 		case ID_TAMA_EXIT:
 			// 終了
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
@@ -928,6 +929,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	}
 	case WM_CLOSE:
 		if(dllpath.c_str())
 			ExecUnload();
@@ -948,9 +950,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
-	static HWND hParent;
-	hParent = GetParent(hWnd);
-
 	switch(msg) {
 	case WM_CTLCOLORDLG:
 		return (INT_PTR)DlgBrush;
