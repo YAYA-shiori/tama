@@ -32,6 +32,10 @@
 #define E_UTF8	  17 /* UTF-8モード */
 #define E_DEFAULT 32 /* デフォルト文字コードモード */
 
+inline bool F_was_warning_or_above(int dwdata) {
+	return dwdata <= 3 && dwdata >= 1;
+}
+
 /*// EM_SETTEXTEX補完
 #define	EM_SETTEXTEX	(WM_USER + 97)
 
@@ -75,6 +79,7 @@ int			   reqshow;										// リクエストダイヤログの表示状態
 wstring		   dlgtext;										// リクエストダイヤログテキスト
 vector<SFface> fontarray;									// フォント一覧
 bool		   receive;										// 受信フラグ
+bool AlertOnWarning;										// Alert on warning
 HBRUSH		   DlgBrush = CreateSolidBrush(0xffffff);		// 对话框控件画刷
 
 Cshiori							shiori;
@@ -382,6 +387,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	dlgcol						= 0xffffff;
 	fontcharset					= DEFAULT_CHARSET;
 	receive						= 1;
+	AlertOnWarning				= 1;
 	wp.x						= -1024;
 	wp.y						= -1024;
 	ws.cx						= 0;
@@ -785,6 +791,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						SendMessageA(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
 					}
 				}
+				// AlertOnWarning
+				if(AlertOnWarning && F_was_warning_or_above(cds->dwData) && shiori.All_OK()) {
+					static FLASHWINFO wfinfo{sizeof(wfinfo), NULL, FLASHW_ALL | FLASHW_TIMERNOFG, 13, 0};
+					wfinfo.hwnd = hWnd;
+					FlashWindowEx(&wfinfo);
+					LPCWSTR boxtittle;
+					auto	icontype = MB_ICONERROR;
+					switch(cds->dwData) {
+					case F_FATAL:
+						boxtittle = L"ghost fatal error";
+						break;
+					case F_ERROR:
+						boxtittle = L"ghost error";
+						break;
+					case F_WARNING:
+						boxtittle = L"ghost warning";
+						icontype  = MB_ICONWARNING;
+						break;
+					default:
+						boxtittle = NULL;
+					}
+					MessageBoxW(NULL, logbuf.c_str(), boxtittle, icontype | MB_OK);
+				}
 			}
 		}
 		else if(cds->dwData == F_NUMBER) {
@@ -832,6 +861,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				ClientToScreen(hEdit, &pt);
 				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
+				CheckMenuItem(hSubMenu, ID_TAMA_ALERTONWARNING, (AlertOnWarning) ? 8 : 0);
+				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (!dllpath.size()) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (dllpath.size()) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
@@ -864,6 +895,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case ID_TAMA_REQUEST:
 			reqshow = (reqshow == SW_SHOW) ? SW_HIDE : SW_SHOW;
 			ShowWindow(hDlgWnd, reqshow);
+			break;
+		case ID_TAMA_ALERTONWARNING:
+			AlertOnWarning ^= 1;
 			break;
 		case ID_TAMA_RECEIVE:
 			receive ^= 1;

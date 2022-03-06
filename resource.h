@@ -33,6 +33,7 @@
 #define ID_TAMA_REQUEST						  32778
 #define ID_TAMA_JUMPBOTTOM					  32779
 #define ID_TAMA_RECEIVE						  32780
+#define ID_TAMA_ALERTONWARNING				  32781
 #define IDC_STATIC							  -1
 
 // Next default values for new objects
