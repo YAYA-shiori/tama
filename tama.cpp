@@ -792,7 +792,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					}
 				}
 				// AlertOnWarning
-				if(AlertOnWarning && F_was_warning_or_above(cds->dwData) && shiori.All_OK()) {
+				if(AlertOnWarning && F_was_warning_or_above(cds->dwData) && !shiori.All_OK()) {
 					static FLASHWINFO wfinfo{sizeof(wfinfo), NULL, FLASHW_ALL | FLASHW_TIMERNOFG, 13, 0};
 					wfinfo.hwnd = hWnd;
 					FlashWindowEx(&wfinfo);
