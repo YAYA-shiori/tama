@@ -62,28 +62,32 @@ struct SFface {
 };
 
 // グローバル変数
-HINSTANCE	   hInst;										// インスタンス
-HWND		   hWnd, hDlgWnd;								// ウィンドウハンドル、ダイヤログウィンドウハンドル
-HWND		   hEdit;										// リッチエディットコントロールのハンドル
-wstring		   szTitle;										// キャプション
-const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;			// ウィンドウクラス名
-SFShape		   fontshape[F_NUMBER];							// フォントシェープ
-COLORREF	   bkcol;										// 背景色
-COLORREF	   bdcol;										// 标题栏色
-COLORREF	   dlgcol;										// 对话框控件色
-wstring		   fontface;									// フォントフェース名
-BYTE		   fontcharset;									// フォントの文字セット
-wstring		   dllpath;										// DLLパス
-wstring		   b_dllpath;									// 直前にunloadしたdllのパス
-int			   reqshow;										// リクエストダイヤログの表示状態
-wstring		   dlgtext;										// リクエストダイヤログテキスト
-vector<SFface> fontarray;									// フォント一覧
-bool		   receive;										// 受信フラグ
-bool AlertOnWarning;										// Alert on warning
-HBRUSH		   DlgBrush = CreateSolidBrush(0xffffff);		// 对话框控件画刷
+HINSTANCE	   hInst;												  // インスタンス
+HWND		   hWnd, hDlgWnd;										  // ウィンドウハンドル、ダイヤログウィンドウハンドル
+HWND		   hEdit;												  // リッチエディットコントロールのハンドル
+wstring		   szTitle;												  // キャプション
+const wchar_t *szWindowClass = CHECK_TOOL_WCNAME;					  // ウィンドウクラス名
+SFShape		   fontshape[F_NUMBER];									  // フォントシェープ
+COLORREF	   bkcol;												  // 背景色
+COLORREF	   bdcol;												  // 标题栏色
+COLORREF	   dlgcol;												  // 对话框控件色
+wstring		   fontface;											  // フォントフェース名
+BYTE		   fontcharset;											  // フォントの文字セット
+wstring		   dllpath;												  // DLLパス
+wstring		   b_dllpath;											  // 直前にunloadしたdllのパス
+int			   reqshow;												  // リクエストダイヤログの表示状態
+wstring		   dlgtext;												  // リクエストダイヤログテキスト
+vector<SFface> fontarray;											  // フォント一覧
+bool		   receive;												  // 受信フラグ
+bool		   AlertOnWarning;										  // Alert on warning
+HBRUSH		   DlgBrush			  = CreateSolidBrush(0xffffff);		  // 对话框控件画刷
+bool		   tamaOpen_called	  = 0;
+bool		   has_fatal_or_error = 0;
 
+UINT_PTR						ghost_status_watcher = NULL;
 Cshiori							shiori;
 SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
+SFMO_t							fmobj;
 
 namespace args_info {
 	wstring ghost_link_to;
@@ -91,6 +95,7 @@ namespace args_info {
 }		// namespace args_info
 wstring ghost_path;
 wstring ghost_uid;
+wstring ghost_shiori;
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
 
@@ -105,10 +110,25 @@ ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
 BOOL			 InitSendRequestDlg(HINSTANCE hInstance);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+void			 reload_shiori_of_baseware();
+void			 unload_shiori_of_baseware();
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 int CALLBACK	 EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam);
 int				 GetFontCharSet(wstring name);
+
+enum shiorimode_t { not_in_loading,
+					load_by_baseware,
+					load_by_tama };
+shiorimode_t shiorimode = not_in_loading;
+enum shioristaus_t { running,
+					 critical };
+shioristaus_t shioristaus = running;
+enum tamamode_t { specified_ghost,
+				  any };
+tamamode_t tamamode				= any;
+bool	   has_shiori_file_info = 0;
+bool	   allow_file_drug		= 0;
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path);
 void On_tamaExit(HWND hWnd, wstring ghost_path);
@@ -116,6 +136,7 @@ void On_tamaExit(HWND hWnd, wstring ghost_path);
 int	 ExecLoad(void);
 void ExecRequest(const wchar_t *str);
 void ExecUnload(void);
+int	 ExecReload(void);
 
 void EOS(int newaddsz);
 
@@ -160,6 +181,50 @@ wstring LoadStringFromResource(
 	return aret;
 }
 
+BOOL has_corresponding_tama(wstring ghost_hwnd_str) {
+	auto hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + ghost_hwnd_str).c_str());
+	if(hMutex == NULL)
+		return TRUE;
+	if(GetLastError() == ERROR_ALREADY_EXISTS) {
+		::CloseHandle(hMutex);
+		return TRUE;
+	}
+	else {
+		::CloseHandle(hMutex);
+		return FALSE;
+	}
+}
+BOOL has_corresponding_tama(HWND ghost_hwnd) {
+	return has_corresponding_tama(to_wstring((size_t)ghost_hwnd));
+}
+
+wstring get_shiori_path(wstring ghost_path) {
+	auto descript_name = ghost_path + L"descript.txt";
+	auto descript_f	   = _wfopen(descript_name.c_str(), L"rb");
+	//
+	CODEPAGE_n::CODEPAGE cp = CODEPAGE_n::CP_UTF8;
+	char				 buf[2048];
+	wstring				 line, s0, s1;
+	if(descript_f) {
+		while(fgets(buf, 2048, descript_f)) {
+			line	 = CODEPAGE_n::MultiByteToUnicode(buf, cp);
+			auto len = line.size();
+			if(len && *line.rbegin() == L'\n')
+				line.resize(--len);
+			if(len && *line.rbegin() == L'\r')
+				line.resize(--len);
+			Split(line, s0, s1, L",");
+			if(s0 == L"charset")
+				cp = CODEPAGE_n::StringtoCodePage(s1.c_str());
+			else if(s0 == L"shiori") {
+				fclose(descript_f);
+				return ghost_path + s1;
+			}
+		}
+		fclose(descript_f);
+	}
+	return {};
+}
 
 void ArgsHandling() {
 	LPWSTR *argv;
@@ -187,8 +252,6 @@ void ArgsHandling() {
 	}
 }
 void GhostSelection(HINSTANCE hInstance) {
-	MSG	   msg;
-	SFMO_t fmobj;
 	using namespace args_info;
 	if(ghost_hwnd)
 		goto link_to_ghost;
@@ -214,12 +277,16 @@ void GhostSelection(HINSTANCE hInstance) {
 		else if(ghostnum == 1) {
 			//"Only one ghost was running.\n";
 			ghost_hwnd = (HWND)wcstoll(fmobj.info_map.begin()->second.map[L"hwnd"].c_str(), nullptr, 10);
+			if(has_corresponding_tama(ghost_hwnd))
+				ghost_hwnd = NULL;
 		}
 		else {
 			auto gsui = CreateDialog(hInstance, (LPCTSTR)IDD_GHOST_SELECT, hWnd, (DLGPROC)GhostSelectDlgProc);
 			ShowWindow(gsui, SW_SHOW);
 			ShowWindow(hWnd, SW_HIDE);
 			for(auto &i: fmobj.info_map) {
+				if(has_corresponding_tama(i.second[L"hwnd"]))
+					continue;
 				HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
 				if(!tmp_hwnd)
 					continue;
@@ -237,6 +304,7 @@ void GhostSelection(HINSTANCE hInstance) {
 			}
 			auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST).c_str());
 			SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)(HWND)-1);
+			MSG msg;
 			while(GetMessage(&msg, NULL, 0, 0)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);
@@ -248,6 +316,17 @@ void GhostSelection(HINSTANCE hInstance) {
 link_to_ghost:
 	if(ghost_hwnd == (HWND)-1)
 		ghost_hwnd = NULL;
+	if(!ghost_hwnd) {
+		tamamode = any;
+		return;
+	}
+	else
+		tamamode = specified_ghost;
+	if(has_corresponding_tama(ghost_hwnd)) {
+		ShowWindow(hWnd, SW_HIDE);
+		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), L"Error", MB_ICONERROR | MB_OK);
+		exit(EXIT_FAILURE);
+	}
 	linker.link_to_ghost(ghost_hwnd);
 	//get ghost path
 	fmobj.Update_info();
@@ -255,8 +334,39 @@ link_to_ghost:
 		HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
 		if(tmp_hwnd != ghost_hwnd)
 			continue;
-		ghost_path = i.second[L"ghostpath"] + L"ghost\\master\\";
-		ghost_uid  = i.second.ID;
+		ghost_path	 = i.second[L"ghostpath"] + L"ghost\\master\\";
+		ghost_uid	 = i.second.ID;
+		ghost_shiori = get_shiori_path(ghost_path);
+		//
+		has_shiori_file_info = !ghost_shiori.empty();
+	}
+}
+
+void UpdateGhostModulestate() {
+	fmobj.Update_info();
+	auto shioristate	 = fmobj.info_map[ghost_uid].get_modulestate(L"shiori");
+	auto shioristausback = shioristaus;
+	if(shioristate == L"running") {
+		shioristaus = running;
+		if(shioristausback == critical) {
+			allow_file_drug = 0;
+			if(!dllpath.empty())
+				ExecUnload();
+		}
+	}
+	else if(shioristate == L"critical") {
+		shioristaus = critical;
+		if(shioristausback == running) {
+			if(has_shiori_file_info) {
+				unload_shiori_of_baseware();
+				dllpath = ghost_shiori;
+				if(!ExecReload())
+					allow_file_drug = 1;
+			}
+			else {
+				allow_file_drug = 1;
+			}
+		}
 	}
 }
 
@@ -269,6 +379,10 @@ int APIENTRY WinMain(
 	ArgsHandling();
 
 	GhostSelection(hInstance);
+	if(!ghost_uid.empty())
+		shiorimode = load_by_baseware;
+	else
+		shiorimode = not_in_loading;
 
 	using namespace args_info;
 	hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + to_wstring((size_t)ghost_hwnd)).c_str());
@@ -297,19 +411,26 @@ int APIENTRY WinMain(
 
 	ShowWindow(hWnd, SW_SHOW);
 
-	On_tamaOpen(hWnd, ghost_path);
-	bool has_log = GetWindowTextLength(hEdit);
-	if(ghost_hwnd && !has_log)
-		SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
+	if(shiorimode == load_by_baseware)
+		UpdateGhostModulestate();
 
+	if(tamamode == specified_ghost && shioristaus == running)
+		On_tamaOpen(hWnd, ghost_path);
+	if(tamamode == specified_ghost) {
+		bool has_log = GetWindowTextLength(hEdit);
+		if(!has_log)
+			SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
+
+		ghost_status_watcher = SetTimer(hWnd, IDT_CHOST_STATUS_WATCHER, 7000, (TIMERPROC)NULL);		  // 7-second interval & no timer callback
+	}
 	while(GetMessage(&msg, NULL, 0, 0)) {
 		if(!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 	}
-
-	On_tamaExit(hWnd, ghost_path);
+	if(tamamode == specified_ghost && shioristaus == running)
+		On_tamaExit(hWnd, ghost_path);
 
 	if(hMutex != NULL)
 		::CloseHandle(hMutex);
@@ -318,6 +439,7 @@ int APIENTRY WinMain(
 }
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path) {
+	tamaOpen_called = 1;
 	linker.setReplayHwnd(hWnd);
 	WCHAR selfpath[MAX_PATH];
 	GetModuleFileNameW(NULL, selfpath, MAX_PATH);
@@ -353,7 +475,7 @@ void On_tamaExit(HWND hWnd, wstring ghost_path) {
 	auto info = linker.NOTYFY({{L"Event", L"tamaExit"}});
 }
 
-[[noreturn]]void LostGhostLink() {
+[[noreturn]] void LostGhostLink() {
 	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 	exit(EXIT_FAILURE);
 }
@@ -659,7 +781,7 @@ bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
 void CutSpace(wstring &str) {
 	// str前後の空白とタブを削る
 
-	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_not_of(L" \t")+1);
+	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_not_of(L" \t") + 1);
 }
 
 int HexStrToInt(const wchar_t *str) {
@@ -766,7 +888,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		SetFontShapeInit(F_DEFAULT);
 		break;
 	}
-	case WM_COPYDATA:{
+	case WM_COPYDATA: {
 		COPYDATASTRUCT *cds = (COPYDATASTRUCT *)lParam;
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
 			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
@@ -791,8 +913,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						SendMessageA(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
 					}
 				}
+				if(!has_fatal_or_error && (cds->dwData == F_FATAL || cds->dwData == F_ERROR))
+					has_fatal_or_error = 1;
 				// AlertOnWarning
-				if(AlertOnWarning && F_was_warning_or_above(cds->dwData) && !shiori.All_OK()) {
+				if(AlertOnWarning && F_was_warning_or_above(cds->dwData) && shiorimode == load_by_baseware) {
 					static FLASHWINFO wfinfo{sizeof(wfinfo), NULL, FLASHW_ALL | FLASHW_TIMERNOFG, 13, 0};
 					wfinfo.hwnd = hWnd;
 					FlashWindowEx(&wfinfo);
@@ -833,15 +957,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_DROPFILES: {
 		wstring tmpdllpath;
 		HDROP	hDrop = (HDROP)wParam;
-		tmpdllpath.resize(MAX_PATH);
-		if(::DragQueryFileW(hDrop, 0xFFFFFFFF, tmpdllpath.data(), MAX_PATH)) {
-			// ドロップされたファイル名を取得
-			::DragQueryFileW(hDrop, 0, tmpdllpath.data(), MAX_PATH);
-			// dllパス更新
-			b_dllpath = dllpath;
-			dllpath	  = tmpdllpath;
-			// 实行
-			ExecLoad();
+		if(allow_file_drug) {
+			tmpdllpath.resize(MAX_PATH);
+			if(::DragQueryFileW(hDrop, 0xFFFFFFFF, tmpdllpath.data(), MAX_PATH)) {
+				// ドロップされたファイル名を取得
+				::DragQueryFileW(hDrop, 0, tmpdllpath.data(), MAX_PATH);
+				// dllパス更新
+				b_dllpath = dllpath;
+				dllpath	  = tmpdllpath;
+				// 实行
+				ExecLoad();
+			}
+		}
+		else {
+			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 		}
 		::DragFinish(hDrop);
 		break;
@@ -862,10 +991,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_ALERTONWARNING, (AlertOnWarning) ? 8 : 0);
-				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (!dllpath.size()) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (dllpath.size()) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (dllpath.size() || b_dllpath.size() || (linker.was_linked_to_ghost() && !ghost_uid.empty())) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (shiorimode != not_in_loading) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (shiorimode != not_in_loading) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (has_shiori_file_info || shiorimode == load_by_baseware) ? MF_ENABLED : MF_GRAYED);
 				TrackPopupMenu(hSubMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 				DestroyMenu(hMenu);
 			}
@@ -878,8 +1006,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_SIZE:
 		MoveWindow(hEdit, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
 		break;
+	case WM_TIMER:
+		switch(wParam) {
+		case IDT_CHOST_STATUS_WATCHER:
+			UpdateGhostModulestate();
+			if(!tamaOpen_called && shioristaus == running)
+				On_tamaOpen(hWnd, ghost_path);
+			return 0;
+		}
+		break;
 	case WM_COMMAND: {
-		WORD wmId	= LOWORD(wParam);
+		WORD wmId	 = LOWORD(wParam);
 		WORD wmEvent = HIWORD(wParam);
 		switch(wmId) {
 		case ID_TAMA_JUMPTOP:
@@ -893,8 +1030,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			SendMessage(hEdit, WM_HSCROLL, SB_LEFT, NULL);
 			break;
 		case ID_TAMA_REQUEST:
-			reqshow = (reqshow == SW_SHOW) ? SW_HIDE : SW_SHOW;
-			ShowWindow(hDlgWnd, reqshow);
+			if(shiorimode == load_by_tama) {
+				reqshow = (reqshow == SW_SHOW) ? SW_HIDE : SW_SHOW;
+				ShowWindow(hDlgWnd, reqshow);
+			}
+			else {
+				if(linker.was_linked_to_ghost()) {
+					linker.SEND({{L"ID", ghost_uid},
+								 {L"Script", L"\\![open,shiorirequest]"}});
+				}
+			}
 			break;
 		case ID_TAMA_ALERTONWARNING:
 			AlertOnWarning ^= 1;
@@ -904,50 +1049,63 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			break;
 		case ID_TAMA_RELOAD:
 			// reload
-			if(dllpath.size()) {
-				ExecUnload();
-				ExecLoad();
+			if(shiorimode == load_by_tama) {
+				if(dllpath.size()) {
+					ExecReload();
+				}
+				else if(b_dllpath.size()) {
+					dllpath = b_dllpath;
+					ExecLoad();
+				}
 			}
-			else if(b_dllpath.size()) {
-				dllpath = b_dllpath;
-				ExecLoad();
-			}
-			else if(linker.was_linked_to_ghost()) {
-				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
-				switch(info.get_code()) {
-				case -1:	   //ssp exit
-					[[fallthrough]];
-				case 404:		//Not Found
-					LostGhostLink();
-					break;
-				case 204:		//No Content
-					[[fallthrough]];
-				case 400:		//Bad Request
-					linker.SEND({{L"ID", ghost_uid},
-								 {L"Script", L"\\![reload,shiori]"}});
+			else {
+				if(linker.was_linked_to_ghost()) {
+					if(shioristaus == running) {
+						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
+						switch(info.get_code()) {
+						case -1:	   //ssp exit
+							[[fallthrough]];
+						case 404:		//Not Found
+							LostGhostLink();
+							break;
+						case 204:		//No Content
+							[[fallthrough]];
+						case 400:		//Bad Request
+							reload_shiori_of_baseware();
+						}
+					}
+					else
+						ExecReload();
 				}
 			}
 			break;
 		case ID_TAMA_UNLOAD:
 			// unload
-			if(dllpath.size()) {
-				ExecUnload();
-				b_dllpath = dllpath;
-				dllpath.clear();
+			if(shiorimode == load_by_tama) {
+				if(dllpath.size()) {
+					ExecUnload();
+					b_dllpath = dllpath;
+					dllpath.clear();
+				}
 			}
-			else if(linker.was_linked_to_ghost()) {
-				auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
-				switch(info.get_code()) {
-				case -1:	   //ssp exit
-					[[fallthrough]];
-				case 404:		//Not Found
-					LostGhostLink();
-					break;
-				case 204:		//No Content
-					[[fallthrough]];
-				case 400:		//Bad Request
-					linker.SEND({{L"ID", ghost_uid},
-								 {L"Script", L"\\![unload,shiori]"}});
+			else {
+				if(linker.was_linked_to_ghost()) {
+					if(shioristaus == running) {
+						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
+						switch(info.get_code()) {
+						case -1:	   //ssp exit
+							[[fallthrough]];
+						case 404:		//Not Found
+							LostGhostLink();
+							break;
+						case 204:		//No Content
+							[[fallthrough]];
+						case 400:		//Bad Request
+							unload_shiori_of_baseware();
+						}
+					}
+					else
+						ExecUnload();
 				}
 			}
 			break;
@@ -965,7 +1123,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		break;
 	}
 	case WM_CLOSE:
-		if(dllpath.c_str())
+		if(!dllpath.empty())
 			ExecUnload();
 		if(!args_info::ghost_hwnd)
 			SaveParameter();
@@ -981,6 +1139,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void reload_shiori_of_baseware() {
+	linker.SEND({{L"ID", ghost_uid},
+				 {L"Script", L"\\![reload,shiori]"}});
+	shiorimode = load_by_baseware;
+}
+
+void unload_shiori_of_baseware() {
+	linker.SEND({{L"ID", ghost_uid},
+				 {L"Script", L"\\![unload,shiori]"}});
+	shiorimode = not_in_loading;
 }
 
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
@@ -1046,6 +1216,8 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 }
 
 int ExecLoad(void) {
+	has_fatal_or_error = 0;
+	shiorimode		   = load_by_tama;
 	// テキスト全クリア
 	SetWindowText(hEdit, L"");
 	SetFontShapeInit(F_DEFAULT);
@@ -1057,15 +1229,23 @@ int ExecLoad(void) {
 		dllpath.clear();
 		wstring tmp = dllpath + L" : tama error TE0001 : Cannot load dll.";
 		SetWindowTextW(hEdit, tmp.c_str());
+		shiorimode = not_in_loading;
 		return 0;
 	}
 	// logsend
 	if(!shiori.is_logsend_ok()) {
 		wstring tmp = dllpath + L" : tama error TE0002 : Cannot set dll's logsend hwnd.";
 		SetWindowTextW(hEdit, tmp.c_str());
+		shiorimode = not_in_loading;
 		return 0;
 	}
 
+	if(tamamode == specified_ghost && shioristaus == critical) {
+		if(!has_fatal_or_error) {
+			ExecUnload();
+			reload_shiori_of_baseware();
+		}
+	}
 	return 1;
 }
 
@@ -1079,6 +1259,12 @@ void ExecUnload() {
 	SendMessage(hEdit, EM_SETSEL, -1, -1);
 
 	shiori.Dounload();
+	shiorimode = not_in_loading;
+}
+
+int ExecReload() {
+	ExecUnload();
+	return ExecLoad();
 }
 
 BOOL SetFontShape(int shapeid) {
@@ -1235,7 +1421,7 @@ wchar_t *setlocaleauto(int category) {
 	case LANG_FARSI:
 		return _wsetlocale(category, L"Farsi");
 	//case LANG_SERBIAN:					// どこかと値が衝突している模様
-		//return _wsetlocale(category, L"Serbian");
+	//	return _wsetlocale(category, L"Serbian");
 	case LANG_FINNISH:
 		return _wsetlocale(category, L"Finnish");
 	case LANG_SINDHI:
@@ -1283,7 +1469,7 @@ wchar_t *setlocaleauto(int category) {
 	case LANG_ITALIAN:
 		return _wsetlocale(category, L"Italian");
 	//case LANG_UKRANIAN:					// 存在しない？
-		//return _wsetlocale(category, L"Ukranian");
+	//	return _wsetlocale(category, L"Ukranian");
 	case LANG_JAPANESE:
 		return _wsetlocale(category, L"Japanese");
 	case LANG_URDU:
