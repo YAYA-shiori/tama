@@ -270,7 +270,7 @@ void GhostSelection(HINSTANCE hInstance) {
 			}
 			if(!ghost_hwnd) {
 				ShowWindow(hWnd, SW_HIDE);
-				MessageBoxW(NULL, (LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), L"Error", MB_ICONERROR | MB_OK);
+				MessageBoxW(NULL, (LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -324,7 +324,7 @@ link_to_ghost:
 		tamamode = specified_ghost;
 	if(has_corresponding_tama(ghost_hwnd)) {
 		ShowWindow(hWnd, SW_HIDE);
-		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), L"Error", MB_ICONERROR | MB_OK);
+		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
 	}
 	linker.link_to_ghost(ghost_hwnd);
