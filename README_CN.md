@@ -1,3 +1,7 @@
+[![download num](https://img.shields.io/github/downloads/nikolat/tama/total)](https://github.com/nikolat/tama/releases/latest)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+
 Tama是[AYA]( http://umeici.onjn.jp/ )/[YAYA]( https://github.com/ponapalt/yaya-shiori )的基本操作检查工具，也可以作为AYA/YAYA执行日志的实时查看器。  
 原作者：[umeici](http://umeici.onjn.jp/)  
 新功能：  

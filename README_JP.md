@@ -1,3 +1,7 @@
+[![download num](https://img.shields.io/github/downloads/nikolat/tama/total)](https://github.com/nikolat/tama/releases/latest)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+
 [AYA](http://umeici.onjn.jp/) / [YAYA](https://github.com/ponapalt/yaya-shiori) の基本動作確認ツール、およびAYA / YAYA実行ログのリアルタイムビューアとして使用できます。  
 原作者：[umeici](http://umeici.onjn.jp/)  
 新機能を追加しました：  
