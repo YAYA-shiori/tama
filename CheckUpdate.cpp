@@ -4,6 +4,10 @@
 #include <wininet.h>
 #pragma comment(lib, "WinInet.lib")
 
+wstring LoadStringFromResource(
+	__in UINT		   stringID,
+	__in_opt HINSTANCE instance = NULL);
+
 //check update at https://github.com/nikolat/tama/releases with windows api
 //if has update,open https://github.com/nikolat/tama/releases/latest
 #define VERSION_STRING u8"v1.0.3.0"
@@ -72,7 +76,7 @@ void CheckUpdate() {
 	if (tagname == VERSION_STRING) {
 		return;
 	}
-	if(MessageBox(NULL, L"新しいバージョンがあります。\nダウンロードしますか？", L"Tama", MB_YESNO)==IDYES)
+	if(MessageBox(NULL, LoadStringFromResource(IDS_NEW_VERSION_AVAILABLE).c_str(), L"Tama", MB_YESNO) == IDYES)
 		ShellExecute(NULL, L"open", L"https://github.com/nikolat/tama/releases/latest", NULL, NULL, SW_SHOW);
 	#endif
 }

@@ -2,6 +2,8 @@
 // Microsoft Developer Studio generated include file.
 // Used by tama.rc
 
+#include "windows.h"
+
 #define IDC_MYICON							   2
 #define IDD_DRAGFILES_DIALOG				   102
 #define IDS_APP_TITLE						   103
@@ -15,6 +17,7 @@
 #define IDS_ERROR_LOST_GHOST_LINK			   111
 #define IDS_ERROR_GHOST_ALREADY_HAS_TAMA	   112
 #define IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED 113
+#define IDS_NEW_VERSION_AVAILABLE			   114
 #define IDM_EXIT							   105
 #define IDI_DRAGFILES						   107
 #define IDI_SMALL							   108
