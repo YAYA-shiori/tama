@@ -10,69 +10,52 @@ wstring LoadStringFromResource(
 
 //check update at https://github.com/nikolat/tama/releases with windows api
 //if has update,open https://github.com/nikolat/tama/releases/latest
-#define VERSION_STRING u8"v1.0.3.1"
+#define VERSION_STRING u8"v1.0.3.2"
 void CheckUpdate() {
 	#ifndef _DEBUG
-	HINTERNET hInternet = InternetOpen(L"Tama", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-	if (hInternet == NULL) {
-		return;
-	}
-	HINTERNET hConnect = InternetConnect(hInternet, L"api.github.com", INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
-	if (hConnect == NULL) {
-		InternetCloseHandle(hInternet);
-		return;
-	}
-	HINTERNET hRequest = HttpOpenRequest(hConnect, L"GET", L"/repos/nikolat/tama/releases/latest", NULL, NULL, NULL, INTERNET_FLAG_SECURE, 0);
-	if (hRequest == NULL) {
+	u8string tagname;
+	{
+		HINTERNET hInternet = InternetOpen(L"Tama", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+		if(hInternet == NULL) {
+			return;
+		}
+		HINTERNET hConnect = InternetConnect(hInternet, L"api.github.com", INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+		if(hConnect == NULL) {
+			InternetCloseHandle(hInternet);
+			return;
+		}
+		HINTERNET hRequest = HttpOpenRequest(hConnect, L"GET", L"/repos/nikolat/tama/releases/latest", NULL, NULL, NULL, INTERNET_FLAG_SECURE, 0);
+		if(hRequest == NULL) {
+			InternetCloseHandle(hConnect);
+			InternetCloseHandle(hInternet);
+			return;
+		}
+		//download json
+		HttpSendRequest(hRequest, NULL, 0, NULL, 0);
+		DWORD	 dwSize = 0;
+		u8string buff;
+		InternetQueryDataAvailable(hRequest, &dwSize, 0, 0);
+		buff.resize(dwSize);
+		while(InternetReadFile(hRequest, buff.data(), buff.size(), &dwSize) && dwSize > 0) {
+			buff.resize(buff.size() + dwSize);
+		}
+		InternetCloseHandle(hRequest);
 		InternetCloseHandle(hConnect);
 		InternetCloseHandle(hInternet);
-		return;
+		//parse json
+		auto p = buff.find(u8"\"tag_name\":");
+		if(p == u8string::npos)
+			return;
+		buff = buff.substr(p + 11);
+		p	 = buff.find(u8"\"");
+		if(p == u8string::npos)
+			return;
+		buff = buff.substr(p + 1);
+		p	 = buff.find(u8"\"");
+		if(p == u8string::npos)
+			return;
+		tagname = buff.substr(0, p);
 	}
-	//download json
-	HttpSendRequest(hRequest, NULL, 0, NULL, 0);
-	DWORD dwSize = 0;
-	char *pBuffer = NULL;
-	u8string tagname;
-	do {
-		InternetQueryDataAvailable(hRequest, &dwSize, 0, 0);
-		if (dwSize == 0)
-			break;
-		auto tmp = (char *)realloc(pBuffer, dwSize + 1);
-		if (tmp == NULL)
-			free(pBuffer);
-		pBuffer = tmp;
-		if (pBuffer == NULL)
-			break;
-		DWORD dwRead = 0;
-		InternetReadFile(hRequest, pBuffer, dwSize, &dwRead);
-		pBuffer[dwRead] = '\0';
-	} while (0);
-	InternetCloseHandle(hRequest);
-	InternetCloseHandle(hConnect);
-	InternetCloseHandle(hInternet);
-	if (dwSize == 0 || pBuffer == NULL) {
-		return;
-	}
-	pBuffer[dwSize] = '\0';
-	auto p = strstr(pBuffer, "\"tag_name\":");
-	if (p == NULL) {
-		free(pBuffer);
-		return;
-	}
-	p += 11;
-	p = strstr(pBuffer, "\"");
-	if (p == NULL) {
-		free(pBuffer);
-		return;
-	}
-	p++;
-	auto p2 = strstr(p, "\"");
-	if (p2 == NULL) {
-		free(pBuffer);
-		return;
-	}
-	tagname.assign(p, p2);
-	free(pBuffer);
 	if (tagname == VERSION_STRING) {
 		return;
 	}
