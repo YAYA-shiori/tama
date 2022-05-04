@@ -32,6 +32,8 @@
 #define E_UTF8	  17 /* UTF-8モード */
 #define E_DEFAULT 32 /* デフォルト文字コードモード */
 
+void CheckUpdate();
+
 inline bool F_was_warning_or_above(int dwdata) {
 	return dwdata <= 3 && dwdata >= 1;
 }
@@ -378,6 +380,8 @@ int APIENTRY WinMain(
 	_In_ int		   nShowCmd) {
 	ArgsHandling();
 
+	CheckUpdate();
+	
 	GhostSelection(hInstance);
 	if(!ghost_uid.empty())
 		shiorimode = load_by_baseware;
