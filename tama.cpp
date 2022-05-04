@@ -529,12 +529,24 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	ReleaseDC(hWnd, hDC);
 	// ファイルから取得
 	wstring filename;
-	filename.resize(MAX_PATH);
-	GetModuleFileName(NULL, filename.data(), MAX_PATH);
-	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
-	filename = wstring() + drive + dir + L"tama.txt";
+	if(tamamode==specified_ghost)
+		filename = ghost_path + L"profile\\tama.txt";
+	else {
+		filename.resize(MAX_PATH);
+		GetModuleFileName(NULL, filename.data(), MAX_PATH);
+		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
+		filename = wstring() + drive + dir + L"tama.txt";
+	}
 	FILE *fp = _wfopen(filename.c_str(), L"rt, ccs=UTF-8");
+	if(fp == NULL && tamamode==specified_ghost){
+		filename.resize(MAX_PATH);
+		GetModuleFileName(NULL, filename.data(), MAX_PATH);
+		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
+		filename = wstring() + drive + dir + L"tama.txt";
+		fp = _wfopen(filename.c_str(), L"rt, ccs=UTF-8");
+	}
 	if(fp != NULL) {
 		wstring buf;
 		wstring s0, s1;
@@ -693,11 +705,15 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 void SaveParameter(void) {
 	// ファイルへ設定を書き出し
 	wstring filename;
-	filename.resize(MAX_PATH);
-	GetModuleFileName(NULL, filename.data(), MAX_PATH);
-	wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-	_wsplitpath(filename.c_str(), drive, dir, fname, ext);
-	filename = wstring() + drive + dir + L"tama.txt";
+	if(tamamode == specified_ghost)
+		filename = ghost_path + L"profile\\tama.txt";
+	else {
+		filename.resize(MAX_PATH);
+		GetModuleFileName(NULL, filename.data(), MAX_PATH);
+		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
+		filename = wstring() + drive + dir + L"tama.txt";
+	}
 	FILE *fp = _wfopen(filename.c_str(), L"wt, ccs=UTF-8");
 	if(fp != NULL) {
 		fwprintf(fp, L"default.pt,%d\n", fontshape[F_DEFAULT].pt);
@@ -1129,8 +1145,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_CLOSE:
 		if(!dllpath.empty())
 			ExecUnload();
-		if(!args_info::ghost_hwnd)
-			SaveParameter();
+		SaveParameter();
 		DestroyWindow(hEdit);
 		DestroyWindow(hDlgWnd);
 		DestroyWindow(hWnd);

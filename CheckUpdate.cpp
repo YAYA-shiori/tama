@@ -8,6 +8,7 @@
 //if has update,open https://github.com/nikolat/tama/releases/latest
 #define VERSION_STRING u8"v1.0.3.0"
 void CheckUpdate() {
+	#ifndef _DEBUG
 	HINTERNET hInternet = InternetOpen(L"Tama", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 	if (hInternet == NULL) {
 		return;
@@ -73,4 +74,5 @@ void CheckUpdate() {
 	}
 	if(MessageBox(NULL, L"新しいバージョンがあります。\nダウンロードしますか？", L"Tama", MB_YESNO)==IDYES)
 		ShellExecute(NULL, L"open", L"https://github.com/nikolat/tama/releases/latest", NULL, NULL, SW_SHOW);
+	#endif
 }
