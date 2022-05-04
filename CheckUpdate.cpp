@@ -10,7 +10,7 @@ wstring LoadStringFromResource(
 
 //check update at https://github.com/nikolat/tama/releases with windows api
 //if has update,open https://github.com/nikolat/tama/releases/latest
-#define VERSION_STRING u8"v1.0.3.0"
+#define VERSION_STRING u8"v1.0.3.1"
 void CheckUpdate() {
 	#ifndef _DEBUG
 	HINTERNET hInternet = InternetOpen(L"Tama", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
