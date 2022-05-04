@@ -130,7 +130,7 @@ enum tamamode_t { specified_ghost,
 				  any };
 tamamode_t tamamode				= any;
 bool	   has_shiori_file_info = 0;
-bool	   allow_file_drug		= 0;
+bool	   allow_file_drug		= 1;
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path);
 void On_tamaExit(HWND hWnd, wstring ghost_path);
@@ -345,9 +345,12 @@ link_to_ghost:
 }
 
 void UpdateGhostModulestate() {
+	if(ghost_uid.empty())
+		return;
 	fmobj.Update_info();
 	auto shioristate	 = fmobj.info_map[ghost_uid].get_modulestate(L"shiori");
 	auto shioristausback = shioristaus;
+	allow_file_drug = 0;
 	if(shioristate == L"running") {
 		shioristaus = running;
 		if(shioristausback == critical) {
