@@ -380,7 +380,8 @@ int APIENTRY WinMain(
 	_In_ int		   nShowCmd) {
 	ArgsHandling();
 
-	CheckUpdate();
+	//new thread for CheckUpdate, using windows api
+	auto checkupdate_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)CheckUpdate, NULL, 0, NULL);
 	
 	GhostSelection(hInstance);
 	if(!ghost_uid.empty())
@@ -435,9 +436,12 @@ int APIENTRY WinMain(
 	}
 	if(tamamode == specified_ghost && shioristaus == running)
 		On_tamaExit(hWnd, ghost_path);
-
+	
 	if(hMutex != NULL)
 		::CloseHandle(hMutex);
+
+	if(checkupdate_thread)
+		WaitForSingleObject(checkupdate_thread, INFINITE);
 
 	return msg.wParam;
 }
