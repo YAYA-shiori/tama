@@ -426,8 +426,10 @@ int APIENTRY WinMain(
 		On_tamaOpen(hWnd, ghost_path);
 	if(tamamode == specified_ghost) {
 		bool has_log = GetWindowTextLength(hEdit);
-		if(!has_log)
+		if(!has_log) {
 			SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
+			allow_file_drug = 1;
+		}
 
 		ghost_status_watcher = SetTimer(hWnd, IDT_CHOST_STATUS_WATCHER, 7000, (TIMERPROC)NULL);		  // 7-second interval & no timer callback
 	}
