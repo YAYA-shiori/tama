@@ -2,6 +2,10 @@
 #include "Windows.h"
 #include "DbgHelp.h"
 
+wstring LoadStringFromResource(
+	__in UINT		   stringID,
+	__in_opt HINSTANCE instance = NULL);
+
 int GenerateDump(PEXCEPTION_POINTERS pExceptionPointers) {
 	HANDLE hDumpFile = CreateFileW(L"Dump.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if(hDumpFile == INVALID_HANDLE_VALUE) {
@@ -28,6 +32,7 @@ int GenerateDump(PEXCEPTION_POINTERS pExceptionPointers) {
 
 	BOOL bRet = pfnMiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &mdei, NULL, NULL);
 	CloseHandle(hDumpFile);
+	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_UNEXPECTED_EXCEPTION).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo) {
