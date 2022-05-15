@@ -10,7 +10,7 @@ wstring LoadStringFromResource(
 
 //check update at https://github.com/nikolat/tama/releases with windows api
 //if has update,open https://github.com/nikolat/tama/releases/latest
-#define VERSION_STRING u8"v1.0.3.3"
+#define VERSION_STRING u8"v1.0.3.4"
 void CheckUpdate() {
 	#ifndef _DEBUG
 	u8string tagname;
