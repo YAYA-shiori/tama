@@ -817,8 +817,17 @@ bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
 
 void CutSpace(wstring &str) {
 	// str前後の空白とタブを削る
-
-	str = str.substr(str.find_first_not_of(L" \t"), str.find_last_not_of(L" \t") + 1);
+	auto pos1 = str.find_first_not_of(L" \t");
+	auto pos2 = str.find_last_not_of(L" \t");
+	if(pos1 == wstring::npos) {
+		str = L"";
+		return;
+	}
+	if(pos1 == pos2) {
+		str = str.substr(pos1);
+		return;
+	}
+	str = str.substr(pos1, pos2 - pos1 + 1);
 }
 
 int HexStrToInt(const wchar_t *str) {
