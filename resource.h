@@ -8,7 +8,7 @@
 #define IDD_DRAGFILES_DIALOG				   102
 #define IDS_APP_TITLE						   103
 #define IDS_ERROR_NONE_GHOST				   104
-#define IDS_ERROR_TITTLE					   105
+#define IDS_ERROR_TITLE					   105
 #define IDS_ERROR_GHOST_NOT_FOUND_P1		   106
 #define IDS_ERROR_GHOST_NOT_FOUND_P2		   107
 #define IDS_EVENT_DEF_REMINDER				   108

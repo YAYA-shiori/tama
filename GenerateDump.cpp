@@ -32,7 +32,7 @@ int GenerateDump(PEXCEPTION_POINTERS pExceptionPointers) {
 
 	BOOL bRet = pfnMiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &mdei, NULL, NULL);
 	CloseHandle(hDumpFile);
-	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_UNEXPECTED_EXCEPTION).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_UNEXPECTED_EXCEPTION).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 LONG WINAPI ExceptionFilter(LPEXCEPTION_POINTERS lpExceptionInfo) {

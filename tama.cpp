@@ -261,7 +261,7 @@ void GhostSelection(HINSTANCE hInstance) {
 		auto ghostnum = fmobj.info_map.size();
 		if(ghostnum == 0) {
 			ShowWindow(hWnd, SW_HIDE);
-			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NONE_GHOST).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NONE_GHOST).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 			exit(EXIT_FAILURE);
 		}
 		else if(!ghost_link_to.empty()) {
@@ -272,7 +272,7 @@ void GhostSelection(HINSTANCE hInstance) {
 			}
 			if(!ghost_hwnd) {
 				ShowWindow(hWnd, SW_HIDE);
-				MessageBoxW(NULL, (LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+				MessageBoxW(NULL, (LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -326,7 +326,7 @@ link_to_ghost:
 		tamamode = specified_ghost;
 	if(has_corresponding_tama(ghost_hwnd)) {
 		ShowWindow(hWnd, SW_HIDE);
-		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
 	}
 	linker.link_to_ghost(ghost_hwnd);
@@ -467,8 +467,10 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 			wstring icofullpath = ghost_path + info[L"Icon"];
 			SetIcon(hWnd, icofullpath.c_str());
 		}
-	if(info.has(L"Tittle"))
+	if(info.has(L"Tittle"))//For backward compatibility, should be removed in the next medium update
 		SetWindowTextW(hWnd, info[L"Tittle"].c_str());
+	if(info.has(L"Title"))
+		SetWindowTextW(hWnd, info[L"Title"].c_str());
 
 	auto &info_map = info.to_str_map();
 	POINT wpos{};
@@ -492,7 +494,7 @@ void On_tamaExit(HWND hWnd, wstring ghost_path) {
 }
 
 [[noreturn]] void LostGhostLink() {
-	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 	exit(EXIT_FAILURE);
 }
 
@@ -966,23 +968,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					static FLASHWINFO wfinfo{sizeof(wfinfo), NULL, FLASHW_ALL | FLASHW_TIMERNOFG, 13, 0};
 					wfinfo.hwnd = hWnd;
 					FlashWindowEx(&wfinfo);
-					LPCWSTR boxtittle;
+					LPCWSTR boxtitle;
 					auto	icontype = MB_ICONERROR;
 					switch(cds->dwData) {
 					case F_FATAL:
-						boxtittle = L"ghost fatal error";
+						boxtitle = L"ghost fatal error";
 						break;
 					case F_ERROR:
-						boxtittle = L"ghost error";
+						boxtitle = L"ghost error";
 						break;
 					case F_WARNING:
-						boxtittle = L"ghost warning";
+						boxtitle = L"ghost warning";
 						icontype  = MB_ICONWARNING;
 						break;
 					default:
-						boxtittle = NULL;
+						boxtitle = NULL;
 					}
-					MessageBoxW(NULL, logbuf.c_str(), boxtittle, icontype | MB_OK);
+					MessageBoxW(NULL, logbuf.c_str(), boxtitle, icontype | MB_OK);
 				}
 			}
 		}
@@ -1016,7 +1018,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 		}
 		else {
-			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 		}
 		::DragFinish(hDrop);
 		break;
@@ -1244,7 +1246,7 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			ghost_hwnd = (HWND)SendDlgItemMessageW(hDlg, IDC_GHOST_SELECT_LIST, LB_GETITEMDATA, index, 0);
 			EndDialog(hDlg, TRUE);
 			if(!ghost_hwnd) {
-				MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NULL_GHOST_HWND).c_str(), LoadStringFromResource(IDS_ERROR_TITTLE).c_str(), MB_ICONERROR | MB_OK);
+				MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NULL_GHOST_HWND).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
 				exit(EXIT_FAILURE);
 			}
 			return TRUE;
