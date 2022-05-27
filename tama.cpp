@@ -941,7 +941,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
 			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
 			if(cds->cbData > 0) {
-				SetFontShape(cds->dwData);
 				// 更新
 				wstring logbuf;
 				logbuf.resize(cds->cbData);
@@ -952,12 +951,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 				if(osi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
 					EOS(logbuf.size());
+					SetFontShape(cds->dwData);
 					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.c_str());
 				}
 				else {
 					string mstr = CODEPAGE_n::UnicodeToMultiByte(logbuf, CODEPAGE_n::CP_ACP);
 					if(!mstr.empty()) {
 						EOS(mstr.size());
+						SetFontShape(cds->dwData);
 						SendMessageA(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
 					}
 				}
