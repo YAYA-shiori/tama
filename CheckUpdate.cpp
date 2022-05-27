@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "Version.h"
 
 //更新检查用
 #include <wininet.h>
@@ -10,7 +11,6 @@ wstring LoadStringFromResource(
 
 //check update at https://github.com/nikolat/tama/releases with windows api
 //if has update,open https://github.com/nikolat/tama/releases/latest
-#define VERSION_STRING u8"v1.0.3.4"
 void CheckUpdate() {
 	#ifndef _DEBUG
 	u8string tagname;
@@ -56,7 +56,7 @@ void CheckUpdate() {
 			return;
 		tagname = buff.substr(0, p);
 	}
-	if (tagname == VERSION_STRING) {
+	if (tagname == U8_VERSION_STRING_FOR_TAG_CHECK) {
 		return;
 	}
 	if(MessageBox(NULL, LoadStringFromResource(IDS_NEW_VERSION_AVAILABLE).c_str(), L"Tama", MB_YESNO) == IDYES)
