@@ -24,7 +24,7 @@ tama.exe -gh ghost_hwnd
 ```c
 On_tamaOpen{
 	SETTAMAHWND(reference[0])
-	SHIORI3FW.Push_X_SSTP_PassThru('Tittle','tama test: Taromati2')//These settings are all optional
+	SHIORI3FW.Push_X_SSTP_PassThru('Title','tama test: Taromati2')//These settings are all optional
 	SHIORI3FW.Push_X_SSTP_PassThru('Icon','IMG_PATH/ico/tama.ico')
 	SHIORI3FW.Push_X_SSTP_PassThru('border.color','626262')
 	SHIORI3FW.Push_X_SSTP_PassThru('background.color','1e1e1e')
