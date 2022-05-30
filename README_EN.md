@@ -31,6 +31,20 @@ On_tamaExit{
 ```
 Some advanced tips:  
 You can also keep tama's hwnd in a variable and re-call `SETTAMAHWND` after the shiori has been reloaded to keep ghost in touch with tama  
-This required some more complex changes, and although I implemented this I used something specific to taromati2's dic (`OnShioriReloaded`), so I won't post the reference code here  
-For those who are interested, here is the link to the changes for reference.  
-https://github.com/Taromati2/ghost/compare/c6ac682b4a7039e6801d36c83dccdefdaf946cee...ad652766efa09b0b582b9e9a5f9e42ad9156137e  
+```c
+On_tamaOpen{
+	TamaHwnd=reference[0]
+	//...
+}
+On_tamaExit{
+	ERASEVAR('TamaHwnd')
+	//...
+}
+//...
+OnInitialize{
+	if reference[0]=='reload'
+		SETTAMAHWND(TamaHwnd)
+	//...
+}
+
+```
