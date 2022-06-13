@@ -17,8 +17,8 @@
 #define FONTFACELEN		  16				  /* FONTFACEのlstrlenW */
 
 #define FONT_JAPANESE L"ＭＳ ゴシック" /* 日本語フォント */
-#define FONT_CHINESE  L"MingLiU"	   /* ハングルフォント */
-#define FONT_KOREAN	  L"Gulim"		   /* 中国（繁体）フォント */
+#define FONT_CHINESE  L"MingLiU"	   /* 中国（繁体）フォント */
+#define FONT_KOREAN	  L"Gulim"		   /* ハングルフォント */
 #define FONT_ENGLISH  L"Arial"		   /* 上記以外（英語） */
 
 // WM_COPYDATA dwData送信コマンド
