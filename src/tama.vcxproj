@@ -166,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="LoadStringFromResource.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Version.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="tama.ico" />
