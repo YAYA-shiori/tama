@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "LoadStringFromResource.h"
+﻿#include "LoadStringFromResource.h"
 #include <windows.h>
 
 const wchar_t *LoadCStringFromResource(

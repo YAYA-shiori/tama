@@ -1,12 +1,15 @@
-﻿#include "stdafx.h"
-#include "my-gists/ukagaka/SFMO.hpp"
+﻿#include "my-gists/ukagaka/SFMO.hpp"
 #include "my-gists/ukagaka/shiori_loader.hpp"
 #define DONT_USE_SOCKET
 #include "my-gists/ukagaka/sstp.hpp"
 #include "my-gists/codepage.hpp"
 #include <dwmapi.h>
 #include "my-gists/windows/SetIcon.h"
+#include "resource.h"
 #include "LoadStringFromResource.h"
+#include "Richedit.h"
+
+using namespace std;
 
 // 汎用
 #define MAX_LOADSTRING 100

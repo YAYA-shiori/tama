@@ -1,6 +1,6 @@
-﻿#include "stdafx.h"
-#include "Windows.h"
+﻿#include "Windows.h"
 #include "DbgHelp.h"
+#include "resource.h"
 #include "LoadStringFromResource.h"
 
 int GenerateDump(PEXCEPTION_POINTERS pExceptionPointers) {

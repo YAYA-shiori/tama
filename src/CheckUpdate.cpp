@@ -1,4 +1,7 @@
-﻿#include "stdafx.h"
+﻿#include <Windows.h>
+#include <string>
+#include "resource.h"
+#include "LoadStringFromResource.h"
 #include "Version.h"
 
 //更新检查用
@@ -9,6 +12,7 @@
 //if has update,open https://github.com/nikolat/tama/releases/latest
 void CheckUpdate() {
 	#ifndef _DEBUG
+	using namespace std;
 	u8string tagname;
 	{
 		HINTERNET hInternet = InternetOpen(L"Tama", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
