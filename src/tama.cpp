@@ -44,15 +44,6 @@ inline bool F_was_warning_or_above(int dwdata) {
 	return dwdata <= 3 && dwdata >= 1;
 }
 
-/*// EM_SETTEXTEX補完
-#define	EM_SETTEXTEX	(WM_USER + 97)
-
-typedef struct _settextex {
-    DWORD flags;
-    UINT codepage;
-} SETTEXTEX;
-*/
-
 // テキストサイズ上限
 #define TEXTMAX 131072 /* EM_EXLIMITTEXTするサイズ、128KB */
 
