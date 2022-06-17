@@ -148,29 +148,29 @@ bool ExecReload(void);
 
 void EOS(int newaddsz);
 
-BOOL SetFontShape(int shapeid);
-BOOL SetFontShapeInit(int shapeid);
-BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf);
-BOOL SetMyBkColor(COLORREF col);
-BOOL SetDlgFont(HWND hDlgEdit);
-BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col);
+bool SetFontShape(int shapeid);
+bool SetFontShapeInit(int shapeid);
+bool SetMyFont(const wchar_t *facename, int shapeid, int scf);
+bool SetMyBkColor(COLORREF col);
+bool SetDlgFont(HWND hDlgEdit);
+bool SetDlgBkColor(HWND hDlgEdit, COLORREF col);
 
 wchar_t *setlocaleauto(int category);
 
-BOOL has_corresponding_tama(wstring ghost_hwnd_str) {
+bool has_corresponding_tama(wstring ghost_hwnd_str) {
 	auto hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + ghost_hwnd_str).c_str());
 	if(hMutex == NULL)
-		return TRUE;
+		return true;
 	if(GetLastError() == ERROR_ALREADY_EXISTS) {
 		::CloseHandle(hMutex);
-		return TRUE;
+		return true;
 	}
 	else {
 		::CloseHandle(hMutex);
-		return FALSE;
+		return false;
 	}
 }
-BOOL has_corresponding_tama(HWND ghost_hwnd) {
+bool has_corresponding_tama(HWND ghost_hwnd) {
 	return has_corresponding_tama(to_wstring((size_t)ghost_hwnd));
 }
 
@@ -1289,19 +1289,19 @@ bool ExecReload() {
 	return ExecLoad();
 }
 
-BOOL SetFontShape(int shapeid) {
+bool SetFontShape(int shapeid) {
 	// IDでフォント属性を設定
 
 	return SetMyFont(fontface.c_str(), shapeid, SCF_SELECTION);
 }
 
-BOOL SetFontShapeInit(int shapeid) {
+bool SetFontShapeInit(int shapeid) {
 	// IDでフォント属性を初期化
 
 	return SetMyFont(fontface.c_str(), shapeid, SCF_ALL);
 }
 
-BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf) {
+bool SetMyFont(const wchar_t *facename, int shapeid, int scf) {
 	// フォントフェース、ポイント、色、ボールドを設定
 	static CHARFORMAT cfm{sizeof(cfm), CFM_BOLD | CFM_CHARSET | CFM_COLOR |
 										   CFM_FACE | CFM_ITALIC | CFM_SIZE | CFM_STRIKEOUT |
@@ -1316,13 +1316,13 @@ BOOL SetMyFont(const wchar_t *facename, int shapeid, int scf) {
 	cfm.crTextColor = fontshape[shapeid].col;
 	cfm.dwEffects	= ((fontshape[shapeid].bold) ? CFE_BOLD : 0) | ((fontshape[shapeid].italic) ? CFE_ITALIC : 0);
 	if(SendMessage(hEdit, EM_SETCHARFORMAT, (WPARAM)scf, (LPARAM)&cfm) == 0)
-		return FALSE;
+		return false;
 
 	SetFocus(hEdit);
-	return TRUE;
+	return true;
 }
 
-BOOL SetDlgFont(HWND hDlgEdit) {
+bool SetDlgFont(HWND hDlgEdit) {
 	// requestダイヤログリッチエディットのフォントフェース、ポイント、色、ボールドを設定
 
 	CHARFORMAT cfm;
@@ -1338,26 +1338,26 @@ BOOL SetDlgFont(HWND hDlgEdit) {
 	cfm.dwEffects |= (fontshape[F_DEFAULT].italic) ? CFE_ITALIC : 0;
 	cfm.crTextColor = fontshape[F_DEFAULT].col;
 	if(SendMessage(hDlgEdit, EM_SETCHARFORMAT, (WPARAM)SCF_SELECTION, (LPARAM)&cfm) == 0)
-		return FALSE;
+		return false;
 
 	SetFocus(hDlgEdit);
-	return TRUE;
+	return true;
 }
 
-BOOL SetMyBkColor(COLORREF col) {
+bool SetMyBkColor(COLORREF col) {
 	// 背景色をcolに設定
 
 	if(SendMessage(hEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)col) == 0)
-		return FALSE;
-	return TRUE;
+		return false;
+	return true;
 }
 
-BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col) {
+bool SetDlgBkColor(HWND hDlgEdit, COLORREF col) {
 	// 背景色をcolに設定
 
 	if(SendMessage(hDlgEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)col) == 0)
-		return FALSE;
-	return TRUE;
+		return false;
+	return true;
 }
 
 wchar_t *setlocaleauto(int category) {
