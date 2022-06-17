@@ -6,6 +6,7 @@
 #include "my-gists/codepage.hpp"
 #include <dwmapi.h>
 #include "my-gists/windows/SetIcon.h"
+#include "LoadStringFromResource.h"
 
 // 汎用
 #define MAX_LOADSTRING 100
@@ -151,38 +152,6 @@ BOOL SetDlgBkColor(HWND hDlgEdit, COLORREF col);
 
 wchar_t *setlocaleauto(int category);
 
-wstring LoadStringFromResource(
-	__in UINT		   stringID,
-	__in_opt HINSTANCE instance = NULL) {
-	/*
-	//bug but idk why
-	TCHAR *pBuf = NULL;
-
-	int len = LoadStringA(
-		instance,
-		stringID,
-		reinterpret_cast<LPSTR>(&pBuf), 0);
-
-	if(len)
-		return wstring(pBuf, pBuf + len);
-	else
-		return "";
-	*/
-	wstring aret;
-	size_t	size = 1024;
-	auto	len	 = size;
-	while(len == size && len) {
-		aret.resize(size);
-		len = LoadStringW(
-			instance,
-			stringID,
-			aret.data(), size);
-		size *= 2;
-	}
-	aret.resize(len);
-	return aret;
-}
-
 BOOL has_corresponding_tama(wstring ghost_hwnd_str) {
 	auto hMutex = ::CreateMutexW(NULL, FALSE, (L"scns_task" + ghost_hwnd_str).c_str());
 	if(hMutex == NULL)
@@ -261,7 +230,7 @@ void GhostSelection(HINSTANCE hInstance) {
 		auto ghostnum = fmobj.info_map.size();
 		if(ghostnum == 0) {
 			ShowWindow(hWnd, SW_HIDE);
-			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NONE_GHOST).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+			MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_NONE_GHOST), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 			exit(EXIT_FAILURE);
 		}
 		else if(!ghost_link_to.empty()) {
@@ -272,7 +241,7 @@ void GhostSelection(HINSTANCE hInstance) {
 			}
 			if(!ghost_hwnd) {
 				ShowWindow(hWnd, SW_HIDE);
-				MessageBoxW(NULL, (LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+				MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -304,7 +273,7 @@ void GhostSelection(HINSTANCE hInstance) {
 				auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)name.c_str());
 				SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)tmp_hwnd);
 			}
-			auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST).c_str());
+			auto index = SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_ADDSTRING, 0, (LPARAM)LoadCStringFromResource(IDS_GHOST_SELECT_START_WITH_OUT_GHOST));
 			SendDlgItemMessageW(gsui, IDC_GHOST_SELECT_LIST, LB_SETITEMDATA, index, (LPARAM)(HWND)-1);
 			MSG msg;
 			while(GetMessage(&msg, NULL, 0, 0)) {
@@ -326,7 +295,7 @@ link_to_ghost:
 		tamamode = specified_ghost;
 	if(has_corresponding_tama(ghost_hwnd)) {
 		ShowWindow(hWnd, SW_HIDE);
-		MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+		MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_GHOST_ALREADY_HAS_TAMA), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
 	}
 	linker.link_to_ghost(ghost_hwnd);
@@ -430,7 +399,7 @@ int APIENTRY WinMain(
 	if(tamamode == specified_ghost) {
 		bool has_log = GetWindowTextLength(hEdit);
 		if(!has_log) {
-			SetWindowTextW(hEdit, LoadStringFromResource(IDS_EVENT_DEF_REMINDER).c_str());
+			SetWindowTextW(hEdit, LoadCStringFromResource(IDS_EVENT_DEF_REMINDER));
 			allow_file_drug = 1;
 		}
 
@@ -494,7 +463,7 @@ void On_tamaExit(HWND hWnd, wstring ghost_path) {
 }
 
 [[noreturn]] void LostGhostLink() {
-	MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_LOST_GHOST_LINK).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+	MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_LOST_GHOST_LINK), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 	exit(EXIT_FAILURE);
 }
 
@@ -1019,7 +988,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 		}
 		else {
-			MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+			MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 		}
 		::DragFinish(hDrop);
 		break;
@@ -1247,7 +1216,7 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			ghost_hwnd = (HWND)SendDlgItemMessageW(hDlg, IDC_GHOST_SELECT_LIST, LB_GETITEMDATA, index, 0);
 			EndDialog(hDlg, TRUE);
 			if(!ghost_hwnd) {
-				MessageBoxW(NULL, LoadStringFromResource(IDS_ERROR_NULL_GHOST_HWND).c_str(), LoadStringFromResource(IDS_ERROR_TITLE).c_str(), MB_ICONERROR | MB_OK);
+				MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_NULL_GHOST_HWND), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 				exit(EXIT_FAILURE);
 			}
 			return TRUE;

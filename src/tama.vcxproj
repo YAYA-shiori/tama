@@ -86,6 +86,7 @@
     </Midl>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <NullTerminateStrings>true</NullTerminateStrings>
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -136,6 +137,7 @@
     </Midl>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <NullTerminateStrings>true</NullTerminateStrings>
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -154,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="CheckUpdate.cpp" />
     <ClCompile Include="GenerateDump.cpp" />
+    <ClCompile Include="LoadStringFromResource.cpp" />
     <ClCompile Include="tama.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -166,6 +169,7 @@
     <ResourceCompile Include="tama.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LoadStringFromResource.h" />
     <ClInclude Include="tama.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
