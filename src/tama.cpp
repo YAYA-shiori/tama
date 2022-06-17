@@ -1,4 +1,6 @@
-﻿#include "my-gists/ukagaka/SFMO.hpp"
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include "my-gists/ukagaka/SFMO.hpp"
 #include "my-gists/ukagaka/shiori_loader.hpp"
 #define DONT_USE_SOCKET
 #include "my-gists/ukagaka/sstp.hpp"
