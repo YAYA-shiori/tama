@@ -139,10 +139,10 @@ bool	   allow_file_drug		= 1;
 void On_tamaOpen(HWND hWnd, wstring ghost_path);
 void On_tamaExit(HWND hWnd, wstring ghost_path);
 
-int	 ExecLoad(void);
+bool ExecLoad(void);
 void ExecRequest(const wchar_t *str);
 void ExecUnload(void);
-int	 ExecReload(void);
+bool ExecReload(void);
 
 void EOS(int newaddsz);
 
@@ -1084,7 +1084,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					if(shioristaus == running) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 						switch(info.get_code()) {
-						case -1:	   //ssp exit
+						case -1:		//ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
 							LostGhostLink();
@@ -1114,7 +1114,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					if(shioristaus == running) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 						switch(info.get_code()) {
-						case -1:	   //ssp exit
+						case -1:		//ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
 							LostGhostLink();
@@ -1235,7 +1235,7 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	}
 }
 
-int ExecLoad(void) {
+bool ExecLoad(void) {
 	has_fatal_or_error = 0;
 	shiorimode		   = load_by_tama;
 	// テキスト全クリア
@@ -1282,7 +1282,7 @@ void ExecUnload() {
 	shiorimode = not_in_loading;
 }
 
-int ExecReload() {
+bool ExecReload() {
 	ExecUnload();
 	return ExecLoad();
 }
