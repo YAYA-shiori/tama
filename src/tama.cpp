@@ -121,7 +121,8 @@ enum shiorimode_t { not_in_loading,
 					load_by_tama };
 shiorimode_t shiorimode = not_in_loading;
 enum shioristaus_t { running,
-					 critical };
+					 critical,
+					 unloaded };
 shioristaus_t shioristaus = running;
 enum tamamode_t { specified_ghost,
 				  any };
@@ -318,6 +319,7 @@ void UpdateGhostModulestate() {
 	allow_file_drug = 0;
 	if(shioristate == L"running") {
 		shioristaus = running;
+		shiorimode	= load_by_baseware;
 		if(shioristausback == critical) {
 			allow_file_drug = 0;
 			if(!dllpath.empty())
@@ -326,6 +328,7 @@ void UpdateGhostModulestate() {
 	}
 	else if(shioristate == L"critical") {
 		shioristaus = critical;
+		shiorimode	= load_by_baseware;
 		if(shioristausback == running) {
 			if(has_shiori_file_info) {
 				unload_shiori_of_baseware();
@@ -337,6 +340,10 @@ void UpdateGhostModulestate() {
 				allow_file_drug = 1;
 			}
 		}
+	}
+	else if(shioristate.empty()) {
+		shioristaus = unloaded;
+		shiorimode = not_in_loading;
 	}
 }
 
@@ -1005,8 +1012,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
 				CheckMenuItem(hSubMenu, ID_TAMA_ALERTONWARNING, (AlertOnWarning) ? 8 : 0);
-				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (shiorimode != not_in_loading) ? MF_ENABLED : MF_GRAYED);
-				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (shiorimode != not_in_loading) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (shiorimode != not_in_loading && shioristaus == running) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (shiorimode != not_in_loading && shioristaus != unloaded) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (has_shiori_file_info || shiorimode == load_by_baseware) ? MF_ENABLED : MF_GRAYED);
 				TrackPopupMenu(hSubMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 				DestroyMenu(hMenu);
@@ -1163,6 +1170,7 @@ void reload_shiori_of_baseware() {
 void unload_shiori_of_baseware() {
 	linker.SEND({{L"ID", ghost_uid},
 				 {L"Script", L"\\![unload,shiori]"}});
+	shioristaus = unloaded;
 	shiorimode = not_in_loading;
 }
 
