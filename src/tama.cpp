@@ -82,6 +82,7 @@ bool		   AlertOnWarning;										  // Alert on warning
 HBRUSH		   DlgBrush			  = CreateSolidBrush(0xffffff);		  // 对话框控件画刷
 bool		   tamaOpen_called	  = 0;
 bool		   has_fatal_or_error = 0;
+bool		   darkmode			  = 0;
 
 UINT_PTR						ghost_status_watcher = NULL;
 Cshiori							shiori;
@@ -659,7 +660,12 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"border.color") {
 		int col = HexStrToInt(s1.c_str());
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
-		DwmSetWindowAttribute(hWnd, 20, &bdcol, sizeof(bdcol));
+		DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, &bdcol, sizeof(bdcol));
+	}
+	// To change darkmode
+	else if(s0 == L"darkmode") {
+		darkmode = HexStrToInt(s1.c_str());
+		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode, sizeof(darkmode));
 	}
 	// To change border color
 	else if(s0 == L"dialogbox.color") {
@@ -744,6 +750,8 @@ void SaveParameter(void) {
 		fwprintf(fp, L"alert.onwarning,%d\n", AlertOnWarning);
 
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
+
+		fwprintf(fp, L"darkmode,%d\n", darkmode);
 
 		RECT rect;
 		GetWindowRect(hWnd, &rect);
