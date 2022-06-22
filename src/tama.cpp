@@ -662,12 +662,14 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, &bdcol, sizeof(bdcol));
 		darkmode = bool(bdcol);
-		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode, sizeof(darkmode));
+		BOOL darkmode_tmp = darkmode;
+		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode_tmp, sizeof(darkmode_tmp));
 	}
 	// To change darkmode
 	else if(s0 == L"darkmode") {
 		darkmode = HexStrToInt(s1.c_str());
-		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode, sizeof(darkmode));
+		BOOL darkmode_tmp = darkmode;
+		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode_tmp, sizeof(darkmode_tmp));
 	}
 	// To change border color
 	else if(s0 == L"dialogbox.color") {
