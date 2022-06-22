@@ -401,7 +401,10 @@ int APIENTRY WinMain(
 			On_tamaOpen(hWnd, ghost_path);
 		bool has_log = GetWindowTextLength(hEdit);
 		if(!has_log) {
-			SetWindowTextW(hEdit, LoadCStringFromResource(IDS_EVENT_DEF_REMINDER));
+			if((shioristaus == unloaded) && fmobj.info_map[ghost_uid].map.contains(L"modulestate"))
+				SetWindowTextW(hEdit, LoadCStringFromResource(IDS_TARGET_GHOST_SHIORI_UNLOADED));
+			else
+				SetWindowTextW(hEdit, LoadCStringFromResource(IDS_EVENT_DEF_REMINDER));
 			allow_file_drug = 1;
 		}
 
