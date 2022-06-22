@@ -395,12 +395,10 @@ int APIENTRY WinMain(
 
 	ShowWindow(hWnd, SW_SHOW);
 
-	if(shiorimode == load_by_baseware)
-		UpdateGhostModulestate();
-
-	if(tamamode == specified_ghost && shioristaus == running)
-		On_tamaOpen(hWnd, ghost_path);
 	if(tamamode == specified_ghost) {
+		UpdateGhostModulestate();
+		if(shioristaus == running)
+			On_tamaOpen(hWnd, ghost_path);
 		bool has_log = GetWindowTextLength(hEdit);
 		if(!has_log) {
 			SetWindowTextW(hEdit, LoadCStringFromResource(IDS_EVENT_DEF_REMINDER));
@@ -1093,7 +1091,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
-					if(shioristaus == running) {
+					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 						switch(info.get_code()) {
 						case -1:		//ssp exit
@@ -1123,7 +1121,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
-					if(shioristaus == running) {
+					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 						switch(info.get_code()) {
 						case -1:		//ssp exit
