@@ -661,7 +661,7 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 		int col = HexStrToInt(s1.c_str());
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, &bdcol, sizeof(bdcol));
-		darkmode = bool(bdcol);
+		darkmode = bool(bdcol);//For backward compatibility, should be removed in the next medium update
 		BOOL darkmode_tmp = darkmode;
 		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode_tmp, sizeof(darkmode_tmp));
 	}
