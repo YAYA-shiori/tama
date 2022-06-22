@@ -1100,7 +1100,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						case -1:		//ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
-							LostGhostLink();
+							if(shioristaus != unloaded)
+								LostGhostLink();
+							else
+								reload_shiori_of_baseware();
 							break;
 						case 204:		//No Content
 							[[fallthrough]];
