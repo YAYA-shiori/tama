@@ -1094,16 +1094,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
+					if(shioristaus == unloaded)
+						reload_shiori_of_baseware();
 					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 						switch(info.get_code()) {
 						case -1:		//ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
-							if(shioristaus != unloaded)
-								LostGhostLink();
-							else
-								reload_shiori_of_baseware();
+							LostGhostLink();
 							break;
 						case 204:		//No Content
 							[[fallthrough]];
@@ -1127,6 +1126,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
+					if(shioristaus == unloaded)
+						unload_shiori_of_baseware();
 					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 						switch(info.get_code()) {
