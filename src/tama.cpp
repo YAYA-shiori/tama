@@ -11,6 +11,13 @@
 #include "LoadStringFromResource.h"
 #include "Richedit.h"
 
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+#ifndef DWMWA_BORDER_COLOR
+#define DWMWA_BORDER_COLOR 34
+#endif
+
 using namespace std;
 
 // 汎用
