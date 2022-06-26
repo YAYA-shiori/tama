@@ -104,6 +104,7 @@ namespace args_info {
 wstring ghost_path;
 wstring ghost_uid;
 wstring ghost_shiori;
+wstring savefile_path;
 
 HANDLE hMutex;		 // ミューテックスオブジェクト
 
@@ -483,6 +484,23 @@ void On_tamaExit(HWND hWnd, wstring ghost_path) {
 	exit(EXIT_FAILURE);
 }
 
+void IninSaveFilePath() {
+	wstring &selfpath = args_info::selfpath;
+	wstring	 filename;
+	bool	 self_in_ghost_path = selfpath.contains(L"ghost\\master\\");
+	if(tamamode == specified_ghost)
+		filename = ghost_path + L"profile\\tama.txt";
+	else if(self_in_ghost_path) {
+		filename = selfpath.substr(0, selfpath.find(L"ghost\\master\\") + 13) + L"profile\\tama.txt";
+	}
+	if(_waccess(filename.c_str(), 6)) {
+		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
+		_wsplitpath(selfpath.c_str(), drive, dir, fname, ext);
+		filename = wstring() + drive + dir + L"tama.txt";
+	}
+	savefile_path = filename;
+}
+
 void SetParameter(POINT &wp, SIZE &ws) {
 	// 各種パラメータ設定
 
@@ -527,25 +545,8 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	EnumFontFamiliesEx(hDC, &logFont, (FONTENUMPROC)EnumFontFamExProc, NULL, 0);
 	ReleaseDC(hWnd, hDC);
 	// ファイルから取得
-	wstring filename;
-	if(tamamode==specified_ghost)
-		filename = ghost_path + L"profile\\tama.txt";
-	else {
-		filename.resize(MAX_PATH);
-		GetModuleFileName(NULL, filename.data(), MAX_PATH);
-		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
-		filename = wstring() + drive + dir + L"tama.txt";
-	}
-	FILE *fp = _wfopen(filename.c_str(), L"rt, ccs=UTF-8");
-	if(fp == NULL && tamamode==specified_ghost){
-		filename.resize(MAX_PATH);
-		GetModuleFileName(NULL, filename.data(), MAX_PATH);
-		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
-		filename = wstring() + drive + dir + L"tama.txt";
-		fp = _wfopen(filename.c_str(), L"rt, ccs=UTF-8");
-	}
+	IninSaveFilePath();
+	FILE *fp = _wfopen(savefile_path.c_str(), L"rt, ccs=UTF-8");
 	if(fp != NULL) {
 		wstring buf;
 		wstring s0, s1;
@@ -715,17 +716,7 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 
 void SaveParameter(void) {
 	// ファイルへ設定を書き出し
-	wstring filename;
-	if(tamamode == specified_ghost)
-		filename = ghost_path + L"profile\\tama.txt";
-	else {
-		filename.resize(MAX_PATH);
-		GetModuleFileName(NULL, filename.data(), MAX_PATH);
-		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
-		_wsplitpath(filename.c_str(), drive, dir, fname, ext);
-		filename = wstring() + drive + dir + L"tama.txt";
-	}
-	FILE *fp = _wfopen(filename.c_str(), L"wt, ccs=UTF-8");
+	FILE *fp = _wfopen(savefile_path.c_str(), L"wt, ccs=UTF-8");
 	if(fp != NULL) {
 		fwprintf(fp, L"default.pt,%d\n", fontshape[F_DEFAULT].pt);
 		fwprintf(fp, L"default.color,%x\n",
