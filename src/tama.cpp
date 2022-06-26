@@ -97,6 +97,7 @@ SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"ta
 SFMO_t							fmobj;
 
 namespace args_info {
+	wstring selfpath;
 	wstring ghost_link_to;
 	HWND	ghost_hwnd = NULL;
 }		// namespace args_info
@@ -210,6 +211,9 @@ void ArgsHandling() {
 	argv		= CommandLineToArgvW(GetCommandLineW(), &_targc);
 	size_t argc = _targc;
 
+	if(argc)
+		selfpath = argv[0];
+	
 	if(argc != 1) {
 		size_t i = 1;
 		while(i < argc) {
