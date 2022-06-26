@@ -155,22 +155,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CheckUpdate.cpp" />
-    <ClCompile Include="GenerateDump.cpp" />
-    <ClCompile Include="LoadStringFromResource.cpp" />
+    <ClCompile Include="Events.cpp" />
+    <ClCompile Include="GhostStuff.cpp" />
+    <ClCompile Include="GhostStuff.hpp" />
+    <ClCompile Include="ToolFunctions.cpp" />
+    <ClCompile Include="Parameter.cpp" />
     <ClCompile Include="tama.cpp" />
+    <ClCompile Include="UItools.cpp" />
     <ClCompile Include="_gists.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tama.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LoadStringFromResource.h" />
+    <ClInclude Include="Events.hpp" />
+    <ClInclude Include="Parameter.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="tama.h" />
+    <ClInclude Include="ToolFunctions.hpp" />
+    <ClInclude Include="UItools.hpp" />
     <ClInclude Include="Version.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="tama.ico" />
-    <Image Include="small.ico" />
+    <Image Include="icon\small.ico" />
+    <Image Include="icon\tama.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,7 @@
 ﻿#include <Windows.h>
 #include <string>
 #include "resource.h"
-#include "LoadStringFromResource.h"
+#include "my-gists/windows/LoadStringFromResource.h"
 #include "Version.h"
 
 //更新检查用

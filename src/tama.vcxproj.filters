@@ -21,13 +21,25 @@
     <ClCompile Include="CheckUpdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GenerateDump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadStringFromResource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="_gists.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Events.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GhostStuff.hpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Parameter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GhostStuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UItools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,24 +47,36 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LoadStringFromResource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="tama.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClInclude Include="tama.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolFunctions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Events.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UItools.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tama.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon\small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="icon\tama.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
