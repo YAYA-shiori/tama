@@ -13,6 +13,7 @@
 
 using namespace std;
 
+void			 GhostSelection(HINSTANCE hInstance);
 ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
 BOOL			 InitInstance(HINSTANCE, int);
 BOOL			 InitSendRequestDlg(HINSTANCE hInstance);
