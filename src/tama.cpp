@@ -330,7 +330,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				// 更新
 				wstring logbuf;
 				logbuf.resize(cds->cbData);
-				wcscpy(logbuf.data(), (wchar_t *)cds->lpData);
+				wcscpy_s(logbuf.data(), (size_t)cds->cbData, (wchar_t*)cds->lpData);
 
 				static OSVERSIONINFO osi	   = {sizeof(osi)};
 				static bool			 osiiniter = GetVersionEx(&osi);
