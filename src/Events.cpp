@@ -18,8 +18,6 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 			wstring icofullpath = ghost_path + info[L"Icon"];
 			SetIcon(hWnd, icofullpath.c_str());
 		}
-	if(info.has(L"Tittle"))		  //For backward compatibility, should be removed in the next medium update
-		SetWindowTextW(hWnd, info[L"Tittle"].c_str());
 	if(info.has(L"Title"))
 		SetWindowTextW(hWnd, info[L"Title"].c_str());
 
