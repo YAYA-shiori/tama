@@ -31,6 +31,7 @@ On_tamaExit{
 ```
 上級者向けのヒントも：  
 また、tamaのhwndを変数に保持し、shioriがリロードされた後に`SETTAMAHWND`を再コールすれば、ghostがtamaと連絡を取り続けることができるようになります  
+(この基礎となる機能は、[yayaの基礎となるdicの最新版](https://github.com/ponapalt/yaya-dic)で実装されています。)  
 ```c
 On_tamaOpen{
 	TamaHwnd=reference[0]

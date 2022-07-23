@@ -31,6 +31,7 @@ On_tamaExit{
 ```
 Some advanced tips:  
 You can also keep tama's hwnd in a variable and re-call `SETTAMAHWND` after the shiori has been reloaded to keep ghost in touch with tama  
+(This underlying functionality has been implemented in the [latest version of yaya's underlying dic](https://github.com/ponapalt/yaya-dic))  
 ```c
 On_tamaOpen{
 	TamaHwnd=reference[0]

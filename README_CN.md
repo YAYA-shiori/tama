@@ -31,6 +31,7 @@ On_tamaExit{
 ```
 一些进阶技巧：  
 你还可以将tama的hwnd保存在变量中并在shiori重载过后重新调用`SETTAMAHWND`来使得ghost与tama保持联系  
+(这个底层功能已经在[最新版本的yaya底层dic](https://github.com/ponapalt/yaya-dic)中实现。)  
 ```c
 On_tamaOpen{
 	TamaHwnd=reference[0]
