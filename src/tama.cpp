@@ -306,8 +306,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		SIZE  wsz;
 		// パラメータ設定
 		SetParameter(wpos, wsz);
-		if(wsz.cx)
-			MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
+		if(wsz.cx && wsz.cy)
+			if(wpos.x != LONG_MIN && wpos.y != LONG_MIN)
+				MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
+			else
+				SendMessage(hWnd, WM_SIZE, wsz.cx, wsz.cy);
+		
 		// リッチエディットコントロール作成
 		hRtLib		  = LoadLibrary(L"RICHED32.DLL");
 		hEdit		  = CreateWindowEx(WS_EX_CLIENTEDGE, L"RICHEDIT", L"",

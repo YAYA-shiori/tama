@@ -100,6 +100,12 @@ void SetParameter(POINT &wp, SIZE &ws) {
 		fclose(fp);
 	}
 
+	//
+	//
+	if(wp.x < -ws.cx)
+		wp.x = LONG_MIN;
+	if(wp.y < -ws.cy)
+		wp.y = LONG_MIN;
 	// フォント設定
 	// ファイル指定→システムデフォルト→unicode→Arial、の順に検索して設定
 
@@ -233,11 +239,17 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"window.y")
 		wp.y = _wtoi(s1.c_str());
 	// window.width
-	else if(s0 == L"window.width")
+	else if(s0 == L"window.width") {
 		ws.cx = _wtoi(s1.c_str());
+		if(ws.cx < 0)
+			ws.cx = 0;
+	}
 	// window.height
-	else if(s0 == L"window.height")
+	else if(s0 == L"window.height") {
 		ws.cy = _wtoi(s1.c_str());
+		if(ws.cy < 0)
+			ws.cy = 0;
+	}
 	else
 		return 0;
 	return 1;
