@@ -56,7 +56,7 @@ void CheckUpdate() {
 			return;
 		tagname = buff.substr(0, p);
 	}
-	if (tagname == U8_VERSION_STRING_FOR_TAG_CHECK) {
+	if(tagname == U8_VERSION_STRING_FOR_TAG_CHECK) {
 		return;
 	}
 	if(MessageBox(NULL, LoadStringFromResource(IDS_NEW_VERSION_AVAILABLE).c_str(), L"Tama", MB_YESNO) == IDYES)

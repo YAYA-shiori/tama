@@ -13,7 +13,7 @@ void reload_shiori_of_baseware();
 void unload_shiori_of_baseware();
 
 std::wstring get_shiori_path(std::wstring ghost_path);
-void UpdateGhostModulestate();
+void		 UpdateGhostModulestate();
 
 bool ExecLoad(void);
 void ExecRequest(const wchar_t* str);

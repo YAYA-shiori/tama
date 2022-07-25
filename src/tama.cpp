@@ -48,7 +48,7 @@ void ArgsHandling() {
 
 	if(argc)
 		selfpath = argv[0];
-	
+
 	if(argc != 1) {
 		size_t i = 1;
 		while(i < argc) {
@@ -79,7 +79,7 @@ int APIENTRY WinMain(
 
 	//new thread for CheckUpdate, using windows api
 	auto checkupdate_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)CheckUpdate, NULL, 0, NULL);
-	
+
 	GhostSelection(hInstance);
 	if(!ghost_uid.empty())
 		shiorimode = load_by_baseware;
@@ -136,7 +136,7 @@ int APIENTRY WinMain(
 	}
 	if(tamamode == specified_ghost && shioristaus == running)
 		On_tamaExit(hWnd, ghost_path);
-	
+
 	if(hMutex != NULL)
 		::CloseHandle(hMutex);
 
@@ -311,7 +311,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
 			else
 				SendMessage(hWnd, WM_SIZE, wsz.cx, wsz.cy);
-		
+
 		// リッチエディットコントロール作成
 		hRtLib		  = LoadLibrary(L"RICHED32.DLL");
 		hEdit		  = CreateWindowEx(WS_EX_CLIENTEDGE, L"RICHEDIT", L"",
@@ -334,7 +334,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				// 更新
 				wstring logbuf;
 				logbuf.resize(cds->cbData);
-				wcscpy_s(logbuf.data(), (size_t)cds->cbData, (wchar_t*)cds->lpData);
+				wcscpy_s(logbuf.data(), (size_t)cds->cbData, (wchar_t *)cds->lpData);
 
 				static OSVERSIONINFO osi	   = {sizeof(osi)};
 				static bool			 osiiniter = GetVersionEx(&osi);
@@ -370,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						break;
 					case F_WARNING:
 						boxtitle = L"ghost warning";
-						icontype  = MB_ICONWARNING;
+						icontype = MB_ICONWARNING;
 						break;
 					default:
 						boxtitle = NULL;
@@ -509,7 +509,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 						switch(info.get_code()) {
-						case -1:		//ssp exit
+						case -1:	   //ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
 							LostGhostLink();
@@ -541,7 +541,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					if(shioristaus != critical) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 						switch(info.get_code()) {
-						case -1:		//ssp exit
+						case -1:	   //ssp exit
 							[[fallthrough]];
 						case 404:		//Not Found
 							LostGhostLink();
