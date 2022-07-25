@@ -60,6 +60,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	fontcharset					= DEFAULT_CHARSET;
 	receive						= 1;
 	AlertOnWarning				= 1;
+	disable_auto_transfer_shiori_ownership = 0;
 	wp.x						= -1024;
 	wp.y						= -1024;
 	ws.cx						= 0;
@@ -229,6 +230,9 @@ bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
 	// AlertOnWarning
 	else if(s0 == L"alert.onwarning")
 		AlertOnWarning = (_wtoi(s1.c_str())) ? 1 : 0;
+	// disable_auto_transfer_shiori_ownership
+	else if(s0 == L"shiori_ownership.auto_transfer.disable")
+		disable_auto_transfer_shiori_ownership = (_wtoi(s1.c_str())) ? 1 : 0;
 	// face
 	else if(s0 == L"face")
 		fontface = s1;
@@ -296,6 +300,8 @@ void SaveParameter(void) {
 		fwprintf(fp, L"dialogbox.color,%x\n", ((dlgcol & 0xff) << 16) + (dlgcol & 0xff00) + ((dlgcol >> 16) & 0xff));
 
 		fwprintf(fp, L"alert.onwarning,%d\n", AlertOnWarning);
+
+		fwprintf(fp, L"shiori_ownership.auto_transfer.disable,%d\n", disable_auto_transfer_shiori_ownership);
 
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
 

@@ -73,7 +73,7 @@ void UpdateGhostModulestate() {
 		shioristaus = critical;
 		shiorimode	= load_by_baseware;
 		if(shioristausback == running) {
-			if(has_shiori_file_info) {
+			if(has_shiori_file_info && !disable_auto_transfer_shiori_ownership) {
 				unload_shiori_of_baseware();
 				dllpath = ghost_shiori;
 				if(!ExecReload())
@@ -115,7 +115,7 @@ bool ExecLoad(void) {
 		return 0;
 	}
 
-	if(tamamode == specified_ghost && shioristaus == critical) {
+	if(tamamode == specified_ghost && shioristaus == critical && !disable_auto_transfer_shiori_ownership) {
 		if(!has_fatal_or_error) {
 			ExecUnload();
 			reload_shiori_of_baseware();

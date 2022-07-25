@@ -71,6 +71,7 @@ inline wstring		  dlgtext;												 // リクエストダイヤログテキ�
 inline vector<SFface> fontarray;											 // フォント一覧
 inline bool			  receive;												 // 受信フラグ
 inline bool			  AlertOnWarning;										 // Alert on warning
+inline bool			  disable_auto_transfer_shiori_ownership;				 // disable auto transfer shiori ownership
 inline HBRUSH		  DlgBrush			 = CreateSolidBrush(0xffffff);		 // 对话框控件画刷
 inline bool			  tamaOpen_called	 = 0;
 inline bool			  has_fatal_or_error = 0;

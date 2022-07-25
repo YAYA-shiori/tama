@@ -427,12 +427,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				pt.x	 = (long)LOWORD(pmf->lParam);
 				pt.y	 = (long)HIWORD(pmf->lParam);
 				ClientToScreen(hEdit, &pt);
-				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? 8 : 0);
-				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? 8 : 0);
-				CheckMenuItem(hSubMenu, ID_TAMA_ALERTONWARNING, (AlertOnWarning) ? 8 : 0);
+				CheckMenuItem(hSubMenu, ID_TAMA_REQUEST, (reqshow == SW_SHOW) ? MF_CHECKED : MF_UNCHECKED);
+				CheckMenuItem(hSubMenu, ID_TAMA_RECEIVE, (receive) ? MF_CHECKED : MF_UNCHECKED);
+				CheckMenuItem(hSubMenu, ID_TAMA_ALERTONWARNING, (AlertOnWarning) ? MF_CHECKED : MF_UNCHECKED);
+				CheckMenuItem(hSubMenu, ID_TAMA_DISABLE_AUTO_TRANSFER_SHIORI_OWNERSHIP, (disable_auto_transfer_shiori_ownership) ? MF_CHECKED : MF_UNCHECKED);
 				EnableMenuItem(hSubMenu, ID_TAMA_REQUEST, (shiorimode != not_in_loading && shioristaus == running) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_UNLOAD, (shiorimode != not_in_loading && shioristaus != unloaded) ? MF_ENABLED : MF_GRAYED);
 				EnableMenuItem(hSubMenu, ID_TAMA_RELOAD, (has_shiori_file_info || shiorimode == load_by_baseware) ? MF_ENABLED : MF_GRAYED);
+				EnableMenuItem(hSubMenu, ID_TAMA_DISABLE_AUTO_TRANSFER_SHIORI_OWNERSHIP, (!has_shiori_file_info) ? MF_DISABLED : MF_ENABLED);
 				TrackPopupMenu(hSubMenu, TPM_LEFTALIGN, pt.x, pt.y, 0, hWnd, NULL);
 				DestroyMenu(hMenu);
 			}
@@ -482,6 +484,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			break;
 		case ID_TAMA_ALERTONWARNING:
 			AlertOnWarning ^= 1;
+			break;
+		case ID_TAMA_DISABLE_AUTO_TRANSFER_SHIORI_OWNERSHIP:
+			disable_auto_transfer_shiori_ownership ^= 1;
 			break;
 		case ID_TAMA_RECEIVE:
 			receive ^= 1;
