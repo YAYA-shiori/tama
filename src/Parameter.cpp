@@ -4,6 +4,7 @@
 #include "header_files/ToolFunctions.hpp"
 #include "header_files/Parameter.hpp"
 #include "header_files/UItools.hpp"
+#include "my-gists/file/canXfile.hpp"
 #include <dwmapi.h>
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
@@ -22,7 +23,7 @@ void InitSaveFilePath() {
 	else if(self_in_ghost_path) {
 		filename = selfpath.substr(0, selfpath.find(L"ghost\\master\\") + 13) + L"profile\\tama.txt";
 	}
-	if(_waccess(filename.c_str(), 6)) {
+	if(can_t_read_write_file(filename)) {
 		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];
 		_wsplitpath(selfpath.c_str(), drive, dir, fname, ext);
 		filename = wstring() + drive + dir + L"tama.txt";
