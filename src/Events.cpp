@@ -1,9 +1,9 @@
-﻿#include "tama.h"
-#include "GhostStuff.hpp"
+﻿#include "header_files/tama.h"
+#include "header_files/GhostStuff.hpp"
+#include "header_files/Parameter.hpp"
+#include "header_files/resource.h"
+#include "header_files/UItools.hpp"
 #include "my-gists/windows/SetIcon.h"
-#include "Parameter.hpp"
-#include "resource.h"
-#include "UItools.hpp"
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	tamaOpen_called = 1;

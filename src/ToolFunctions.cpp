@@ -1,6 +1,6 @@
 ﻿#include <string>
 #include <windows.h>
-#include "tama.h"
+#include "header_files/tama.h"
 using namespace std;
 
 int HexStrToInt(const wchar_t *str) {

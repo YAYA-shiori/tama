@@ -1,6 +1,6 @@
 ﻿#include <Richedit.h>
-#include "tama.h"
-#include "UItools.hpp"
+#include "header_files/tama.h"
+#include "header_files/UItools.hpp"
 
 bool SetFontShape(int shapeid) {
 	// IDでフォント属性を設定

@@ -1,11 +1,11 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
-#include "tama.h"
-#include "GhostStuff.hpp"
+#include "header_files/tama.h"
+#include "header_files/GhostStuff.hpp"
 #include "my-gists/windows/LoadStringFromResource.h"
-#include "resource.h"
-#include "ToolFunctions.hpp"
-#include "UItools.hpp"
+#include "header_files/resource.h"
+#include "header_files/ToolFunctions.hpp"
+#include "header_files/UItools.hpp"
 
 [[noreturn]] void LostGhostLink() {
 	MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_LOST_GHOST_LINK), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);

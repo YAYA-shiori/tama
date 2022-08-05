@@ -43,14 +43,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Release\</OutDir>
-    <IntDir>.\Release\</IntDir>
+    <OutDir>.\builds\$(Configuration)\</OutDir>
+    <IntDir>.\builds\$(Configuration)\temp\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
+    <OutDir>.\builds\$(Configuration)\</OutDir>
+    <IntDir>.\builds\$(Configuration)\temp\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -64,12 +64,12 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_AFX_NO_MFC_CONTROLS_IN_DIALOGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\Release\tama.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutputPath)\asm\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>$(OutputPath)$(AssemblyName).pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <ObjectFileName>.\Release\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+      <ObjectFileName>$(OutputPath)\objs\</ObjectFileName>
+      <ProgramDataBaseFileName>$(OutputPath)\pdb\</ProgramDataBaseFileName>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -95,7 +95,7 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>Release/tama.exe</OutputFile>
+      <OutputFile>$(OutputPath)$(AssemblyName).$(OutputType)</OutputFile>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -117,12 +117,12 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <PreprocessorDefinitions>_AFX_NO_MFC_CONTROLS_IN_DIALOGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\Debug\tama.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(OutputPath)\asm\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>$(OutputPath)$(AssemblyName).pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <ObjectFileName>.\Debug\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <ObjectFileName>$(OutputPath)\objs\</ObjectFileName>
+      <ProgramDataBaseFileName>$(OutputPath)\pdb\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -147,38 +147,38 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>Debug/tama.exe</OutputFile>
+      <OutputFile>$(OutputPath)$(AssemblyName).$(OutputType)</OutputFile>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;Dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CheckUpdate.cpp" />
-    <ClCompile Include="Events.cpp" />
-    <ClCompile Include="GhostStuff.cpp" />
-    <ClCompile Include="GhostStuff.hpp" />
-    <ClCompile Include="ToolFunctions.cpp" />
-    <ClCompile Include="Parameter.cpp" />
-    <ClCompile Include="tama.cpp" />
-    <ClCompile Include="UItools.cpp" />
-    <ClCompile Include="_gists.cpp" />
+    <ClCompile Include="src\CheckUpdate.cpp" />
+    <ClCompile Include="src\Events.cpp" />
+    <ClCompile Include="src\GhostStuff.cpp" />
+    <ClCompile Include="src\ToolFunctions.cpp" />
+    <ClCompile Include="src\Parameter.cpp" />
+    <ClCompile Include="src\tama.cpp" />
+    <ClCompile Include="src\UItools.cpp" />
+    <ClCompile Include="src\_gists.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="tama.rc" />
+    <ResourceCompile Include="src\tama.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Events.hpp" />
-    <ClInclude Include="Parameter.hpp" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="tama.h" />
-    <ClInclude Include="ToolFunctions.hpp" />
-    <ClInclude Include="UItools.hpp" />
-    <ClInclude Include="Version.h" />
+    <Image Include="src\icon\small.ico" />
+    <Image Include="src\icon\tama.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon\small.ico" />
-    <Image Include="icon\tama.ico" />
+    <ClInclude Include="src\header_files\Events.hpp" />
+    <ClInclude Include="src\header_files\GhostStuff.hpp" />
+    <ClInclude Include="src\header_files\Parameter.hpp" />
+    <ClInclude Include="src\header_files\resource.h" />
+    <ClInclude Include="src\header_files\tama.h" />
+    <ClInclude Include="src\header_files\ToolFunctions.hpp" />
+    <ClInclude Include="src\header_files\UItools.hpp" />
+    <ClInclude Include="src\header_files\Version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

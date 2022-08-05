@@ -1,10 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
-#include "tama.h"
-#include "ToolFunctions.hpp"
+#include "header_files/tama.h"
+#include "header_files/ToolFunctions.hpp"
+#include "header_files/Parameter.hpp"
+#include "header_files/UItools.hpp"
 #include <dwmapi.h>
-#include "Parameter.hpp"
-#include "UItools.hpp"
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 	#define DWMWA_USE_IMMERSIVE_DARK_MODE 20

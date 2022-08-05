@@ -1,15 +1,16 @@
 ﻿#include "my-gists/codepage.hpp"
 #include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/windows/OSinfo.hpp"
 
 #include <Richedit.h>
 
-#include "resource.h"
-#include "tama.h"
-#include "GhostStuff.hpp"
-#include "ToolFunctions.hpp"
-#include "Events.hpp"
-#include "UItools.hpp"
-#include "Parameter.hpp"
+#include "header_files/resource.h"
+#include "header_files/tama.h"
+#include "header_files/GhostStuff.hpp"
+#include "header_files/ToolFunctions.hpp"
+#include "header_files/Events.hpp"
+#include "header_files/UItools.hpp"
+#include "header_files/Parameter.hpp"
 
 using namespace std;
 
@@ -336,15 +337,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				logbuf.resize(cds->cbData);
 				wcscpy_s(logbuf.data(), (size_t)cds->cbData, (wchar_t *)cds->lpData);
 
-				static OSVERSIONINFO osi	   = {sizeof(osi)};
-				static bool			 osiiniter = GetVersionEx(&osi);
-
-				if(osi.dwPlatformId == VER_PLATFORM_WIN32_NT) {
+				if(IsWinNT()) [[likely]] {
 					EOS(logbuf.size());
 					SetFontShape(cds->dwData);
 					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.c_str());
 				}
-				else {
+				else [[unlikely]] {
 					string mstr = CODEPAGE_n::UnicodeToMultiByte(logbuf, CODEPAGE_n::CP_ACP);
 					if(!mstr.empty()) {
 						EOS(mstr.size());
@@ -648,4 +646,8 @@ LRESULT CALLBACK GhostSelectDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	default:
 		return FALSE;
 	}
+}
+
+void OnError(PEXCEPTION_POINTERS pExceptionPointers) {
+	MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_UNEXPECTED_EXCEPTION), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 }

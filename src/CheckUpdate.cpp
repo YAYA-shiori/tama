@@ -1,8 +1,8 @@
 ﻿#include <Windows.h>
 #include <string>
-#include "resource.h"
+#include "header_files/resource.h"
+#include "header_files/Version.h"
 #include "my-gists/windows/LoadStringFromResource.h"
-#include "Version.h"
 
 //更新检查用
 #include <wininet.h>

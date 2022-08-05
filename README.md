@@ -1,7 +1,7 @@
 
-- [cn](./README_CN.md)
-- [jp](./README_JP.md)
-- [en](./README_EN.md)
+- [cn](docs/README_CN.md)
+- [jp](docs/README_JP.md)
+- [en](docs/README_EN.md)
 
 _____
 
