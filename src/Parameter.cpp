@@ -13,7 +13,7 @@
 	#define DWMWA_BORDER_COLOR 34
 #endif
 
-void IninSaveFilePath() {
+void InitSaveFilePath() {
 	wstring &selfpath = args_info::selfpath;
 	wstring	 filename;
 	bool	 self_in_ghost_path = selfpath.contains(L"ghost\\master\\");
@@ -75,7 +75,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	EnumFontFamiliesEx(hDC, &logFont, (FONTENUMPROC)EnumFontFamExProc, NULL, 0);
 	ReleaseDC(hWnd, hDC);
 	// ファイルから取得
-	IninSaveFilePath();
+	InitSaveFilePath();
 	FILE *fp = _wfopen(savefile_path.c_str(), L"rt, ccs=UTF-8");
 	if(fp != NULL) {
 		wstring buf;
@@ -100,9 +100,6 @@ void SetParameter(POINT &wp, SIZE &ws) {
 		}
 		fclose(fp);
 	}
-
-	//
-	//
 	if(wp.x < -ws.cx)
 		wp.x = LONG_MIN;
 	if(wp.y < -ws.cy)
