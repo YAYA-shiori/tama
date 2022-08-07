@@ -1,7 +1,7 @@
 ﻿// Microsoft Visual C++ generated resource script.
 //
-#include "header_files/resource.h"
-#include "header_files/Version.h"
+#include "../header_files/resource.h"
+#include "../header_files/Version.h"
 /////////////////////////////////////////////////////////////////////////////
 // 日语(中性) resources
 

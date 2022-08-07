@@ -165,9 +165,6 @@
     <ClCompile Include="src\_gists.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src\tama.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="src\icon\small.ico" />
     <Image Include="src\icon\tama.ico" />
   </ItemGroup>
@@ -181,6 +178,9 @@
     <ClInclude Include="src\header_files\ToolFunctions.hpp" />
     <ClInclude Include="src\header_files\UItools.hpp" />
     <ClInclude Include="src\header_files\Version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\resource\tama.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
