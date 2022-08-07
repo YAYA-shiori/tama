@@ -134,6 +134,9 @@ BEGIN
                             "予期せぬ例外が発生しました。\n問題を特定するために、レポートファイル ""Dump.dmp"" を開発者に送信してください。"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "対象のゴーストのSHIORIはアンロードされています。\n右クリックから「リロード」を選択して、対象のゴーストのSHIORIをリロードしてください。"
+    IDS_ASK_IF_GHOST_RUNNING "このゴーストは実行されていません\nを始めるのか？"
+    IDS_ERROR_RUN_SSP_FAILED "SSPの起動に失敗しました。"
+    IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP開始タイムアウト。"
 END
 
 #endif    // 日语(中性) resources
@@ -182,6 +185,7 @@ BEGIN
         VALUE "Translation", 0x0, 1200
     END
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -329,6 +333,9 @@ BEGIN
                             "发生了未预料到的异常\n请将汇报文件“Dump.dmp”发送给开发者以帮助确定问题所在"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "目标ghost的shiori处于卸载状态\n右键并选择“重新加载shiori”来使得目标ghost的shiori重新被加载"
+    IDS_ASK_IF_GHOST_RUNNING "这个ghost没有在运行\n试着启动他/她/它/他们？"
+    IDS_ERROR_RUN_SSP_FAILED "启动SSP失败。"
+    IDS_ERROR_SSP_RUNNING_TIMEOUT "启动SSP超时。"
 END
 
 #endif    // 中文(简体) resources
@@ -496,6 +503,10 @@ BEGIN
                             "An unforeseen exception occurs\nplease send the report file ""Dump.dmp"" to the developer to help locate the problem"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "The shiori of the target ghost is in the unloaded state\nRight click and select ""Reload"" to make the shiori of the target ghost reload"
+    IDS_ASK_IF_GHOST_RUNNING 
+                            "This ghost is not running\nTry to start him/her/it/them?"
+    IDS_ERROR_RUN_SSP_FAILED "Failed to launch SSP."
+    IDS_ERROR_SSP_RUNNING_TIMEOUT "Start SSP timeout."
 END
 
 #endif    // 英语(中性) resources

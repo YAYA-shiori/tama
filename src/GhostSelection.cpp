@@ -3,6 +3,8 @@
 #include "header_files/resource.h"
 #include "header_files/GhostStuff.hpp"
 #include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/ukagaka/SSPpath.hpp"
+#include "my-gists/STL/replace_all.hpp"
 
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -23,11 +25,8 @@ void GhostSelection(HINSTANCE hInstance) {
 				if(i.second[L"name"] == ghost_link_to || i.second[L"fullname"] == ghost_link_to)
 					ghost_hwnd = tmp_hwnd;
 			}
-			if(!ghost_hwnd) {
-				ShowWindow(hWnd, SW_HIDE);
-				MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
-				exit(EXIT_FAILURE);
-			}
+			if(!ghost_hwnd)
+				goto ask_if_ghost_running;
 		}
 		else if(ghostnum == 1) {
 			//"Only one ghost was running.\n";
@@ -67,6 +66,48 @@ void GhostSelection(HINSTANCE hInstance) {
 					goto link_to_ghost;
 			}
 		}
+	}
+	else if(!ghost_link_to.empty()) {		//ssp not running 
+	ask_if_ghost_running:
+		if(IsSSPinstalled()) {
+			auto tmp = MessageBoxW(NULL, LoadCStringFromResource(IDS_ASK_IF_GHOST_RUNNING), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_YESNO);
+			if(tmp == IDYES) {
+				std::wstring SSPpath = GetSSPpath();
+				std::wstring SSPargs = ghost_link_to;
+				SSPargs = L"/G \"" + replace_all(SSPargs, L"\"", L"\"\"") + L"\"";
+				auto		 tmp	 = (INT_PTR)ShellExecuteW(NULL, L"open", SSPpath.c_str(), SSPargs.c_str(), NULL, SW_SHOW);
+				if(tmp <= 32) {
+					ShowWindow(hWnd, SW_HIDE);
+					MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_RUN_SSP_FAILED), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
+					exit(EXIT_FAILURE);
+				}
+				//sleep until ghost is running
+				size_t sleep_sec = 0;
+				while(1) {
+					Sleep(1000);
+					++sleep_sec;
+					if(sleep_sec > 90) {
+						ShowWindow(hWnd, SW_HIDE);
+						MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_SSP_RUNNING_TIMEOUT), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
+						exit(EXIT_FAILURE);
+					}
+					if(fmobj.Update_info()) {
+						for(auto &i: fmobj.info_map) {
+							HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
+							if(i.second[L"name"] == ghost_link_to || i.second[L"fullname"] == ghost_link_to)
+								ghost_hwnd = tmp_hwnd;
+						}
+						if(ghost_hwnd)
+							goto link_to_ghost;
+					}
+				}
+			}
+			else	   //IDNO
+				exit(EXIT_FAILURE);
+		}
+		ShowWindow(hWnd, SW_HIDE);
+		MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
+		exit(EXIT_FAILURE);
 	}
 link_to_ghost:
 	if(ghost_hwnd == (HWND)-1)

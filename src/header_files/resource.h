@@ -20,6 +20,9 @@
 #define IDS_NEW_VERSION_AVAILABLE					   114
 #define IDS_ERROR_UNEXPECTED_EXCEPTION				   115
 #define IDS_TARGET_GHOST_SHIORI_UNLOADED			   116
+#define IDS_ASK_IF_GHOST_RUNNING					   117
+#define IDS_ERROR_RUN_SSP_FAILED					   118
+#define IDS_ERROR_SSP_RUNNING_TIMEOUT				   119
 #define IDM_EXIT									   105
 #define IDI_DRAGFILES								   107
 #define IDI_SMALL									   108
