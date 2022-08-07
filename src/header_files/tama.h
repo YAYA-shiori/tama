@@ -105,3 +105,6 @@ enum tamamode_t { specified_ghost,
 inline tamamode_t tamamode			   = any;
 inline bool		  has_shiori_file_info = 0;
 inline bool		  allow_file_drug	   = 1;
+
+bool has_corresponding_tama(wstring ghost_hwnd_str);
+bool has_corresponding_tama(HWND ghost_hwnd);

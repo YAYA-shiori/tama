@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="src\CheckUpdate.cpp" />
     <ClCompile Include="src\Events.cpp" />
+    <ClCompile Include="src\GhostSelection.cpp" />
     <ClCompile Include="src\GhostStuff.cpp" />
     <ClCompile Include="src\ToolFunctions.cpp" />
     <ClCompile Include="src\Parameter.cpp" />
@@ -172,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\header_files\Events.hpp" />
+    <ClInclude Include="src\header_files\GhostSelection.hpp" />
     <ClInclude Include="src\header_files\GhostStuff.hpp" />
     <ClInclude Include="src\header_files\Parameter.hpp" />
     <ClInclude Include="src\header_files\resource.h" />

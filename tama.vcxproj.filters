@@ -39,6 +39,9 @@
     <ClCompile Include="src\UItools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GhostSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\tama.rc">
@@ -76,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\header_files\Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\header_files\GhostSelection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
