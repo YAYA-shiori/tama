@@ -3,14 +3,14 @@
 #include "header_files/resource.h"
 #include "header_files/GhostStuff.hpp"
 #include "my-gists/windows/LoadStringFromResource.h"
-#include "my-gists/ukagaka/SSPpath.hpp"
+#include "my-gists/ukagaka/SSP_Runner.hpp"
 #include "my-gists/ukagaka/ghost_path.hpp"
-#include "my-gists/STL/replace_all.hpp"
 
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
 void GhostSelection(HINSTANCE hInstance) {
 	using namespace args_info;
+	SSP_Runner SSP;
 	if(ghost_hwnd)
 		goto link_to_ghost;
 	if(fmobj.Update_info()) {
@@ -70,38 +70,22 @@ void GhostSelection(HINSTANCE hInstance) {
 	}
 	else if(!ghost_link_to.empty()) {		//ssp not running 
 	ask_if_ghost_running:
-		if(IsSSPinstalled()) {
+		if(SSP.IsInstalled()) {
 			if(MessageBoxW(NULL, LoadCStringFromResource(IDS_ASK_IF_GHOST_RUNNING), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_YESNO)
 				== IDYES) {
 			ask_if_ghost_running_cofirmed:
-				std::wstring SSPpath = GetSSPpath();
-				std::wstring SSPargs = ghost_link_to;
-				SSPargs = L"/G \"" + replace_all(SSPargs, L"\"", L"\"\"") + L"\"";
-				if((INT_PTR)ShellExecuteW(NULL, L"open", SSPpath.c_str(), SSPargs.c_str(), NULL, SW_SHOW)
-					<= 32) {
+				if(!SSP.run_ghost(ghost_link_to)) {
 					ShowWindow(hWnd, SW_HIDE);
 					MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_RUN_SSP_FAILED), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 					exit(EXIT_FAILURE);
 				}
-				//sleep until ghost is running
-				size_t sleep_sec = 0;
-				while(1) {
-					Sleep(1000);
-					++sleep_sec;
-					if(sleep_sec > 90) {
-						ShowWindow(hWnd, SW_HIDE);
-						MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_SSP_RUNNING_TIMEOUT), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
-						exit(EXIT_FAILURE);
-					}
-					if(fmobj.Update_info()) {
-						for(auto &i: fmobj.info_map) {
-							HWND tmp_hwnd = (HWND)wcstoll(i.second[L"hwnd"].c_str(), nullptr, 10);
-							if(i.second[L"name"] == ghost_link_to || i.second[L"fullname"] == ghost_link_to)
-								ghost_hwnd = tmp_hwnd;
-						}
-						if(ghost_hwnd)
-							goto link_to_ghost;
-					}
+				ghost_hwnd = fmobj.wait_ghost_info_by_name_or_fullname(ghost_link_to, 90);
+				if(ghost_hwnd)
+					goto link_to_ghost;
+				else {
+					ShowWindow(hWnd, SW_HIDE);
+					MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_SSP_RUNNING_TIMEOUT), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
+					exit(EXIT_FAILURE);
 				}
 			}
 			else	   //IDNO
@@ -111,7 +95,7 @@ void GhostSelection(HINSTANCE hInstance) {
 		MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
 	}
-	else if(path_in_ghost_dir(selfpath) && IsSSPinstalled()) {
+	else if(path_in_ghost_dir(selfpath) && SSP.IsInstalled()) {
 		if(MessageBoxW(NULL, LoadCStringFromResource(IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP), LoadCStringFromResource(IDS_INFO_TITLE), MB_ICONINFORMATION | MB_YESNO)
 			== IDYES) {
 			ghost_link_to = get_ghost_dir_name(selfpath);
