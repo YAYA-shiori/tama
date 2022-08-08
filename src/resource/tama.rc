@@ -487,34 +487,34 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "Tama - AYA5 Log Viewer"
-    IDS_ERROR_NONE_GHOST    "None of ghost was running."
+    IDS_ERROR_NONE_GHOST    "No ghosts are running."
     IDS_ERROR_TITLE         "Error"
     IDS_ERROR_GHOST_NOT_FOUND_P1 "Target ghost """
     IDS_ERROR_GHOST_NOT_FOUND_P2 """ not found."
-    IDS_EVENT_DEF_REMINDER  "A friendly reminder: if nothing happens, you need to add reactions to the tamaOpen and tamaExit events in your ghost\nSee https://github.com/nikolat/tama for details\n\nIf you just want to know where your dic file went wrong, drag aya.dll or yaya.dll into this window\n"
-    IDS_ERROR_NULL_GHOST_HWND "Unknown error causes ghost hwnd was NULL."
-    IDS_GHOST_SELECT_START_WITH_OUT_GHOST "Start without choosing ghost"
-    IDS_ERROR_LOST_GHOST_LINK "Link to target ghost lost, about to exit tama"
+    IDS_EVENT_DEF_REMINDER  "A friendly reminder: if nothing happens, you need to add reactions to the tamaOpen and tamaExit events in your ghost.\nSee https://github.com/nikolat/tama for details.\n\nIf you just want to know where your dic file went wrong, drag aya.dll or yaya.dll into this window.\n"
+    IDS_ERROR_NULL_GHOST_HWND "Unknown error, ghost hwnd was NULL."
+    IDS_GHOST_SELECT_START_WITH_OUT_GHOST "Start without choosing a ghost"
+    IDS_ERROR_LOST_GHOST_LINK "Link to target ghost lost, this tama will now close."
 END
 
 STRINGTABLE
 BEGIN
     IDS_ERROR_GHOST_ALREADY_HAS_TAMA 
-                            "The target ghost already has a corresponding tama instance so is about to exit this tama"
+                            "The target ghost already has a corresponding Tama instance, this Tama will now close."
     IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED 
-                            "Has been linked with the target ghost and another instance of shiori will not be allowed to be loaded.\nPlease open another tama if you need to load another shiori."
-    IDS_NEW_VERSION_AVAILABLE "New version available.\njump to download page?"
+                            "This Tama is already linked to a SHIORI, another cannot be loaded.\nPlease open another Tama if you need to load another SHIORI."
+    IDS_NEW_VERSION_AVAILABLE "New version available.\nJump to download page?"
     IDS_ERROR_UNEXPECTED_EXCEPTION 
-                            "An unforeseen exception occurs\nplease send the report file ""Dump.dmp"" to the developer to help locate the problem"
+                            "An unforeseen exception occurred.\nPlease send the report file ""Dump.dmp"" to the Tama developer to help locate the problem."
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
-                            "The shiori of the target ghost is in the unloaded state\nRight click and select ""Reload"" to make the shiori of the target ghost reload"
+                            "The SHIORI of the target ghost is in an unloaded state\nRight click and select ""Reload"" to make the SHIORI of the target ghost reload."
     IDS_ASK_IF_GHOST_RUNNING 
-                            "This ghost is not running\nTry to start him/her/it/them?"
+                            "This ghost is not running.\nTry to start it?"
     IDS_ERROR_RUN_SSP_FAILED "Failed to launch SSP."
-    IDS_ERROR_SSP_RUNNING_TIMEOUT "Start SSP timeout."
+    IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP launch timed out."
     IDS_INFO_TITLE          "Attention"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
-                            "This tama is in a ghost folder\nRun the ghost where it is and link it?"
+                            "This Tama is in a ghost folder.\nStart SSP with this ghost and link Tama?"
 END
 
 #endif    // 英语(中性) resources
