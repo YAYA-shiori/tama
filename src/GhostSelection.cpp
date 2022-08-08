@@ -111,7 +111,7 @@ void GhostSelection(HINSTANCE hInstance) {
 		MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
 	}
-	else if(path_in_ghost_dir(selfpath)) {
+	else if(path_in_ghost_dir(selfpath) && IsSSPinstalled()) {
 		if(MessageBoxW(NULL, LoadCStringFromResource(IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP), LoadCStringFromResource(IDS_INFO_TITLE), MB_ICONINFORMATION | MB_YESNO)
 			== IDYES) {
 			ghost_link_to = get_ghost_dir_name(selfpath);
