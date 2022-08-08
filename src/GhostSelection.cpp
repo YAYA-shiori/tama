@@ -4,6 +4,7 @@
 #include "header_files/GhostStuff.hpp"
 #include "my-gists/windows/LoadStringFromResource.h"
 #include "my-gists/ukagaka/SSPpath.hpp"
+#include "my-gists/ukagaka/ghost_path.hpp"
 #include "my-gists/STL/replace_all.hpp"
 
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -70,13 +71,14 @@ void GhostSelection(HINSTANCE hInstance) {
 	else if(!ghost_link_to.empty()) {		//ssp not running 
 	ask_if_ghost_running:
 		if(IsSSPinstalled()) {
-			auto tmp = MessageBoxW(NULL, LoadCStringFromResource(IDS_ASK_IF_GHOST_RUNNING), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_YESNO);
-			if(tmp == IDYES) {
+			if(MessageBoxW(NULL, LoadCStringFromResource(IDS_ASK_IF_GHOST_RUNNING), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_YESNO)
+				== IDYES) {
+			ask_if_ghost_running_cofirmed:
 				std::wstring SSPpath = GetSSPpath();
 				std::wstring SSPargs = ghost_link_to;
 				SSPargs = L"/G \"" + replace_all(SSPargs, L"\"", L"\"\"") + L"\"";
-				auto		 tmp	 = (INT_PTR)ShellExecuteW(NULL, L"open", SSPpath.c_str(), SSPargs.c_str(), NULL, SW_SHOW);
-				if(tmp <= 32) {
+				if((INT_PTR)ShellExecuteW(NULL, L"open", SSPpath.c_str(), SSPargs.c_str(), NULL, SW_SHOW)
+					<= 32) {
 					ShowWindow(hWnd, SW_HIDE);
 					MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_RUN_SSP_FAILED), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 					exit(EXIT_FAILURE);
@@ -108,6 +110,13 @@ void GhostSelection(HINSTANCE hInstance) {
 		ShowWindow(hWnd, SW_HIDE);
 		MessageBoxW(NULL, (LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P1) + ghost_link_to + LoadCStringFromResource(IDS_ERROR_GHOST_NOT_FOUND_P2)).c_str(), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 		exit(EXIT_FAILURE);
+	}
+	else if(path_in_ghost_dir(selfpath)) {
+		if(MessageBoxW(NULL, LoadCStringFromResource(IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP), LoadCStringFromResource(IDS_INFO_TITLE), MB_ICONINFORMATION | MB_YESNO)
+			== IDYES) {
+			ghost_link_to = get_ghost_dir_name(selfpath);
+			goto ask_if_ghost_running_cofirmed;
+		}
 	}
 link_to_ghost:
 	if(ghost_hwnd == (HWND)-1)

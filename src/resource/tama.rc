@@ -137,6 +137,9 @@ BEGIN
     IDS_ASK_IF_GHOST_RUNNING "このゴーストは実行されていません\nを始めるのか？"
     IDS_ERROR_RUN_SSP_FAILED "SSPの起動に失敗しました。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP開始タイムアウト。"
+    IDS_INFO_TITLE          "注意"
+    IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
+                            "このタマはゴーストフォルダに入っています\nゴーストをあるところで走らせて、リンクさせる？"
 END
 
 #endif    // 日语(中性) resources
@@ -336,6 +339,8 @@ BEGIN
     IDS_ASK_IF_GHOST_RUNNING "这个ghost没有在运行\n试着启动他/她/它/他们？"
     IDS_ERROR_RUN_SSP_FAILED "启动SSP失败。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "启动SSP超时。"
+    IDS_INFO_TITLE          "注意"
+    IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP "此tama在一个ghost文件夹中\n运行所在ghost并链接？"
 END
 
 #endif    // 中文(简体) resources
@@ -507,6 +512,9 @@ BEGIN
                             "This ghost is not running\nTry to start him/her/it/them?"
     IDS_ERROR_RUN_SSP_FAILED "Failed to launch SSP."
     IDS_ERROR_SSP_RUNNING_TIMEOUT "Start SSP timeout."
+    IDS_INFO_TITLE          "Attention"
+    IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
+                            "This tama is in a ghost folder\nRun the ghost where it is and link it?"
 END
 
 #endif    // 英语(中性) resources

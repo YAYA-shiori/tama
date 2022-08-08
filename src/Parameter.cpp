@@ -5,6 +5,7 @@
 #include "header_files/Parameter.hpp"
 #include "header_files/UItools.hpp"
 #include "my-gists/file/canXfile.hpp"
+#include "my-gists/ukagaka/ghost_path.hpp"
 #include <dwmapi.h>
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
@@ -17,11 +18,10 @@
 void InitSaveFilePath() {
 	wstring &selfpath = args_info::selfpath;
 	wstring	 filename;
-	bool	 self_in_ghost_path = selfpath.contains(L"ghost\\master\\");
 	if(tamamode == specified_ghost)
 		filename = ghost_path + L"profile\\tama.txt";
-	else if(self_in_ghost_path) {
-		filename = selfpath.substr(0, selfpath.find(L"ghost\\master\\") + 13) + L"profile\\tama.txt";
+	else if(path_in_ghost_dir(selfpath)) {
+		filename = get_ghost_path(selfpath) + L"profile\\tama.txt";
 	}
 	if(can_t_read_write_file(filename)) {
 		wchar_t drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME], ext[_MAX_EXT];

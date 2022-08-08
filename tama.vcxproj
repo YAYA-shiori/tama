@@ -165,8 +165,8 @@
     <ClCompile Include="src\_gists.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\icon\small.ico" />
-    <Image Include="src\icon\tama.ico" />
+    <Image Include="src\resource\icon\small.ico" />
+    <Image Include="src\resource\icon\tama.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\header_files\Events.hpp" />

@@ -2,6 +2,7 @@
 #include "my-gists/windows/SetIcon.cpp"
 #include "my-gists/ukagaka/shiori_loader.cpp"
 #include "my-gists/ukagaka/SSPpath.cpp"
+#include "my-gists/ukagaka/ghost_path.cpp"
 #include "my-gists/windows/GenerateDump.cpp"
 #include "my-gists/windows/LoadStringFromResource.cpp"
 #include "my-gists/windows/OSinfo.cpp"

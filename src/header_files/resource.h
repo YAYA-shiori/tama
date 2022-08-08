@@ -23,6 +23,8 @@
 #define IDS_ASK_IF_GHOST_RUNNING					   117
 #define IDS_ERROR_RUN_SSP_FAILED					   118
 #define IDS_ERROR_SSP_RUNNING_TIMEOUT				   119
+#define IDS_INFO_TITLE								   120
+#define IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP		   121
 #define IDM_EXIT									   105
 #define IDI_DRAGFILES								   107
 #define IDI_SMALL									   108

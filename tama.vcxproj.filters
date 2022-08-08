@@ -44,10 +44,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\icon\small.ico">
+    <Image Include="src\resource\icon\tama.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="src\icon\tama.ico">
+    <Image Include="src\resource\icon\small.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
