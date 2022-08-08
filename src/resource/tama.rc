@@ -134,12 +134,12 @@ BEGIN
                             "予期せぬ例外が発生しました。\n問題を特定するために、レポートファイル ""Dump.dmp"" を開発者に送信してください。"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "対象のゴーストのSHIORIはアンロードされています。\n右クリックから「リロード」を選択して、対象のゴーストのSHIORIをリロードしてください。"
-    IDS_ASK_IF_GHOST_RUNNING "このゴーストは実行されていません\nを始めるのか？"
+    IDS_ASK_IF_GHOST_RUNNING "このゴーストは起動していません。\n起動しますか？"
     IDS_ERROR_RUN_SSP_FAILED "SSPの起動に失敗しました。"
-    IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP開始タイムアウト。"
+    IDS_ERROR_SSP_RUNNING_TIMEOUT "SSPの起動でタイムアウトしました。"
     IDS_INFO_TITLE          "注意"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
-                            "このタマはゴーストフォルダに入っています\nゴーストをあるところで走らせて、リンクさせる？"
+                            "この玉はゴーストフォルダに入っています。\nゴーストを起動してリンクさせますか？"
 END
 
 #endif    // 日语(中性) resources
