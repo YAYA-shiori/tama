@@ -113,8 +113,9 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "玉 - AYA5 Log Viewer"
-    IDS_ERROR_NONE_GHOST    "動作中のゴーストが存在しません"
+    IDS_INFO_TITLE          "注意"
     IDS_ERROR_TITLE         "エラー"
+    IDS_ERROR_NONE_GHOST    "動作中のゴーストが存在しません"
     IDS_ERROR_GHOST_NOT_FOUND_P1 "ターゲットゴースト「"
     IDS_ERROR_GHOST_NOT_FOUND_P2 "」が見つかりません"
     IDS_EVENT_DEF_REMINDER  "注意：何も起こらない場合は、ゴーストのtamaOpenとtamaExitのイベントにリアクションを追加する必要があります。\n詳しくは https://github.com/nikolat/tama をご覧ください。\n\nもし、あなたのdicファイルがどこで間違ったのか知りたいだけなら、aya.dllまたはyaya.dllをこのウィンドウにドラッグしてください。\n"
@@ -131,13 +132,12 @@ BEGIN
                             "対象のゴーストとのリンクが確立されており、別のshioriのインスタンスのロードは許可されません。\n別のshioriを読み込む必要がある場合は、別の玉を開いてください。"
     IDS_NEW_VERSION_AVAILABLE "新しいバージョンがあります。\nダウンロードしますか？"
     IDS_ERROR_UNEXPECTED_EXCEPTION 
-                            "予期せぬ例外が発生しました。\n問題を特定するために、レポートファイル ""Dump.dmp"" を開発者に送信してください。"
+                            "予期せぬ例外が発生しました。\n問題を特定するために、レポートファイル ""Dump.dmp"" をTama開発者に送信してください。"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "対象のゴーストのSHIORIはアンロードされています。\n右クリックから「リロード」を選択して、対象のゴーストのSHIORIをリロードしてください。"
     IDS_ASK_IF_GHOST_RUNNING "このゴーストは起動していません。\n起動しますか？"
     IDS_ERROR_RUN_SSP_FAILED "SSPの起動に失敗しました。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSPの起動でタイムアウトしました。"
-    IDS_INFO_TITLE          "注意"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "この玉はゴーストフォルダに入っています。\nゴーストを起動してリンクさせますか？"
 END
@@ -197,7 +197,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_DRAGFILES           ICON                    "icon/tama.ico"
+IDI_TAMA                ICON                    "icon/tama.ico"
+
 
 IDI_SMALL               ICON                    "icon/small.ico"
 
@@ -316,8 +317,9 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "Tama - AYA5日志查看器"
-    IDS_ERROR_NONE_GHOST    "没有ghost在运行中"
+    IDS_INFO_TITLE          "注意"
     IDS_ERROR_TITLE         "错误"
+    IDS_ERROR_NONE_GHOST    "没有ghost在运行中"
     IDS_ERROR_GHOST_NOT_FOUND_P1 "未找到目标ghost“"
     IDS_ERROR_GHOST_NOT_FOUND_P2 "”"
     IDS_EVENT_DEF_REMINDER  "一个友好的提醒：如果什么都没有发生，你需要在你的ghost中添加对tamaOpen和tamaExit事件的反应\n详见https://github.com/nikolat/tama\n\n如果你只是想知道你的dic文件出错于哪里，请将aya.dll或yaya.dll拖到这个窗口中\n\n"
@@ -333,13 +335,12 @@ BEGIN
                             "已与目标ghost建立链接，不允许加载另一个shiori实例。\n如果你需要加载另一个shiori，请另打开一个tama。"
     IDS_NEW_VERSION_AVAILABLE "新版本可用。\n跳转至下载页面？"
     IDS_ERROR_UNEXPECTED_EXCEPTION 
-                            "发生了未预料到的异常\n请将汇报文件“Dump.dmp”发送给开发者以帮助确定问题所在"
+                            "发生了未预料到的异常\n请将汇报文件“Dump.dmp”发送给tama开发者以帮助确定问题所在"
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "目标ghost的shiori处于卸载状态\n右键并选择“重新加载shiori”来使得目标ghost的shiori重新被加载"
     IDS_ASK_IF_GHOST_RUNNING "这个ghost没有在运行\n试着启动他/她/它/他们？"
     IDS_ERROR_RUN_SSP_FAILED "启动SSP失败。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "启动SSP超时。"
-    IDS_INFO_TITLE          "注意"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP "此tama在一个ghost文件夹中\n运行所在ghost并链接？"
 END
 
@@ -487,14 +488,16 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "Tama - AYA5 Log Viewer"
-    IDS_ERROR_NONE_GHOST    "No ghosts are running."
+    IDS_INFO_TITLE          "Attention"
     IDS_ERROR_TITLE         "Error"
+    IDS_ERROR_NONE_GHOST    "No ghosts are running."
     IDS_ERROR_GHOST_NOT_FOUND_P1 "Target ghost """
     IDS_ERROR_GHOST_NOT_FOUND_P2 """ not found."
     IDS_EVENT_DEF_REMINDER  "A friendly reminder: if nothing happens, you need to add reactions to the tamaOpen and tamaExit events in your ghost.\nSee https://github.com/nikolat/tama for details.\n\nIf you just want to know where your dic file went wrong, drag aya.dll or yaya.dll into this window.\n"
     IDS_ERROR_NULL_GHOST_HWND "Unknown error, ghost hwnd was NULL."
     IDS_GHOST_SELECT_START_WITH_OUT_GHOST "Start without choosing a ghost"
-    IDS_ERROR_LOST_GHOST_LINK "Link to target ghost lost, this tama will now close."
+    IDS_ERROR_LOST_GHOST_LINK 
+                            "Link to target ghost lost, this tama will now close."
 END
 
 STRINGTABLE
@@ -508,11 +511,9 @@ BEGIN
                             "An unforeseen exception occurred.\nPlease send the report file ""Dump.dmp"" to the Tama developer to help locate the problem."
     IDS_TARGET_GHOST_SHIORI_UNLOADED 
                             "The SHIORI of the target ghost is in an unloaded state\nRight click and select ""Reload"" to make the SHIORI of the target ghost reload."
-    IDS_ASK_IF_GHOST_RUNNING 
-                            "This ghost is not running.\nTry to start it?"
+    IDS_ASK_IF_GHOST_RUNNING "This ghost is not running.\nTry to start it?"
     IDS_ERROR_RUN_SSP_FAILED "Failed to launch SSP."
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP launch timed out."
-    IDS_INFO_TITLE          "Attention"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "This Tama is in a ghost folder.\nStart SSP with this ghost and link Tama?"
 END

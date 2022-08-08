@@ -156,7 +156,7 @@ ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	wcex.cbClsExtra	   = 0;
 	wcex.cbWndExtra	   = 0;
 	wcex.hInstance	   = hInstance;
-	wcex.hIcon		   = LoadIcon(hInstance, (LPCTSTR)IDI_DRAGFILES);
+	wcex.hIcon		   = LoadIcon(hInstance, (LPCTSTR)IDI_TAMA);
 	wcex.hCursor	   = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName  = NULL;

@@ -4,11 +4,10 @@
 
 #include "windows.h"
 
-#define IDC_MYICON									   2
-#define IDD_DRAGFILES_DIALOG						   102
-#define IDS_APP_TITLE								   103
-#define IDS_ERROR_NONE_GHOST						   104
-#define IDS_ERROR_TITLE								   105
+#define IDS_APP_TITLE								   100
+#define IDS_INFO_TITLE								   101
+#define IDS_ERROR_TITLE								   102
+#define IDS_ERROR_NONE_GHOST						   105
 #define IDS_ERROR_GHOST_NOT_FOUND_P1				   106
 #define IDS_ERROR_GHOST_NOT_FOUND_P2				   107
 #define IDS_EVENT_DEF_REMINDER						   108
@@ -23,32 +22,30 @@
 #define IDS_ASK_IF_GHOST_RUNNING					   117
 #define IDS_ERROR_RUN_SSP_FAILED					   118
 #define IDS_ERROR_SSP_RUNNING_TIMEOUT				   119
-#define IDS_INFO_TITLE								   120
-#define IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP		   121
-#define IDM_EXIT									   105
-#define IDI_DRAGFILES								   107
-#define IDI_SMALL									   108
-#define IDR_MAINFRAME								   128
-#define IDD_GHOST_SELECT							   134
-#define IDD_SEND_REQUEST							   136
-#define IDC_EDIT									   1000
-#define IDC_SEND									   1001
-#define IDC_SEND_REQUEST_RICHEDIT					   1002
-#define IDC_GHOST_SELECT_LIST						   1003
+#define IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP		   120
+
+#define IDI_TAMA									   100
+#define IDI_SMALL									   101
+
+#define IDD_GHOST_SELECT							   128
+#define IDD_SEND_REQUEST							   129
+
+#define IDC_SEND									   1000
+#define IDC_SEND_REQUEST_RICHEDIT					   1001
+#define IDC_GHOST_SELECT_LIST						   1002
+
 #define ID_TAMA_EXIT								   32771
 #define ID_TAMA_RELOAD								   32772
-#define ID_TAMA_VERSION								   32773
-#define ID_TAMA_COPY								   32774
-#define ID_TAMA_TOP									   32775
-#define ID_TAMA_UNLOAD								   32776
-#define ID_TAMA_JUMPTOP								   32777
-#define ID_TAMA_REQUEST								   32778
-#define ID_TAMA_JUMPBOTTOM							   32779
-#define ID_TAMA_RECEIVE								   32780
-#define ID_TAMA_ALERTONWARNING						   32781
-#define ID_TAMA_DISABLE_AUTO_TRANSFER_SHIORI_OWNERSHIP 32782
+#define ID_TAMA_COPY								   32773
+#define ID_TAMA_UNLOAD								   32774
+#define ID_TAMA_JUMPTOP								   32775
+#define ID_TAMA_REQUEST								   32776
+#define ID_TAMA_JUMPBOTTOM							   32777
+#define ID_TAMA_RECEIVE								   32778
+#define ID_TAMA_ALERTONWARNING						   32779
+#define ID_TAMA_DISABLE_AUTO_TRANSFER_SHIORI_OWNERSHIP 32780
+
 #define IDT_CHOST_STATUS_WATCHER					   13
-#define IDC_STATIC									   -1
 
 // Next default values for new objects
 //
