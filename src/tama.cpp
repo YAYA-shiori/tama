@@ -1,5 +1,5 @@
 ﻿#include "my-gists/codepage.hpp"
-#include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/windows/LoadStringFromResource.hpp"
 #include "my-gists/windows/OSinfo.hpp"
 
 #include <Richedit.h>

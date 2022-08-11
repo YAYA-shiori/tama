@@ -2,7 +2,7 @@
 
 #include "header_files/tama.h"
 #include "header_files/GhostStuff.hpp"
-#include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/windows/LoadStringFromResource.hpp"
 #include "header_files/resource.h"
 #include "header_files/ToolFunctions.hpp"
 #include "header_files/UItools.hpp"

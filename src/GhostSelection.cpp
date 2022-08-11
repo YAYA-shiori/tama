@@ -2,7 +2,7 @@
 #include "header_files/tama.h"
 #include "header_files/resource.h"
 #include "header_files/GhostStuff.hpp"
-#include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/windows/LoadStringFromResource.hpp"
 #include "my-gists/ukagaka/SSP_Runner.hpp"
 #include "my-gists/ukagaka/ghost_path.hpp"
 

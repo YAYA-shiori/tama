@@ -2,7 +2,7 @@
 #include <string>
 #include "header_files/resource.h"
 #include "header_files/Version.h"
-#include "my-gists/windows/LoadStringFromResource.h"
+#include "my-gists/windows/LoadStringFromResource.hpp"
 
 //更新检查用
 #include <wininet.h>
