@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <windows.h>
 #include "header_files/tama.h"
+#include "my-gists/STL/CutSpace.hpp"
 using namespace std;
 
 int HexStrToInt(const wchar_t *str) {
@@ -19,21 +20,6 @@ int HexStrToInt(const wchar_t *str) {
 		result = (result << 4) + digit;
 	}
 	return result;
-}
-
-void CutSpace(wstring &str) {
-	// str前後の空白とタブを削る
-	auto pos1 = str.find_first_not_of(L" \t");
-	auto pos2 = str.find_last_not_of(L" \t");
-	if(pos1 == wstring::npos) {
-		str = L"";
-		return;
-	}
-	if(pos1 == pos2) {
-		str = str.substr(pos1);
-		return;
-	}
-	str = str.substr(pos1, pos2 - pos1 + 1);
 }
 
 bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
