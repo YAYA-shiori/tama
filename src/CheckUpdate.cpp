@@ -8,8 +8,8 @@
 #include <wininet.h>
 #pragma comment(lib, "WinInet.lib")
 
-//check update at https://github.com/nikolat/tama/releases with windows api
-//if has update,open https://github.com/nikolat/tama/releases/latest
+//check update at https://github.com/YAYA-shiori/tama/releases with windows api
+//if has update,open https://github.com/YAYA-shiori/tama/releases/latest
 void CheckUpdate() {
 	#ifndef _DEBUG
 	using namespace std;
@@ -24,7 +24,7 @@ void CheckUpdate() {
 			InternetCloseHandle(hInternet);
 			return;
 		}
-		HINTERNET hRequest = HttpOpenRequest(hConnect, L"GET", L"/repos/nikolat/tama/releases/latest", NULL, NULL, NULL, INTERNET_FLAG_SECURE, 0);
+		HINTERNET hRequest = HttpOpenRequest(hConnect, L"GET", L"/repos/YAYA-shiori/tama/releases/latest", NULL, NULL, NULL, INTERNET_FLAG_SECURE, 0);
 		if(hRequest == NULL) {
 			InternetCloseHandle(hConnect);
 			InternetCloseHandle(hInternet);
@@ -60,6 +60,6 @@ void CheckUpdate() {
 		return;
 	}
 	if(MessageBox(NULL, LoadStringFromResource(IDS_NEW_VERSION_AVAILABLE).c_str(), L"Tama", MB_YESNO) == IDYES)
-		ShellExecute(NULL, L"open", L"https://github.com/nikolat/tama/releases/latest", NULL, NULL, SW_SHOW);
+		ShellExecute(NULL, L"open", L"https://github.com/YAYA-shiori/tama/releases/latest", NULL, NULL, SW_SHOW);
 	#endif
 }
