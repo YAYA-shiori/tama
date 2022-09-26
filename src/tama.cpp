@@ -241,14 +241,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
 			if(cds->cbData > 0) {
 				// 更新
-				wstring logbuf;
-				logbuf.resize(cds->cbData);
-				wcscpy_s(logbuf.data(), (size_t)cds->cbData, (wchar_t *)cds->lpData);
+				wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
 
 				if(IsWinNT()) [[likely]] {
 					EOS(logbuf.size());
 					SetFontShape(cds->dwData);
-					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.c_str());
+					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.data());
 				}
 				else [[unlikely]] {
 					string mstr = CODEPAGE_n::UnicodeToMultiByte(logbuf, CODEPAGE_n::CP_ACP);
@@ -281,7 +279,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					default:
 						boxtitle = NULL;
 					}
-					MessageBoxW(NULL, logbuf.c_str(), boxtitle, icontype | MB_OK);
+					MessageBoxW(NULL, logbuf.data(), boxtitle, icontype | MB_OK);
 				}
 			}
 		}
