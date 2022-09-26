@@ -1,6 +1,5 @@
 ﻿#include "my-gists/codepage.hpp"
 #include "my-gists/windows/LoadStringFromResource.hpp"
-#include "my-gists/windows/OSinfo.hpp"
 
 #include <Richedit.h>
 
@@ -243,19 +242,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				// 更新
 				wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
 
-				if(IsWinNT()) [[likely]] {
-					EOS(logbuf.size());
-					SetFontShape(cds->dwData);
-					SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.data());
-				}
-				else [[unlikely]] {
-					string mstr = CODEPAGE_n::UnicodeToMultiByte(logbuf, CODEPAGE_n::CP_ACP);
-					if(!mstr.empty()) {
-						EOS(mstr.size());
-						SetFontShape(cds->dwData);
-						SendMessageA(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)mstr.c_str());
-					}
-				}
+				EOS(logbuf.size());
+				SetFontShape(cds->dwData);
+				SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.data());
+				
 				if(!has_fatal_or_error && (cds->dwData == F_FATAL || cds->dwData == F_ERROR))
 					has_fatal_or_error = 1;
 				// AlertOnWarning
