@@ -237,9 +237,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_COPYDATA: {
 		COPYDATASTRUCT *cds = (COPYDATASTRUCT *)lParam;
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
-			// メッセージ表示更新　NT系はunicodeのまま、9x系はMBCSへ変換して更新
+			// メッセージ表示更新
 			if(cds->cbData > 0) {
-				// 更新
 				wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
 
 				EOS(logbuf.size());
