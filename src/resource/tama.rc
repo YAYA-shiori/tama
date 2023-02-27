@@ -122,10 +122,6 @@ BEGIN
     IDS_ERROR_NULL_GHOST_HWND "不明なエラーにより、ゴースト hwnd が NULL になっています。"
     IDS_GHOST_SELECT_START_WITH_OUT_GHOST "ghostを選択せずに起動"
     IDS_ERROR_LOST_GHOST_LINK "ターゲットゴーストへのリンクが失われ、tamaを終了するところです。"
-END
-
-STRINGTABLE
-BEGIN
     IDS_ERROR_GHOST_ALREADY_HAS_TAMA 
                             "対象のゴーストはすでに対応する玉インスタンスを持っているので、この玉を終了しようとしています。"
     IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED 
@@ -140,6 +136,21 @@ BEGIN
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSPの起動でタイムアウトしました。"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "この玉はゴーストフォルダに入っています。\nゴーストを起動してリンクさせますか？"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_interface_load_not_found "必要なインターフェース「load」が見つかりません。"
+    IDS_interface_unload_not_found "必要なインターフェース「unload」が見つかりません。"
+    IDS_interface_request_not_found "必要なインターフェース「request」が見つかりません。"
+    IDS_interface_load_failed "ファイルのロード、アンロードに失敗しました。"
+    IDS_interface_unload_failed "アンロードは失敗を返す。"
+    IDS_dll_file_load_failed "DLLファイルのロードに失敗しました。"
+    IDS_skip_unload_call_because_load_failed "インターフェースのロードに失敗したため、アンロード処理をスキップします。"
+    IDS_skip_unload_call_because_unload_not_found "インターフェースのアンロードに失敗したため、アンロード処理をスキップします。"
+    IDS_interface_logsend_not_found "インターフェースのログ送信に失敗しました。"
+    IDS_logsend_failed "ログ送信に失敗しました。"
+    IDS_unknown_Cshiori_error "不明なエラーが発生しました。"
 END
 
 #endif    // 日语(中性) resources
@@ -326,10 +337,6 @@ BEGIN
     IDS_ERROR_NULL_GHOST_HWND "未知错误导致ghost hwnd为NULL"
     IDS_GHOST_SELECT_START_WITH_OUT_GHOST "不选择任何ghost并启动"
     IDS_ERROR_LOST_GHOST_LINK "与目标ghost的链接丢失，即将退出tama"
-END
-
-STRINGTABLE
-BEGIN
     IDS_ERROR_GHOST_ALREADY_HAS_TAMA "目标ghost已经有了一个对应的tama实例，即将退出这个tama"
     IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED 
                             "已与目标ghost建立链接，不允许加载另一个shiori实例。\n如果你需要加载另一个shiori，请另打开一个tama。"
@@ -342,6 +349,21 @@ BEGIN
     IDS_ERROR_RUN_SSP_FAILED "启动SSP失败。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "启动SSP超时。"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP "此tama在一个ghost文件夹中\n运行所在ghost并链接？"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_interface_load_not_found "没有找到所需的接口'load'。"
+    IDS_interface_unload_not_found "没有找到所需的接口'unload'。"
+    IDS_interface_request_not_found "没有找到所需的接口'request'。"
+    IDS_interface_load_failed "对接口'load'的调用失败。"
+    IDS_interface_unload_failed "对接口'unload'的调用失败。"
+    IDS_dll_file_load_failed "加载DLL文件失败。"
+    IDS_skip_unload_call_because_load_failed "因为load失败，所以跳过unload调用。"
+    IDS_skip_unload_call_because_unload_not_found "因为unload接口未找到，所以跳过unload调用。"
+    IDS_interface_logsend_not_found "没有找到所需的接口'logsend'。"
+    IDS_logsend_failed "对接口'logsend'的调用失败。"
+    IDS_unknown_Cshiori_error "未知的Cshiori错误。"
 END
 
 #endif    // 中文(简体) resources
@@ -464,10 +486,6 @@ BEGIN
     IDS_GHOST_SELECT_START_WITH_OUT_GHOST "Start without choosing a ghost"
     IDS_ERROR_LOST_GHOST_LINK 
                             "Link to target ghost lost, this tama will now close."
-END
-
-STRINGTABLE
-BEGIN
     IDS_ERROR_GHOST_ALREADY_HAS_TAMA 
                             "The target ghost already has a corresponding Tama instance, this Tama will now close."
     IDS_ERROR_DRAGGING_FILE_IS_NOT_ALLOWED 
@@ -482,6 +500,21 @@ BEGIN
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP launch timed out."
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "This Tama is in a ghost folder.\nStart SSP with this ghost and link Tama?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_interface_load_not_found "Necessary interface ""load"" not found."
+    IDS_interface_unload_not_found "Necessary interface ""unload"" not found."
+    IDS_interface_request_not_found "Necessary interface ""request"" not found."
+    IDS_interface_load_failed "Call to interface ""load"" failed."
+    IDS_interface_unload_failed "Call to interface ""unload"" failed."
+    IDS_dll_file_load_failed "Failed to load DLL file."
+    IDS_skip_unload_call_because_load_failed "Skip unload call because load failed."
+    IDS_skip_unload_call_because_unload_not_found "Skip unload call because unload interface not found."
+    IDS_interface_logsend_not_found "Necessary interface ""logsend"" not found."
+    IDS_logsend_failed "Call to interface ""logsend"" failed."
+    IDS_unknown_Cshiori_error "Unknown Cshiori error."
 END
 
 #endif    // 英语(中性) resources

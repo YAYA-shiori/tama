@@ -120,56 +120,58 @@ bool ExecLoad(void) {
 	return 1;
 }
 
+void WriteShioriError(int id,UINT stringResourceID) {
+	auto idstr = to_wstring(id);
+	//id最少4个字符，不够的话前面补0
+	idstr = wstring(4 - idstr.size(), L'0') + idstr;
 
+	wstring tmp = dllpath + L" : tama error TE" + idstr + L" : " + LoadStringFromResource(stringResourceID);
+	WriteText(tmp, F_ERROR);
+}
 void CshioriErrorHandler(Cshiori::Error err) {
 	using enum Cshiori::Error;
 	wstring tmp = dllpath;
 	switch(err) {
 	case interface_load_not_found:
-		tmp += L" : tama error TE0001 : Necessary interface \"load\" not found.";
+		WriteShioriError(1, IDS_interface_load_not_found);
 		break;
 	case interface_unload_not_found:
-		tmp += L" : tama error TE0001 : Necessary interface \"unload\" not found.";
+		WriteShioriError(2, IDS_interface_unload_not_found);
 		break;
 	case interface_request_not_found:
-		tmp += L" : tama error TE0001 : Necessary interface \"request\" not found.";
+		WriteShioriError(3, IDS_interface_request_not_found);
 		break;
 	case interface_load_failed:
-		tmp += L" : tama error TE0001 : Failed to load, unloading file...";
+		WriteShioriError(4, IDS_interface_load_failed);
 		break;
 	case interface_unload_failed:
-		tmp += L" : tama error TE0001 : unload returns failure";
+		WriteShioriError(5, IDS_interface_unload_failed);
 		break;
 	case dll_file_load_failed:
-		tmp += L" : tama error TE0001 : dll file loading failure";
+		WriteShioriError(0, IDS_dll_file_load_failed);
 		break;
 	case skip_unload_call_because_load_failed:
-		tmp += L" : tama error TE0001 : Skip the unload call as load failed";
+		WriteShioriError(6, IDS_skip_unload_call_because_load_failed);
 		break;
-	case skip_unload_call_because_interface_unload_not_found:
-		tmp += L" : tama error TE0001 : Skip the unload call as it was not found";
+	case skip_unload_call_because_unload_not_found:
+		WriteShioriError(7, IDS_skip_unload_call_because_unload_not_found);
 		break;
 	default:
-		tmp += L" : tama error TE0001 : Something fucked up.";
+		WriteShioriError(9999, IDS_unknown_Cshiori_error);
 		break;
 	}
-	SetWindowTextW(hEdit, tmp.c_str());
 }
 void CshioriWarningHandler(Cshiori::Warning warn) {
 	using enum Cshiori::Warning;
 	switch(warn) {
 	case interface_CI_check_not_found:
 		return;//but who cares? tama does not use this interface.
-	case interface_logsend_not_found: {
-		wstring tmp = dllpath + L" : tama error TE0001 : Interface \"logsend\" not found.";
-		SetWindowTextW(hEdit, tmp.c_str());
-		return;
-	}
-	case logsend_failed: {
-		wstring tmp = dllpath + L" : tama error TE0001 : Cannot set dll's logsend hwnd.";
-		SetWindowTextW(hEdit, tmp.c_str());
-		return;
-	}
+	case interface_logsend_not_found:
+		WriteShioriError(8, IDS_interface_logsend_not_found);
+		break;
+	case logsend_failed:
+		WriteShioriError(9, IDS_logsend_failed);
+		break;
 	default:
 		return;//I don't care.
 	}

@@ -24,6 +24,18 @@
 #define IDS_ERROR_SSP_RUNNING_TIMEOUT				   119
 #define IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP		   120
 
+#define IDS_interface_load_not_found				   200
+#define IDS_interface_unload_not_found				   201
+#define IDS_interface_request_not_found				   202
+#define IDS_interface_load_failed					   203
+#define IDS_interface_unload_failed					   204
+#define IDS_dll_file_load_failed					   205
+#define IDS_skip_unload_call_because_load_failed	   206
+#define IDS_skip_unload_call_because_unload_not_found  207
+#define IDS_interface_logsend_not_found				   208
+#define IDS_logsend_failed							   209
+#define IDS_unknown_Cshiori_error					   210
+
 #define IDI_TAMA									   100
 #define IDI_SMALL									   101
 
