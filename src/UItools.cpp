@@ -12,13 +12,19 @@ bool SetFontShapeInit(int shapeid) {
 	return SetMyFont(fontface.c_str(), shapeid, SCF_ALL);
 }
 
-int GetFontCharSet(wstring name) {
+int GetFontCharSet(wstring_view name) {
 	// name名のフォントのcharsetを返す
 	for(vector<SFface>::iterator it = fontarray.begin(); it != fontarray.end(); it++) {
 		if(it->face == name)
 			return it->charset;
 	}
 	return -1;
+}
+
+void WriteText(wstring_view text,int level) {
+	EOS(text.size());
+	SetFontShape(level);
+	SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)text.data());
 }
 
 bool SetMyFont(const wchar_t *facename, int shapeid, int scf) {

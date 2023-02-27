@@ -241,9 +241,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			if(cds->cbData > 0) {
 				wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
 
-				EOS(logbuf.size());
-				SetFontShape(cds->dwData);
-				SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)logbuf.data());
+				WriteText(logbuf, cds->dwData);
 				
 				if(!has_fatal_or_error && (cds->dwData == F_FATAL || cds->dwData == F_ERROR))
 					has_fatal_or_error = 1;
