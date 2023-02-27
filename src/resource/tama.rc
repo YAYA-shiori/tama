@@ -143,14 +143,14 @@ BEGIN
     IDS_interface_load_not_found "必要なインターフェース「load」が見つかりません。"
     IDS_interface_unload_not_found "必要なインターフェース「unload」が見つかりません。"
     IDS_interface_request_not_found "必要なインターフェース「request」が見つかりません。"
-    IDS_interface_load_failed "ファイルのロード、アンロードに失敗しました。"
-    IDS_interface_unload_failed "アンロードは失敗を返す。"
+    IDS_interface_load_failed "インターフェース「load」に失敗しました。"
+    IDS_interface_unload_failed "インターフェース「unload」に失敗しました。"
     IDS_dll_file_load_failed "DLLファイルのロードに失敗しました。"
-    IDS_skip_unload_call_because_load_failed "インターフェースのロードに失敗したため、アンロード処理をスキップします。"
-    IDS_skip_unload_call_because_unload_not_found "インターフェースのアンロードに失敗したため、アンロード処理をスキップします。"
-    IDS_interface_logsend_not_found "インターフェースのログ送信に失敗しました。"
+    IDS_skip_unload_call_because_load_failed "ロードに失敗したため、アンロード処理をスキップします。"
+    IDS_skip_unload_call_because_unload_not_found "インターフェース「unload」が見つからないため、アンロード処理をスキップします。"
+    IDS_interface_logsend_not_found "必要なインターフェース「logsend」が見つかりません。"
     IDS_logsend_failed "ログ送信に失敗しました。"
-    IDS_unknown_Cshiori_error "不明なエラーが発生しました。"
+    IDS_unknown_Cshiori_error "不明なCshioriエラーが発生しました。"
 END
 
 #endif    // 日语(中性) resources
