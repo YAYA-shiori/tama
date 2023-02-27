@@ -121,9 +121,10 @@ bool ExecLoad(void) {
 }
 
 void WriteShioriError(int id,UINT stringResourceID) {
-	auto idstr = to_wstring(id);
 	//id最少4个字符，不够的话前面补0
-	idstr = wstring(4 - idstr.size(), L'0') + idstr;
+	auto idstr = to_wstring(id);
+	if(idstr.size()<4)
+		idstr.insert(0, 4 - idstr.size(), L'0');
 
 	wstring tmp = dllpath + L" : tama error TE" + idstr + L" : " + LoadStringFromResource(stringResourceID) + L"\r\n";
 	WriteText(tmp, F_ERROR);
