@@ -3,7 +3,15 @@
 #include "my-gists/ukagaka/SFMO.hpp"
 #include "my-gists/ukagaka/shiori_loader.hpp"
 
-inline Cshiori						   shiori;
+void CshioriErrorHandler(Cshiori::Error);
+void CshioriWarningHandler(Cshiori::Warning);
+
+inline Cshiori shiori{
+	Cshiori::error_logger_type{
+		CshioriErrorHandler,
+		CshioriWarningHandler
+	}
+};
 inline SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
 inline SFMO_t						   fmobj;
 
