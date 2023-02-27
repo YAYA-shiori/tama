@@ -4,12 +4,12 @@
 #include "my-gists/STL/CutSpace.hpp"
 using namespace std;
 
-int HexStrToInt(const wchar_t *str) {
+int HexStrToInt(wstring_view str) {
 	// HEXのstrをintに変換
-	int len	   = lstrlenW(str);
+	size_t len	   = str.size();
 	int result = 0;
-	for(int i = 0; i < len; i++) {
-		int digit = (int)*(str + i);
+	for(size_t i = 0; i < len; i++) {
+		int digit = (int)str[i];
 
 		if(digit <= L'9')
 			digit -= L'0';
@@ -22,7 +22,23 @@ int HexStrToInt(const wchar_t *str) {
 	return result;
 }
 
-bool Split(wstring &str, wstring &s0, wstring &s1, const wstring sepstr) {
+int StrToInt(wstring_view str) {
+	// 10進数のstrをintに変換
+	int result = 0;
+	if(str[0] == L'-') {
+		for(size_t i = 1; i < str.size(); i++) {
+			result = result * 10 - (str[i] - L'0');
+		}
+	}
+	else{
+		for(size_t i = 0; i < str.size(); i++) {
+			result = result * 10 + (str[i] - L'0');
+		}
+	}
+	return result;
+}
+
+bool Split(wstring &str, wstring &s0, wstring &s1, wstring_view sepstr) {
 	// strをs0とs1に分解
 	auto begin = str.find(sepstr);
 	s0		   = str.substr(0, begin);

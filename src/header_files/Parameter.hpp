@@ -1,4 +1,4 @@
 ﻿void InitSaveFilePath();
 void SetParameter(POINT& wp, SIZE& ws);
-bool SetParameter(const wstring s0, const wstring s1, POINT& wp, SIZE& ws);
+bool SetParameter(wstring_view s0, wstring_view s1, POINT& wp, SIZE& ws);
 void SaveParameter(void);

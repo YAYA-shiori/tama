@@ -142,110 +142,110 @@ void SetParameter(POINT &wp, SIZE &ws) {
 	fontcharset = DEFAULT_CHARSET;
 }
 
-bool SetParameter(const wstring s0, const wstring s1, POINT &wp, SIZE &ws) {
+bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	// default
 	if(s0 == L"default.pt")
-		fontshape[F_DEFAULT].pt = _wtoi(s1.c_str());
+		fontshape[F_DEFAULT].pt = StrToInt(s1);
 	else if(s0 == L"default.color") {
-		int col					 = HexStrToInt(s1.c_str());
+		int col					 = HexStrToInt(s1);
 		fontshape[F_DEFAULT].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"default.bold")
-		fontshape[F_DEFAULT].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_DEFAULT].bold = (StrToInt(s1)) ? 1 : 0;
 	else if(s0 == L"default.italic")
-		fontshape[F_DEFAULT].italic = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_DEFAULT].italic = (StrToInt(s1)) ? 1 : 0;
 	// fatal
 	else if(s0 == L"fatal.pt")
-		fontshape[F_FATAL].pt = _wtoi(s1.c_str());
+		fontshape[F_FATAL].pt = StrToInt(s1);
 	else if(s0 == L"fatal.color") {
-		int col				   = HexStrToInt(s1.c_str());
+		int col				   = HexStrToInt(s1);
 		fontshape[F_FATAL].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"fatal.bold")
-		fontshape[F_FATAL].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_FATAL].bold = (StrToInt(s1)) ? 1 : 0;
 	else if(s0 == L"fatal.italic")
-		fontshape[F_FATAL].italic = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_FATAL].italic = (StrToInt(s1)) ? 1 : 0;
 	// error
 	else if(s0 == L"error.pt")
-		fontshape[F_ERROR].pt = _wtoi(s1.c_str());
+		fontshape[F_ERROR].pt = StrToInt(s1);
 	else if(s0 == L"error.color") {
-		int col				   = HexStrToInt(s1.c_str());
+		int col				   = HexStrToInt(s1);
 		fontshape[F_ERROR].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"error.bold")
-		fontshape[F_ERROR].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_ERROR].bold = (StrToInt(s1)) ? 1 : 0;
 	else if(s0 == L"error.italic")
-		fontshape[F_ERROR].italic = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_ERROR].italic = (StrToInt(s1)) ? 1 : 0;
 	// warning
 	else if(s0 == L"warning.pt")
-		fontshape[F_WARNING].pt = _wtoi(s1.c_str());
+		fontshape[F_WARNING].pt = StrToInt(s1);
 	else if(s0 == L"warning.color") {
-		int col					 = HexStrToInt(s1.c_str());
+		int col					 = HexStrToInt(s1);
 		fontshape[F_WARNING].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"warning.bold")
-		fontshape[F_WARNING].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_WARNING].bold = (StrToInt(s1)) ? 1 : 0;
 	else if(s0 == L"warning.italic")
-		fontshape[F_WARNING].italic = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_WARNING].italic = (StrToInt(s1)) ? 1 : 0;
 	// note
 	else if(s0 == L"note.pt")
-		fontshape[F_NOTE].pt = _wtoi(s1.c_str());
+		fontshape[F_NOTE].pt = StrToInt(s1);
 	else if(s0 == L"note.color") {
-		int col				  = HexStrToInt(s1.c_str());
+		int col				  = HexStrToInt(s1);
 		fontshape[F_NOTE].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"note.bold")
-		fontshape[F_NOTE].bold = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_NOTE].bold = (StrToInt(s1)) ? 1 : 0;
 	else if(s0 == L"note.italic")
-		fontshape[F_NOTE].italic = (_wtoi(s1.c_str())) ? 1 : 0;
+		fontshape[F_NOTE].italic = (StrToInt(s1)) ? 1 : 0;
 	// background
 	else if(s0 == L"background.color") {
-		int col = HexStrToInt(s1.c_str());
+		int col = HexStrToInt(s1);
 		bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	// To change border color
 	else if(s0 == L"border.color") {
-		int col = HexStrToInt(s1.c_str());
+		int col = HexStrToInt(s1);
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, &bdcol, sizeof(bdcol));
 	}
 	// To change darkmode
 	else if(s0 == L"darkmode") {
-		darkmode		  = HexStrToInt(s1.c_str());
+		darkmode		  = HexStrToInt(s1);
 		BOOL darkmode_tmp = darkmode;
 		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode_tmp, sizeof(darkmode_tmp));
 	}
 	// To change border color
 	else if(s0 == L"dialogbox.color") {
-		int col = HexStrToInt(s1.c_str());
+		int col = HexStrToInt(s1);
 		dlgcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DeleteObject(DlgBrush);
 		DlgBrush = CreateSolidBrush(dlgcol);
 	}
 	// AlertOnWarning
 	else if(s0 == L"alert.onwarning")
-		AlertOnWarning = (_wtoi(s1.c_str())) ? 1 : 0;
+		AlertOnWarning = (StrToInt(s1)) ? 1 : 0;
 	// disable_auto_transfer_shiori_ownership
 	else if(s0 == L"shiori_ownership.auto_transfer.disable")
-		disable_auto_transfer_shiori_ownership = (_wtoi(s1.c_str())) ? 1 : 0;
+		disable_auto_transfer_shiori_ownership = (StrToInt(s1)) ? 1 : 0;
 	// face
 	else if(s0 == L"face")
 		fontface = s1;
 	// window.x
 	else if(s0 == L"window.x")
-		wp.x = _wtoi(s1.c_str());
+		wp.x = StrToInt(s1);
 	// window.y
 	else if(s0 == L"window.y")
-		wp.y = _wtoi(s1.c_str());
+		wp.y = StrToInt(s1);
 	// window.width
 	else if(s0 == L"window.width") {
-		ws.cx = _wtoi(s1.c_str());
+		ws.cx = StrToInt(s1);
 		if(ws.cx < 0)
 			ws.cx = 0;
 	}
 	// window.height
 	else if(s0 == L"window.height") {
-		ws.cy = _wtoi(s1.c_str());
+		ws.cy = StrToInt(s1);
 		if(ws.cy < 0)
 			ws.cy = 0;
 	}
