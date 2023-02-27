@@ -291,7 +291,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			tmpdllpath.resize(MAX_PATH);
 			if(::DragQueryFileW(hDrop, 0xFFFFFFFF, tmpdllpath.data(), MAX_PATH)) {
 				// ドロップされたファイル名を取得
-				::DragQueryFileW(hDrop, 0, tmpdllpath.data(), MAX_PATH);
+				tmpdllpath.resize(::DragQueryFileW(hDrop, 0, tmpdllpath.data(), MAX_PATH));
 				// dllパス更新
 				b_dllpath = dllpath;
 				dllpath	  = tmpdllpath;
