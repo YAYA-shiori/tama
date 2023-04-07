@@ -21,12 +21,12 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	if(info.has(L"Title"))
 		SetWindowTextW(hWnd, info[L"Title"].c_str());
 
-	auto &info_map = info.to_str_map();
+	auto &info_map = info.get_params();
 	POINT wpos{};
 	SIZE  wsz{};
 	for(auto &pair: info_map) {
-		if(pair.first.starts_with(L"X-SSTP-PassThru-"))
-			SetParameter(pair.first.substr(16), pair.second, wpos, wsz);
+		if(pair.name.starts_with(L"X-SSTP-PassThru-"))
+			SetParameter(pair.name.substr(16), pair.var, wpos, wsz);
 	}
 	if(wsz.cx)
 		MoveWindow(hWnd, wpos.x, wpos.y, wsz.cx, wsz.cy, TRUE);
