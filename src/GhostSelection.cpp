@@ -5,6 +5,7 @@
 #include "my-gists/windows/LoadStringFromResource.hpp"
 #include "my-gists/ukagaka/SSP_Runner.hpp"
 #include "my-gists/ukagaka/ghost_path.hpp"
+#include "my-gists/ukagaka/from_ghost_path.hpp"
 
 LRESULT CALLBACK GhostSelectDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -125,7 +126,7 @@ link_to_ghost:
 			continue;
 		ghost_path	 = i.second[L"ghostpath"] + L"ghost\\master\\";
 		ghost_uid	 = i.second.ID;
-		ghost_shiori = get_shiori_path(ghost_path);
+		ghost_shiori = from_ghost_path::get_shiori_path(ghost_path);
 		//
 		has_shiori_file_info = !ghost_shiori.empty();
 	}

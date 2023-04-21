@@ -38,17 +38,6 @@ int StrToInt(wstring_view str) {
 	return result;
 }
 
-bool Split(wstring &str, wstring &s0, wstring &s1, wstring_view sepstr) {
-	// strをs0とs1に分解
-	auto begin = str.find(sepstr);
-	s0		   = str.substr(0, begin);
-	s1		   = str.substr(begin + sepstr.size());
-	CutSpace(s0);
-	CutSpace(s1);
-
-	return begin != wstring::npos;
-}
-
 wchar_t *setlocaleauto(int category) {
 	// OSデフォルトの言語IDでロケール設定する
 	switch(PRIMARYLANGID(GetSystemDefaultLangID())) {

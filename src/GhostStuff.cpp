@@ -25,34 +25,6 @@ void unload_shiori_of_baseware() {
 	shiorimode	= not_in_loading;
 }
 
-wstring get_shiori_path(wstring ghost_path) {
-	auto descript_name = ghost_path + L"descript.txt";
-	auto descript_f	   = _wfopen(descript_name.c_str(), L"rb");
-	//
-	CODEPAGE_n::CODEPAGE cp = CODEPAGE_n::CP_UTF8;
-	char				 buf[2048];
-	wstring				 line, s0, s1;
-	if(descript_f) {
-		while(fgets(buf, 2048, descript_f)) {
-			line	 = CODEPAGE_n::MultiByteToUnicode(buf, cp);
-			auto len = line.size();
-			if(len && *line.rbegin() == L'\n')
-				line.resize(--len);
-			if(len && *line.rbegin() == L'\r')
-				line.resize(--len);
-			Split(line, s0, s1, L",");
-			if(s0 == L"charset")
-				cp = CODEPAGE_n::StringtoCodePage(s1.c_str());
-			else if(s0 == L"shiori") {
-				fclose(descript_f);
-				return ghost_path + s1;
-			}
-		}
-		fclose(descript_f);
-	}
-	return {};
-}
-
 void UpdateGhostModulestate() {
 	if(ghost_uid.empty())
 		return;

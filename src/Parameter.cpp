@@ -5,6 +5,7 @@
 #include "header_files/Parameter.hpp"
 #include "header_files/UItools.hpp"
 #include "my-gists/file/canXfile.hpp"
+#include "my-gists/STL/Split.hpp"
 #include "my-gists/ukagaka/ghost_path.hpp"
 #include <dwmapi.h>
 
