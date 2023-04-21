@@ -1,7 +1,6 @@
 ﻿#include <string>
 #include <windows.h>
 #include "header_files/tama.h"
-#include "my-gists/STL/CutSpace.hpp"
 using namespace std;
 
 int HexStrToInt(wstring_view str) {

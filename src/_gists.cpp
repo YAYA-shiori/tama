@@ -10,5 +10,4 @@
 #include "my-gists/windows/SetIcon.cpp"
 #include "my-gists/windows/LoadStringFromResource.cpp"
 
-#include "my-gists/STL/CutSpace.cpp"
 #include "my-gists/STL/Split.cpp"
