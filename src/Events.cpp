@@ -4,6 +4,7 @@
 #include "header_files/resource.h"
 #include "header_files/UItools.hpp"
 #include "my-gists/windows/SetIcon.h"
+#include "my-gists/ukagaka/from_ghost_path.hpp"
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	tamaOpen_called = 1;
@@ -13,11 +14,26 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	auto info = linker.NOTYFY({{L"Event", L"tamaOpen"},
 							   {L"Reference0", std::to_wstring((size_t)hWnd)},
 							   {L"Reference1", selfpath}});
-	if(info.has(L"Icon"))
-		if(!SetIcon(hWnd, info[L"Icon"].c_str())) {
-			wstring icofullpath = ghost_path + info[L"Icon"];
-			SetIcon(hWnd, icofullpath.c_str());
+	{
+		ICON_INFO_t icon_info = GetIcon(hWnd);
+		if(info.has(L"Icon")) {
+			auto hIcon = from_ghost_path::load_icon(ghost_path, info[L"Icon"]);
+			if(!hIcon)
+				;//err << SET_RED "Can't load icon: " SET_BLUE << result[L"Icon"] << RESET_COLOR << endline;
+			else {
+				icon_info.hIcon		 = hIcon;
+				icon_info.hIconSmall = hIcon;
+			}
 		}
+		if(info.has(L"SmallIcon")) {
+			auto hIcon = from_ghost_path::load_icon(ghost_path, info[L"SmallIcon"]);
+			if(!hIcon)
+				;//err << SET_RED "Can't load icon: " SET_BLUE << result[L"SmallIcon"] << RESET_COLOR << endline;
+			else
+				icon_info.hIconSmall = hIcon;
+		}
+		SetIcon(hWnd, icon_info);
+	}
 	if(info.has(L"Title"))
 		SetWindowTextW(hWnd, info[L"Title"].c_str());
 
