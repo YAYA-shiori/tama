@@ -92,13 +92,18 @@ bool ExecLoad(void) {
 	return 1;
 }
 
+
+inline wstring operator+(wstring s0, wstring_view s1) {
+	return s0.append(s1);
+}
+
 void WriteShioriError(int id,UINT stringResourceID) {
 	//id最少4个字符，不够的话前面补0
 	auto idstr = to_wstring(id);
 	if(idstr.size()<4)
 		idstr.insert(0, 4 - idstr.size(), L'0');
 
-	wstring tmp = dllpath + L" : tama error TE" + idstr + L" : " + LoadStringFromResource(stringResourceID) + L"\r\n";
+	wstring tmp = dllpath + L" : tama error TE" + idstr + L" : " + LoadStringViewFromResource(stringResourceID) + L"\r\n";
 	WriteText(tmp, F_ERROR);
 }
 void CshioriErrorHandler(Cshiori::Error err) {

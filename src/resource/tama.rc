@@ -136,6 +136,7 @@ BEGIN
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSPの起動でタイムアウトしました。"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "この玉はゴーストフォルダに入っています。\nゴーストを起動してリンクさせますか？"
+	IDS_ERROR_ICON_NOT_FOUND "アイコンが見つかりません："
 END
 
 STRINGTABLE
@@ -349,6 +350,7 @@ BEGIN
     IDS_ERROR_RUN_SSP_FAILED "启动SSP失败。"
     IDS_ERROR_SSP_RUNNING_TIMEOUT "启动SSP超时。"
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP "此tama在一个ghost文件夹中\n运行所在ghost并链接？"
+    IDS_ERROR_ICON_NOT_FOUND "未找到图标文件："
 END
 
 STRINGTABLE
@@ -500,6 +502,7 @@ BEGIN
     IDS_ERROR_SSP_RUNNING_TIMEOUT "SSP launch timed out."
     IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP 
                             "This Tama is in a ghost folder.\nStart SSP with this ghost and link Tama?"
+    IDS_ERROR_ICON_NOT_FOUND "Icon not found: "
 END
 
 STRINGTABLE

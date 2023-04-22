@@ -47,19 +47,18 @@ void CheckUpdate() {
 		if(p == u8string::npos)
 			return;
 		buff = buff.substr(p + 11);
-		p	 = buff.find(u8"\"");
+		p	 = buff.find(u8'\"');
 		if(p == u8string::npos)
 			return;
 		buff = buff.substr(p + 1);
-		p	 = buff.find(u8"\"");
+		p	 = buff.find(u8'\"');
 		if(p == u8string::npos)
 			return;
 		tagname = buff.substr(0, p);
 	}
-	if(tagname == U8_VERSION_STRING_FOR_TAG_CHECK) {
+	if(tagname == U8_VERSION_STRING_FOR_TAG_CHECK)
 		return;
-	}
-	if(MessageBox(NULL, LoadStringFromResource(IDS_NEW_VERSION_AVAILABLE).c_str(), L"Tama", MB_YESNO) == IDYES)
+	if(MessageBox(NULL, LoadCStringFromResource(IDS_NEW_VERSION_AVAILABLE), L"Tama", MB_YESNO) == IDYES)
 		ShellExecute(NULL, L"open", L"https://github.com/YAYA-shiori/tama/releases/latest", NULL, NULL, SW_SHOW);
 	#endif
 }

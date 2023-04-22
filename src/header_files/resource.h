@@ -23,6 +23,7 @@
 #define IDS_ERROR_RUN_SSP_FAILED					   118
 #define IDS_ERROR_SSP_RUNNING_TIMEOUT				   119
 #define IDS_SELF_IN_GHOST_DIR_ASK_IF_RUN_SSP		   120
+#define IDS_ERROR_ICON_NOT_FOUND					   121
 
 #define IDS_interface_load_not_found				   200
 #define IDS_interface_unload_not_found				   201
