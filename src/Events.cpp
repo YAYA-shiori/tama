@@ -4,7 +4,6 @@
 #include "header_files/resource.h"
 #include "header_files/UItools.hpp"
 #include "my-gists/windows/SetIcon.h"
-#include "my-gists/ukagaka/from_ghost_path.hpp"
 #include "my-gists/windows/LoadStringFromResource.hpp"
 
 void On_tamaOpen(HWND hWnd, wstring ghost_path) {
@@ -18,7 +17,7 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 	{
 		ICON_INFO_t icon_info = GetIcon(hWnd);
 		if(info.has(L"Icon")) {
-			auto hIcon = from_ghost_path::load_icon(ghost_path, info[L"Icon"]);
+			auto hIcon = LoadIconWithBasePath(ghost_path, info[L"Icon"]);
 			if(!hIcon)
 				WriteText(LoadStringFromResource(IDS_ERROR_ICON_NOT_FOUND) + info[L"Icon"], F_ERROR);
 			else {
@@ -27,7 +26,7 @@ void On_tamaOpen(HWND hWnd, wstring ghost_path) {
 			}
 		}
 		if(info.has(L"SmallIcon")) {
-			auto hIcon = from_ghost_path::load_icon(ghost_path, info[L"SmallIcon"]);
+			auto hIcon = LoadIconWithBasePath(ghost_path, info[L"SmallIcon"]);
 			if(!hIcon)
 				WriteText(LoadStringFromResource(IDS_ERROR_ICON_NOT_FOUND) + info[L"SmallIcon"], F_ERROR);
 			else

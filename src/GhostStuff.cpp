@@ -3,6 +3,7 @@
 #include "header_files/tama.h"
 #include "header_files/GhostStuff.hpp"
 #include "my-gists/windows/LoadStringFromResource.hpp"
+#include "my-gists/STL/string_add_string_view.hpp"
 #include "header_files/resource.h"
 #include "header_files/ToolFunctions.hpp"
 #include "header_files/UItools.hpp"
@@ -90,11 +91,6 @@ bool ExecLoad(void) {
 		}
 	}
 	return 1;
-}
-
-
-inline wstring operator+(wstring s0, wstring_view s1) {
-	return s0.append(s1);
 }
 
 void WriteShioriError(int id,UINT stringResourceID) {
