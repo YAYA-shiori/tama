@@ -2,17 +2,17 @@
 #include "header_files/tama.h"
 #include "header_files/UItools.hpp"
 
-bool SetFontShape(int shapeid) {
+bool SetFontShape(int shapeid) noexcept {
 	// IDでフォント属性を設定
 	return SetMyFont(fontface.c_str(), shapeid, SCF_SELECTION);
 }
 
-bool SetFontShapeInit(int shapeid) {
+bool SetFontShapeInit(int shapeid) noexcept {
 	// IDでフォント属性を初期化
 	return SetMyFont(fontface.c_str(), shapeid, SCF_ALL);
 }
 
-int GetFontCharSet(wstring_view name) {
+int GetFontCharSet(wstring_view name) noexcept {
 	// name名のフォントのcharsetを返す
 	for(vector<SFface>::iterator it = fontarray.begin(); it != fontarray.end(); it++) {
 		if(it->face == name)
@@ -21,13 +21,13 @@ int GetFontCharSet(wstring_view name) {
 	return -1;
 }
 
-void WriteText(wstring_view text,int level) {
+void WriteText(wstring_view text, int level) noexcept {
 	EOS(text.size());
 	SetFontShape(level);
 	SendMessageW(hEdit, EM_REPLACESEL, (WPARAM)0, (LPARAM)text.data());
 }
 
-bool SetMyFont(const wchar_t *facename, int shapeid, int scf) {
+bool SetMyFont(const wchar_t *facename, int shapeid, int scf) noexcept {
 	// フォントフェース、ポイント、色、ボールドを設定
 	static CHARFORMAT cfm{sizeof(cfm), CFM_BOLD | CFM_CHARSET | CFM_COLOR |
 										   CFM_FACE | CFM_ITALIC | CFM_SIZE | CFM_STRIKEOUT |
@@ -48,7 +48,7 @@ bool SetMyFont(const wchar_t *facename, int shapeid, int scf) {
 	return true;
 }
 
-bool SetDlgFont(HWND hDlgEdit) {
+bool SetDlgFont(HWND hDlgEdit) noexcept {
 	// requestダイヤログリッチエディットのフォントフェース、ポイント、色、ボールドを設定
 	CHARFORMAT cfm;
 	memset(&cfm, 0, sizeof(cfm));
@@ -69,21 +69,21 @@ bool SetDlgFont(HWND hDlgEdit) {
 	return true;
 }
 
-bool SetMyBkColor(COLORREF col) {
+bool SetMyBkColor(COLORREF col) noexcept {
 	// 背景色をcolに設定
 	if(SendMessage(hEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)col) == 0)
 		return false;
 	return true;
 }
 
-bool SetDlgBkColor(HWND hDlgEdit, COLORREF col) {
+bool SetDlgBkColor(HWND hDlgEdit, COLORREF col) noexcept {
 	// 背景色をcolに設定
 	if(SendMessage(hDlgEdit, EM_SETBKGNDCOLOR, 0, (LPARAM)col) == 0)
 		return false;
 	return true;
 }
 
-int CALLBACK EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam) {
+int CALLBACK EnumFontFamExProc(const ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int nFontType, LPARAM lParam) {
 	// フォント列挙用のコールバック関数
 	SFface addface;
 	addface.face	= lpelfe->elfLogFont.lfFaceName;
@@ -93,15 +93,15 @@ int CALLBACK EnumFontFamExProc(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, i
 	return 1;
 }
 
-void EOS(int newaddsz) {
+void EOS(int newaddsz) noexcept {
 	// newaddsz文字追加前に溢れた行を削除する
-	int j = TEXTMAX;
-	int i = ::GetWindowTextLength(hEdit);
+	constexpr int j = TEXTMAX;
+	const int i = ::GetWindowTextLength(hEdit);
 	if(i + newaddsz > j) {
 		int k = newaddsz - (j - i);
 		if(k < 0)
 			k = 0;
-		int m = ::SendMessage(hEdit, EM_LINEFROMCHAR, (WPARAM)k, 0);
+		const int m = ::SendMessage(hEdit, EM_LINEFROMCHAR, (WPARAM)k, 0);
 		int l = ::SendMessage(hEdit, EM_LINEINDEX, (WPARAM)m, 0);
 		if(l < k)
 			l = ::SendMessage(hEdit, EM_LINEINDEX, (WPARAM)m + 1, 0);

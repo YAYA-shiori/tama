@@ -17,7 +17,7 @@
 #endif
 
 void InitSaveFilePath() {
-	wstring &selfpath = args_info::selfpath;
+	const wstring &selfpath = args_info::selfpath;
 	wstring	 filename;
 	if(tamamode == specified_ghost)
 		filename = ghost_path + L"profile\\tama.txt";
@@ -86,7 +86,7 @@ void SetParameter(POINT &wp, SIZE &ws) {
 			buf.resize(STRMAX);
 			if(fgetws(buf.data(), STRMAX, fp) == NULL)
 				break;
-			size_t len = lstrlenW(buf.data());
+			const size_t len = lstrlenW(buf.data());
 			buf.resize(len);
 			if(len < 2)
 				continue;
@@ -148,7 +148,7 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	if(s0 == L"default.pt")
 		fontshape[F_DEFAULT].pt = StrToInt(s1);
 	else if(s0 == L"default.color") {
-		int col					 = HexStrToInt(s1);
+		const int col			 = HexStrToInt(s1);
 		fontshape[F_DEFAULT].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"default.bold")
@@ -159,7 +159,7 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"fatal.pt")
 		fontshape[F_FATAL].pt = StrToInt(s1);
 	else if(s0 == L"fatal.color") {
-		int col				   = HexStrToInt(s1);
+		const int col		   = HexStrToInt(s1);
 		fontshape[F_FATAL].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"fatal.bold")
@@ -170,7 +170,7 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"error.pt")
 		fontshape[F_ERROR].pt = StrToInt(s1);
 	else if(s0 == L"error.color") {
-		int col				   = HexStrToInt(s1);
+		const int col		   = HexStrToInt(s1);
 		fontshape[F_ERROR].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"error.bold")
@@ -181,7 +181,7 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"warning.pt")
 		fontshape[F_WARNING].pt = StrToInt(s1);
 	else if(s0 == L"warning.color") {
-		int col					 = HexStrToInt(s1);
+		const int col			 = HexStrToInt(s1);
 		fontshape[F_WARNING].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"warning.bold")
@@ -192,7 +192,7 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	else if(s0 == L"note.pt")
 		fontshape[F_NOTE].pt = StrToInt(s1);
 	else if(s0 == L"note.color") {
-		int col				  = HexStrToInt(s1);
+		const int col		  = HexStrToInt(s1);
 		fontshape[F_NOTE].col = ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	else if(s0 == L"note.bold")
@@ -201,24 +201,24 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 		fontshape[F_NOTE].italic = (StrToInt(s1)) ? 1 : 0;
 	// background
 	else if(s0 == L"background.color") {
-		int col = HexStrToInt(s1);
+		const int col = HexStrToInt(s1);
 		bkcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 	}
 	// To change border color
 	else if(s0 == L"border.color") {
-		int col = HexStrToInt(s1);
+		const int col = HexStrToInt(s1);
 		bdcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DwmSetWindowAttribute(hWnd, DWMWA_BORDER_COLOR, &bdcol, sizeof(bdcol));
 	}
 	// To change darkmode
 	else if(s0 == L"darkmode") {
 		darkmode		  = HexStrToInt(s1);
-		BOOL darkmode_tmp = darkmode;
+		const BOOL darkmode_tmp = darkmode;
 		DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkmode_tmp, sizeof(darkmode_tmp));
 	}
 	// To change border color
 	else if(s0 == L"dialogbox.color") {
-		int col = HexStrToInt(s1);
+		const int col = HexStrToInt(s1);
 		dlgcol	= ((col & 0xff) << 16) + (col & 0xff00) + ((col >> 16) & 0xff);
 		DeleteObject(DlgBrush);
 		DlgBrush = CreateSolidBrush(dlgcol);
@@ -255,39 +255,39 @@ bool SetParameter(wstring_view s0, wstring_view s1, POINT &wp, SIZE &ws) {
 	return 1;
 }
 
-void SaveParameter(void) {
+void SaveParameter(void) noexcept {
 	// ファイルへ設定を書き出し
 	FILE *fp = _wfopen(savefile_path.c_str(), L"wt, ccs=UTF-8");
 	if(fp != NULL) {
 		fwprintf(fp, L"default.pt,%d\n", fontshape[F_DEFAULT].pt);
 		fwprintf(fp, L"default.color,%x\n",
 				 ((fontshape[F_DEFAULT].col & 0xff) << 16) + (fontshape[F_DEFAULT].col & 0xff00) + ((fontshape[F_DEFAULT].col >> 16) & 0xff));
-		fwprintf(fp, L"default.bold,%d\n", fontshape[F_DEFAULT].bold);
-		fwprintf(fp, L"default.italic,%d\n", fontshape[F_DEFAULT].italic);
+		fwprintf(fp, L"default.bold,%d\n", (int)fontshape[F_DEFAULT].bold);
+		fwprintf(fp, L"default.italic,%d\n", (int)fontshape[F_DEFAULT].italic);
 
 		fwprintf(fp, L"fatal.pt,%d\n", fontshape[F_FATAL].pt);
 		fwprintf(fp, L"fatal.color,%x\n",
 				 ((fontshape[F_FATAL].col & 0xff) << 16) + (fontshape[F_FATAL].col & 0xff00) + ((fontshape[F_FATAL].col >> 16) & 0xff));
-		fwprintf(fp, L"fatal.bold,%d\n", fontshape[F_FATAL].bold);
-		fwprintf(fp, L"fatal.italic,%d\n", fontshape[F_FATAL].italic);
+		fwprintf(fp, L"fatal.bold,%d\n", (int)fontshape[F_FATAL].bold);
+		fwprintf(fp, L"fatal.italic,%d\n", (int)fontshape[F_FATAL].italic);
 
 		fwprintf(fp, L"error.pt,%d\n", fontshape[F_ERROR].pt);
 		fwprintf(fp, L"error.color,%x\n",
 				 ((fontshape[F_ERROR].col & 0xff) << 16) + (fontshape[F_ERROR].col & 0xff00) + ((fontshape[F_ERROR].col >> 16) & 0xff));
-		fwprintf(fp, L"error.bold,%d\n", fontshape[F_ERROR].bold);
-		fwprintf(fp, L"error.italic,%d\n", fontshape[F_ERROR].italic);
+		fwprintf(fp, L"error.bold,%d\n", (int)fontshape[F_ERROR].bold);
+		fwprintf(fp, L"error.italic,%d\n", (int)fontshape[F_ERROR].italic);
 
 		fwprintf(fp, L"warning.pt,%d\n", fontshape[F_WARNING].pt);
 		fwprintf(fp, L"warning.color,%x\n",
 				 ((fontshape[F_WARNING].col & 0xff) << 16) + (fontshape[F_WARNING].col & 0xff00) + ((fontshape[F_WARNING].col >> 16) & 0xff));
-		fwprintf(fp, L"warning.bold,%d\n", fontshape[F_WARNING].bold);
-		fwprintf(fp, L"warning.italic,%d\n", fontshape[F_WARNING].italic);
+		fwprintf(fp, L"warning.bold,%d\n", (int)fontshape[F_WARNING].bold);
+		fwprintf(fp, L"warning.italic,%d\n", (int)fontshape[F_WARNING].italic);
 
 		fwprintf(fp, L"note.pt,%d\n", fontshape[F_NOTE].pt);
 		fwprintf(fp, L"note.color,%x\n",
 				 ((fontshape[F_NOTE].col & 0xff) << 16) + (fontshape[F_NOTE].col & 0xff00) + ((fontshape[F_NOTE].col >> 16) & 0xff));
-		fwprintf(fp, L"note.bold,%d\n", fontshape[F_NOTE].bold);
-		fwprintf(fp, L"note.italic,%d\n", fontshape[F_NOTE].italic);
+		fwprintf(fp, L"note.bold,%d\n", (int)fontshape[F_NOTE].bold);
+		fwprintf(fp, L"note.italic,%d\n", (int)fontshape[F_NOTE].italic);
 
 		fwprintf(fp, L"background.color,%x\n", ((bkcol & 0xff) << 16) + (bkcol & 0xff00) + ((bkcol >> 16) & 0xff));
 
@@ -295,13 +295,13 @@ void SaveParameter(void) {
 
 		fwprintf(fp, L"dialogbox.color,%x\n", ((dlgcol & 0xff) << 16) + (dlgcol & 0xff00) + ((dlgcol >> 16) & 0xff));
 
-		fwprintf(fp, L"alert.onwarning,%d\n", AlertOnWarning);
+		fwprintf(fp, L"alert.onwarning,%d\n", (int)AlertOnWarning);
 
-		fwprintf(fp, L"shiori_ownership.auto_transfer.disable,%d\n", disable_auto_transfer_shiori_ownership);
+		fwprintf(fp, L"shiori_ownership.auto_transfer.disable,%d\n", (int)disable_auto_transfer_shiori_ownership);
 
 		fwprintf(fp, L"face,%s\n", fontface.c_str());
 
-		fwprintf(fp, L"darkmode,%d\n", darkmode);
+		fwprintf(fp, L"darkmode,%d\n", (int)darkmode);
 
 		RECT rect;
 		GetWindowRect(hWnd, &rect);

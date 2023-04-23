@@ -29,7 +29,7 @@ using namespace std;
 #define F_WARNING 3 /* Warning */
 #define F_NOTE	  4 /* Note */
 #define F_NUMBER  5 /* 総数 */
-inline bool F_was_warning_or_above(int dwdata) {
+inline constexpr bool F_was_warning_or_above(int dwdata) noexcept {
 	return dwdata <= 3 && dwdata >= 1;
 }
 #define E_SJIS	  16 /* SJISモード */

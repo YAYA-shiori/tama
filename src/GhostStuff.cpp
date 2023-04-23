@@ -8,7 +8,7 @@
 #include "header_files/ToolFunctions.hpp"
 #include "header_files/UItools.hpp"
 
-[[noreturn]] void LostGhostLink() {
+[[noreturn]] void LostGhostLink() noexcept {
 	MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_LOST_GHOST_LINK), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 	exit(EXIT_FAILURE);
 }
@@ -31,7 +31,7 @@ void UpdateGhostModulestate() {
 		return;
 	fmobj.Update_info();
 	auto shioristate	 = fmobj.info_map[ghost_uid].get_modulestate(L"shiori");
-	auto shioristausback = shioristaus;
+	const auto shioristausback = shioristaus;
 	allow_file_drug		 = 0;
 	if(shioristate == L"running") {
 		shioristaus = running;

@@ -3,9 +3,9 @@
 #include "header_files/tama.h"
 using namespace std;
 
-int HexStrToInt(wstring_view str) {
+int HexStrToInt(wstring_view str) noexcept {
 	// HEXのstrをintに変換
-	size_t len	   = str.size();
+	const size_t len	   = str.size();
 	int result = 0;
 	for(size_t i = 0; i < len; i++) {
 		int digit = (int)str[i];
@@ -21,7 +21,7 @@ int HexStrToInt(wstring_view str) {
 	return result;
 }
 
-int StrToInt(wstring_view str) {
+int StrToInt(wstring_view str) noexcept {
 	// 10進数のstrをintに変換
 	int result = 0;
 	if(str[0] == L'-') {
@@ -37,7 +37,7 @@ int StrToInt(wstring_view str) {
 	return result;
 }
 
-wchar_t *setlocaleauto(int category) {
+wchar_t *setlocaleauto(int category) noexcept {
 	// OSデフォルトの言語IDでロケール設定する
 	switch(PRIMARYLANGID(GetSystemDefaultLangID())) {
 	case LANG_AFRIKAANS:

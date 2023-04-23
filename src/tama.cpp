@@ -15,9 +15,9 @@
 
 using namespace std;
 
-ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance);
-BOOL			 InitInstance(HINSTANCE, int);
-BOOL			 InitSendRequestDlg(HINSTANCE hInstance);
+ATOM			 TamaMainWindowClassRegister(HINSTANCE hInstance) noexcept;
+BOOL			 InitInstance(HINSTANCE, int) noexcept;
+BOOL			 InitSendRequestDlg(HINSTANCE hInstance) noexcept;
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -44,7 +44,7 @@ void ArgsHandling() {
 	using namespace args_info;
 
 	argv		= CommandLineToArgvW(GetCommandLineW(), &_targc);
-	size_t argc = _targc;
+	const size_t argc = _targc;
 
 	if(argc)
 		selfpath = argv[0];
@@ -116,7 +116,7 @@ int APIENTRY WinMain(
 		UpdateGhostModulestate();
 		if(shioristaus == running)
 			On_tamaOpen(hWnd, ghost_path);
-		bool has_log = GetWindowTextLength(hEdit);
+		const bool has_log = GetWindowTextLength(hEdit);
 		if(!has_log) {
 			if((shioristaus == unloaded) && fmobj.info_map[ghost_uid].map.contains(L"modulestate"))
 				SetWindowTextW(hEdit, LoadCStringFromResource(IDS_TARGET_GHOST_SHIORI_UNLOADED));
@@ -145,7 +145,7 @@ int APIENTRY WinMain(
 	return msg.wParam;
 }
 
-ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
+ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) noexcept {
 	// ウィンドウクラス登録
 
 	WNDCLASSEX wcex{};
@@ -165,7 +165,7 @@ ATOM TamaMainWindowClassRegister(HINSTANCE hInstance) {
 	return RegisterClassEx(&wcex);
 }
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) noexcept {
 	// ウィンドウ作成と表示
 
 	hInst = hInstance;
@@ -185,7 +185,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	return TRUE;
 }
 
-BOOL InitSendRequestDlg(HINSTANCE hInstance) {
+BOOL InitSendRequestDlg(HINSTANCE hInstance) noexcept {
 	reqshow = SW_HIDE;
 	hDlgWnd = CreateDialog(hInstance, (LPCTSTR)IDD_SEND_REQUEST, hWnd, (DLGPROC)SendRequestDlgProc);
 	if(hDlgWnd == NULL)
@@ -226,7 +226,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 									   WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE |
 										   WS_VSCROLL | WS_HSCROLL | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY,
 									   0, 0, 0, 0, hWnd, (HMENU)1, hInst, NULL);
-		DWORD dwEvent = SendMessage(hEdit, EM_GETEVENTMASK, 0, 0) | ENM_KEYEVENTS | ENM_MOUSEEVENTS;
+		const DWORD dwEvent = SendMessage(hEdit, EM_GETEVENTMASK, 0, 0) | ENM_KEYEVENTS | ENM_MOUSEEVENTS;
 		SendMessage(hEdit, EM_SETEVENTMASK, 0, (LPARAM)dwEvent);
 		SendMessage(hEdit, EM_EXLIMITTEXT, 0, (LPARAM)TEXTMAX);
 		// フォントシェープ設定
@@ -235,11 +235,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		break;
 	}
 	case WM_COPYDATA: {
-		COPYDATASTRUCT *cds = (COPYDATASTRUCT *)lParam;
+		const COPYDATASTRUCT *cds = (COPYDATASTRUCT *)lParam;
 		if(cds->dwData >= 0 && cds->dwData < F_NUMBER && receive) {
 			// メッセージ表示更新
 			if(cds->cbData > 0) {
-				wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
+				const wstring_view logbuf{(wchar_t *)cds->lpData, (size_t)cds->cbData};
 
 				WriteText(logbuf, cds->dwData);
 				
@@ -308,7 +308,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_NOTIFY:
 		switch(((NMHDR *)lParam)->code) {
 		case EN_MSGFILTER: {
-			MSGFILTER *pmf = (MSGFILTER *)lParam;
+			const MSGFILTER *pmf = (MSGFILTER *)lParam;
 			if(pmf->msg == WM_RBUTTONDOWN) {
 				HMENU hMenu, hSubMenu;
 				POINT pt{};
@@ -348,8 +348,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 		break;
 	case WM_COMMAND: {
-		WORD wmId	 = LOWORD(wParam);
-		WORD wmEvent = HIWORD(wParam);
+		const WORD wmId	   = LOWORD(wParam);
+		const WORD wmEvent = HIWORD(wParam);
 		switch(wmId) {
 		case ID_TAMA_JUMPTOP:
 			//　先頭へジャンプ
@@ -492,7 +492,7 @@ LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 		case IDC_SEND:
 			if(dllpath.size()) {
 				auto DIofE = GetDlgItem(hWnd, IDC_SEND_REQUEST_RICHEDIT);
-				auto size  = GetWindowTextLength(DIofE);
+				const auto size	 = GetWindowTextLength(DIofE);
 				dlgtext.resize(size);
 				GetWindowTextW(DIofE, dlgtext.data(), size);
 				ExecRequest(dlgtext.c_str());
@@ -508,6 +508,6 @@ LRESULT CALLBACK SendRequestDlgProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) {
 	return FALSE;
 }
 
-void OnError(PEXCEPTION_POINTERS pExceptionPointers) {
+void OnError(PEXCEPTION_POINTERS pExceptionPointers) noexcept {
 	MessageBoxW(NULL, LoadCStringFromResource(IDS_ERROR_UNEXPECTED_EXCEPTION), LoadCStringFromResource(IDS_ERROR_TITLE), MB_ICONERROR | MB_OK);
 }

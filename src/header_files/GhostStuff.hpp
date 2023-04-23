@@ -15,7 +15,7 @@ inline Cshiori shiori{
 inline SSTP_link_n::SSTP_Direct_link_t linker({{L"Charset", L"UTF-8"}, {L"Sender", L"tama"}});
 inline SFMO_t						   fmobj;
 
-void LostGhostLink();
+void LostGhostLink()noexcept;
 
 void reload_shiori_of_baseware();
 void unload_shiori_of_baseware();
