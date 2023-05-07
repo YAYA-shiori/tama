@@ -159,7 +159,7 @@ void ExecRequest(const wchar_t *str) {
 	auto retstr = shiori(str);
 }
 
-void ExecUnload() {
+void ExecUnload() noexcept {
 	SendMessage(hEdit, EM_SETSEL, -1, -1);
 
 	shiori.Dounload();

@@ -24,5 +24,5 @@ void UpdateGhostModulestate();
 
 bool ExecLoad(void);
 void ExecRequest(const wchar_t* str);
-void ExecUnload();
+void ExecUnload() noexcept;
 bool ExecReload();
