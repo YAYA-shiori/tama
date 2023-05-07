@@ -395,9 +395,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
-					if(shioristaus == unloaded)
-						reload_shiori_of_baseware();
-					if(shioristaus != critical) {
+					UpdateGhostModulestate();
+					if(shioristaus == running){
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriReloadRequest"}});
 						switch(info.get_code()) {
 						case -1:	   //ssp exit
@@ -411,8 +410,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 							reload_shiori_of_baseware();
 						}
 					}
-					else
-						ExecReload();
+					else{
+						reload_shiori_of_baseware();
+						do {
+							Sleep(500);
+							UpdateGhostModulestate();
+							if(shioristaus == critical) {
+								unload_shiori_of_baseware();
+								dllpath = ghost_shiori;
+								ExecLoad();
+								break;
+							}
+						} while(shioristaus == unloaded);
+					}
 				}
 			}
 			break;
@@ -427,9 +437,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 			else {
 				if(linker.was_linked_to_ghost()) {
-					if(shioristaus == unloaded)
-						unload_shiori_of_baseware();
-					if(shioristaus != critical) {
+					UpdateGhostModulestate();
+					if(shioristaus == running) {
 						auto info = linker.NOTYFY({{L"Event", L"tama.ShioriUnloadRequest"}});
 						switch(info.get_code()) {
 						case -1:	   //ssp exit
@@ -443,8 +452,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 							unload_shiori_of_baseware();
 						}
 					}
-					else
-						ExecUnload();
+					else//unloaded or critical
+						unload_shiori_of_baseware();
 				}
 			}
 			break;

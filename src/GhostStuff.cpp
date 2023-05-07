@@ -16,13 +16,15 @@
 void reload_shiori_of_baseware() {
 	linker.SEND({{L"ID", ghost_uid},
 				 {L"Script", L"\\![reload,shiori]"}});
+	shioristaus = unloaded;//wait for UpdateGhostModulestate
 	shiorimode = load_by_baseware;
 }
 
 void unload_shiori_of_baseware() {
 	linker.SEND({{L"ID", ghost_uid},
 				 {L"Script", L"\\![unload,shiori]"}});
-	shioristaus = unloaded;
+	if(shioristaus != critical)
+		shioristaus = unloaded;
 	shiorimode	= not_in_loading;
 }
 
@@ -58,7 +60,8 @@ void UpdateGhostModulestate() {
 		}
 	}
 	else if(shioristate.empty()) {
-		shioristaus = unloaded;
+		if(shioristaus != critical)
+			shioristaus = unloaded;
 		shiorimode	= not_in_loading;
 	}
 }
@@ -69,7 +72,6 @@ bool ExecLoad(void) {
 	// テキスト全クリア
 	SetWindowText(hEdit, L"");
 	SetFontShapeInit(F_DEFAULT);
-
 
 	shiori.SetTo(dllpath.c_str());
 	// load　失敗したらdllパスは空にする
