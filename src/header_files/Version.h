@@ -2,7 +2,7 @@
 #define VERSION_NUM1 1
 #define VERSION_NUM2 0
 #define VERSION_NUM3 3
-#define VERSION_NUM4 21
+#define VERSION_NUM4 22
 #define CONSTRUCTION_TIMES 54
 
 #define STRINGIZER_HELPER(a) #a
