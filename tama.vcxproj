@@ -44,14 +44,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\builds\$(Configuration)\</OutDir>
-    <IntDir>.\builds\$(Configuration)\temp\</IntDir>
+    <IntDir>.\builds\$(Configuration)\temp\tama\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\builds\$(Configuration)\</OutDir>
-    <IntDir>.\builds\$(Configuration)\temp\</IntDir>
+    <IntDir>.\builds\$(Configuration)\temp\tama\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -71,7 +71,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <ObjectFileName>$(OutputPath)\objs\</ObjectFileName>
-      <ProgramDataBaseFileName>$(OutputPath)\pdb\</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutputPath)\pdb\tama\</ProgramDataBaseFileName>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -128,7 +128,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <ObjectFileName>$(OutputPath)\objs\</ObjectFileName>
-      <ProgramDataBaseFileName>$(OutputPath)\pdb\</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutputPath)\pdb\tama\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpplatest</LanguageStandard>

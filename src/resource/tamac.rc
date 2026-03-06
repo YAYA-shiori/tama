@@ -1,0 +1,24 @@
+﻿// Microsoft Visual C++ generated resource script.
+//
+#include "tama-shared.rc"
+
+/////////////////////////////////////////////////////////////////////////////
+// 非特定语言 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_TAMA                ICON                    "icon/tamac.ico"
+
+
+IDI_SMALL               ICON                    "icon/smallc.ico"
+
+#endif    // 非特定语言 resources
+/////////////////////////////////////////////////////////////////////////////

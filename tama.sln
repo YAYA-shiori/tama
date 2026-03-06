@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tama", "tama.vcxproj", "{AB6E12B9-CED7-4ED5-86A3-708E0DD39F2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tamac", "tamac.vcxproj", "{C2E3F4A5-B6C7-48D9-E0F1-2A3456789ABC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,6 +17,10 @@ Global
 		{AB6E12B9-CED7-4ED5-86A3-708E0DD39F2C}.Debug|Win32.Build.0 = Debug|Win32
 		{AB6E12B9-CED7-4ED5-86A3-708E0DD39F2C}.Release|Win32.ActiveCfg = Release|Win32
 		{AB6E12B9-CED7-4ED5-86A3-708E0DD39F2C}.Release|Win32.Build.0 = Release|Win32
+		{C2E3F4A5-B6C7-48D9-E0F1-2A3456789ABC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C2E3F4A5-B6C7-48D9-E0F1-2A3456789ABC}.Debug|Win32.Build.0 = Debug|Win32
+		{C2E3F4A5-B6C7-48D9-E0F1-2A3456789ABC}.Release|Win32.ActiveCfg = Release|Win32
+		{C2E3F4A5-B6C7-48D9-E0F1-2A3456789ABC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
