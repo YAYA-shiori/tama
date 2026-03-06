@@ -1,4 +1,6 @@
-﻿#include "my-gists/file/canXfile.cpp"
+﻿#include <string>
+
+#include "my-gists/file/canXfile.cpp"
 
 #include "my-gists/ukagaka/shiori_loader.cpp"
 #include "my-gists/ukagaka/SSP_Runner.cpp"
