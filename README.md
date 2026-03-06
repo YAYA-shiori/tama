@@ -25,7 +25,11 @@ tama.exe -gh ghost_hwnd
 tamac.exe yaya.dll
 # or
 tamac.exe yaya.dll -l [fatal|error|warning|note]
+# or (GitHub Actions CI mode)
+tamac.exe yaya.dll --ci
 ```
+With `--ci` (or automatically when the `GITHUB_ACTIONS` environment variable is set), tamac outputs errors as GitHub Actions annotations (`::error file=...`, `::warning ...`, etc.), allowing errors to be highlighted directly in the PR diff.
+The CI mode output is compatible with [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check), and its implementation is based on that code.
 - you can make your ghosts react to tama by using the `tamaOpen` and `tamaExit` events, the example code as follows  
 ```c
 On_tamaOpen{

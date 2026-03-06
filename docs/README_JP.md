@@ -13,12 +13,16 @@ tama.exe -g ghost_name
 # または
 tama.exe -gh ghost_hwnd
 ```
-- 一度YAYAを読み込んでエラーチェックしエラー内容を標準出力に出して即終了する、CI用/AIドリブン開発用ツールtamac.exe 
+- 一度YAYAを読み込んでエラーチェックしエラー内容を標準出力に出して即終了する、CI用/AIドリブン開発用ツールtamac.exe
 ```bat
 tamac.exe yaya.dll
 # または
 tamac.exe yaya.dll -l [fatal|error|warning|note]
+# または（GitHub Actions CIモード）
+tamac.exe yaya.dll --ci
 ```
+`--ci` を指定するか、`GITHUB_ACTIONS` 環境変数が設定されている場合（GitHub Actions上では自動）、エラーを GitHub Actions アノテーション形式（`::error file=...` など）で出力します。PRのdiff上にエラー箇所を直接表示できます。
+CIモードの出力は [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check) と互換性があります。実装はそのコードを参考にしました。
 - `tamaOpen` と `tamaExit` イベントを使用すると、ゴーストが tama に反応するようにすることができます。 
 ```c
 On_tamaOpen{

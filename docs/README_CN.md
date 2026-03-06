@@ -18,7 +18,11 @@ tama.exe -gh ghost_hwnd
 tamac.exe yaya.dll
 # 或
 tamac.exe yaya.dll -l [fatal|error|warning|note]
+# 或（GitHub Actions CI模式）
+tamac.exe yaya.dll --ci
 ```
+使用 `--ci` 时（或当 `GITHUB_ACTIONS` 环境变量存在时自动启用），tamac 以 GitHub Actions 注解格式（`::error file=...`、`::warning ...` 等）输出错误，可在 PR 的 diff 中直接显示错误位置。
+CI模式的输出与 [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check) 兼容，其实现参考了该项目的代码。
 - 你可以通过使用`tamaOpen`和`tamaExit`事件使你的ghost对tama做出反应，示例代码如下  
 ```c
 On_tamaOpen{
