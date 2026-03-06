@@ -13,6 +13,12 @@ tama.exe -g ghost_name
 # or
 tama.exe -gh ghost_hwnd
 ```
+- A CI/AI-driven development tool `tamac.exe` that loads YAYA once, checks for errors, outputs the error content to stdout, and exits immediately
+```bat
+tamac.exe yaya.dll
+# or
+tamac.exe yaya.dll -l [fatal|error|warning|note]
+```
 - you can make your ghosts react to tama by using the `tamaOpen` and `tamaExit` events, the example code as follows  
 ```c
 On_tamaOpen{

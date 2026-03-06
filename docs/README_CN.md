@@ -13,6 +13,12 @@ tama.exe -g ghost_name
 # 或
 tama.exe -gh ghost_hwnd
 ```
+- `tamac.exe` 是一个用于CI/AI驱动开发的工具，它会加载一次YAYA，检查错误，将错误内容输出到标准输出，然后立即退出
+```bat
+tamac.exe yaya.dll
+# 或
+tamac.exe yaya.dll -l [fatal|error|warning|note]
+```
 - 你可以通过使用`tamaOpen`和`tamaExit`事件使你的ghost对tama做出反应，示例代码如下  
 ```c
 On_tamaOpen{

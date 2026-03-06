@@ -13,6 +13,12 @@ tama.exe -g ghost_name
 # または
 tama.exe -gh ghost_hwnd
 ```
+- 一度YAYAを読み込んでエラーチェックしエラー内容を標準出力に出して即終了する、CI用/AIドリブン開発用ツールtamac.exe 
+```bat
+tamac.exe yaya.dll
+# または
+tamac.exe yaya.dll -l [fatal|error|warning|note]
+```
 - `tamaOpen` と `tamaExit` イベントを使用すると、ゴーストが tama に反応するようにすることができます。 
 ```c
 On_tamaOpen{
