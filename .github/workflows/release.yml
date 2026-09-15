@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      # tama の更新チェックは releases/latest のタグ名と Version.h を比較するため、一致しないタグは弾く
+      - name: Check tag matches Version.h
+        shell: pwsh
+        run: |
+          $header = Get-Content src/header_files/Version.h -Raw
+          $nums = foreach ($i in 1..4) {
+            if ($header -notmatch "#define VERSION_NUM$i\s+(\d+)") { throw "VERSION_NUM$i not found in Version.h" }
+            $Matches[1]
+          }
+          $version = 'v' + ($nums -join '.')
+          if ($version -ne $env:GITHUB_REF_NAME) {
+            throw "Tag $env:GITHUB_REF_NAME does not match Version.h ($version)"
+          }
+          Write-Host "Version: $version"
+
+      # プロジェクト指定の v143 を優先し、ランナーに無ければインストール済みの最新ツールセットを使う
+      - name: Locate MSBuild and platform toolset
+        shell: pwsh
+        run: |
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $vs) { throw 'Visual Studio with MSBuild not found' }
+          $msbuild = Join-Path $vs 'MSBuild\Current\Bin\MSBuild.exe'
+          $toolsets = @(Get-ChildItem "$vs\MSBuild\Microsoft\VC\v*\Platforms\Win32\PlatformToolsets\v*" -Directory |
+            ForEach-Object Name |
+            Where-Object { $_ -match '^v\d+$' } |
+            Select-Object -Unique |
+            Sort-Object { [int]$_.Substring(1) })
+          if (-not $toolsets) { throw "No platform toolset found under $vs" }
+          $toolset = if ($toolsets -contains 'v143') { 'v143' } else { $toolsets[-1] }
+          Write-Host "Visual Studio: $vs"
+          Write-Host "Available toolsets: $($toolsets -join ', ') -> using $toolset"
+          Add-Content -Path $env:GITHUB_ENV -Value "MSBUILD=$msbuild"
+          Add-Content -Path $env:GITHUB_ENV -Value "PLATFORM_TOOLSET=$toolset"
+
+      - name: Build
+        shell: pwsh
+        run: |
+          & $env:MSBUILD tama.sln /m /nologo /p:Configuration=Release /p:Platform=Win32 "/p:PlatformToolset=$env:PLATFORM_TOOLSET"
+
+      - name: Install UPX
+        shell: pwsh
+        run: choco install upx -y --no-progress
+
+      # builds/auto_upx.bat と同じ手順
+      - name: Compress tama.exe
+        shell: pwsh
+        working-directory: builds/Release
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          upx --ultra-brute --no-align --best --compress-resources=1 tama.exe
+          Copy-Item tama.exe tama_NUPX.exe
+          upx -d tama_NUPX.exe
+
+      # リリース本文: 注釈付きタグのメッセージ + 定型文 + 自動生成の Full Changelog
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $files = 'builds/Release/tama.exe', 'builds/Release/tama_NUPX.exe', 'builds/Release/tamac.exe'
+
+          gh release view $tag *> $null
+          $exists = $LASTEXITCODE -eq 0
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          if ($exists) {
+            Write-Host "Release $tag already exists; replacing assets"
+            gh release upload $tag @files --clobber
+            return
+          }
+
+          # actions/checkout は注釈付きタグをコミットへの軽量タグで置き換えるため取り直す
+          git fetch --force origin "refs/tags/${tag}:refs/tags/${tag}"
+          $summary = ''
+          if ((git cat-file -t $tag) -eq 'tag') {
+            $summary = (git tag -l --format='%(contents)' $tag | Out-String) -replace '(?s)-----BEGIN [A-Z ]*SIGNATURE-----.*$', ''
+            $summary = $summary.Trim()
+          }
+
+          $footer = @(
+            '_____'
+            ''
+            'If your anti-virus software prevents you from downloading tama.exe, try the NUPX version, they are functionally the same'
+            '[Dynamic multi-engine analysis report for this executable](https://www.virustotal.com/gui/file-analysis/OWVhODVkODMxNjBhZTkzNWZjNmVmMmRiZjFjMTQ1YWI6MTcwNTIxMjI5MA==)'
+            ''
+          ) -join "`n"
+          $notes = if ($summary) { "$summary`n`n$footer" } else { $footer }
+          $notesFile = Join-Path $env:RUNNER_TEMP 'release-notes.md'
+          Set-Content -Path $notesFile -Value $notes -Encoding utf8NoBOM
+
+          gh release create $tag @files --verify-tag --latest --title $tag --notes-file $notesFile --generate-notes
