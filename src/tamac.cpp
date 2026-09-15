@@ -1,6 +1,9 @@
 // tamac.cpp
 // YAYA ログを受け取り、標準出力に出力するコンソールツール
-// Usage: tamac <yaya.dll> [-l fatal|error|warning|note] [--ci]
+// Usage: tamac <yaya.dll> [-l fatal|error|warning|note] [--ci] [-r|--request]
+//
+// -r / --request: 標準入力を EOF まで読み取って生の SHIORI リクエストとして送信し、
+//                 応答を標準出力に出して終了する（ログはすべて標準エラー出力へ）
 //
 // GitHub Actions アノテーション出力（--ci モード）は以下を参考にしました:
 //   check-tool.cpp - YAYA-shiori/yaya-CI-check
@@ -12,6 +15,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <string>
+#include <vector>
 #include <regex>
 #include <fcntl.h>
 #include <io.h>
@@ -45,6 +49,13 @@ static Cshiori* g_shiori    = NULL;
 static int      g_threshold = E_E;   // 検知対象の最低重大度（<=この値なら検知）
 static bool     g_detected  = false;
 static bool     g_ci_mode   = false; // GitHub Actions アノテーション出力モード
+static bool     g_request_mode = false; // 標準入力のリクエストを送信するモード
+
+// 通常ログの出力先
+// リクエストモードでは標準出力を応答専用にするため、ログはすべて stderr へ回す
+static FILE* log_stdout() {
+	return g_request_mode ? stderr : stdout;
+}
 
 // ログメッセージを解析・出力する
 // --ci 時は GitHub Actions アノテーション形式（check-tool.cpp を参考に実装）
@@ -95,21 +106,21 @@ static void process_log(const wchar_t* stra, int mode, int id) {
 		case E_SJIS: case E_UTF8: case E_DEFAULT: case E_END: break;
 		case E_I:
 			if (str == L"// request\n")
-				fputws(L"::group::request call\n", stdout);
+				fputws(L"::group::request call\n", log_stdout());
 			else if (!in_request_end && str.size() >= 30 && str.substr(0, 30) == L"// response (Execution time : ")
 				in_request_end = true;
 			else if (in_request_end && str == L"\n") {
 				in_request_end = false;
-				fputws(L"::endgroup::\n", stdout);
+				fputws(L"::endgroup::\n", log_stdout());
 			}
 			if (in_dic_load && id == 8) { // dic load end
 				in_dic_load = false;
-				fputws(L"::endgroup::\n", stdout);
+				fputws(L"::endgroup::\n", log_stdout());
 			}
-			fputws(str.data(), stdout);
+			fputws(str.data(), log_stdout());
 			if (id == 3) { // dic load begin
 				in_dic_load = true;
-				fputws(L"::group::dic load list\n", stdout);
+				fputws(L"::group::dic load list\n", log_stdout());
 			}
 			break;
 		case E_F:
@@ -124,8 +135,8 @@ static void process_log(const wchar_t* stra, int mode, int id) {
 				else
 					fputws(L"::error title=Emergency mode::Goes into emergency mode\n", stderr);
 			} else {
-				fputws(str.data(), stdout);
-				fputws(L"// from CI checker: E0057 is always ignored in CI check\n", stdout);
+				fputws(str.data(), log_stdout());
+				fputws(L"// from CI checker: E0057 is always ignored in CI check\n", log_stdout());
 			}
 			break;
 		case E_W:
@@ -137,12 +148,12 @@ static void process_log(const wchar_t* stra, int mode, int id) {
 				fputws(str.data(), stderr);
 				fputws((L"::notice file=" + filename + L",line=" + to_wstring(linenum) + L",title=" + type + L"::" + info + L"\n").data(), stderr);
 			} else {
-				fputws(str.data(), stdout);
-				fputws(L"// from CI checker: N0000 is always ignored in CI check\n", stdout);
+				fputws(str.data(), log_stdout());
+				fputws(L"// from CI checker: N0000 is always ignored in CI check\n", log_stdout());
 			}
 			break;
 		case E_J:
-			fputws(str.data(), stdout);
+			fputws(str.data(), log_stdout());
 			break;
 		}
 	} else {
@@ -151,7 +162,7 @@ static void process_log(const wchar_t* stra, int mode, int id) {
 		case E_SJIS: case E_UTF8: case E_DEFAULT: case E_END: return;
 		}
 		if (mode >= E_F && mode > g_threshold) return;
-		FILE* out = (mode >= E_F && mode <= E_W) ? stderr : stdout;
+		FILE* out = (mode >= E_F && mode <= E_W) ? stderr : log_stdout();
 		if (mode >= 0 && mode < E_LEVEL_MAX)
 			fputws(s_level_prefix[mode], out);
 		fputws(stra, out);
@@ -197,9 +208,68 @@ static int parse_level(const wchar_t* s) {
 	return -1;
 }
 
+// 標準入力を EOF まで読み取り、SHIORI リクエスト形式（CRLF 区切り・空行終端）に整える
+// 入力が空行のみなら空文字列を返す
+static std::wstring read_request_from_stdin() {
+	std::wstring in;
+	wchar_t buf[4096];
+	while (fgetws(buf, (int)_countof(buf), stdin))
+		in += buf;
+	if (!in.empty() && in[0] == L'﻿') // BOM
+		in.erase(0, 1);
+
+	// 改行コード（CRLF / LF / CR）を行区切りとして分割
+	std::vector<std::wstring> lines(1);
+	for (size_t i = 0; i < in.size(); i++) {
+		if (in[i] == L'\r' || in[i] == L'\n') {
+			if (in[i] == L'\r' && i + 1 < in.size() && in[i + 1] == L'\n')
+				i++;
+			lines.emplace_back();
+		} else {
+			lines.back() += in[i];
+		}
+	}
+	while (!lines.empty() && lines.back().empty())
+		lines.pop_back();
+
+	std::wstring req;
+	for (const auto& line : lines)
+		req += line + L"\r\n";
+	if (!req.empty())
+		req += L"\r\n";
+	return req;
+}
+
+// 標準入力のリクエストを送信し、応答を標準出力に出力する
+static bool exec_request(Cshiori& shiori) {
+	std::wstring req = read_request_from_stdin();
+	if (req.empty()) {
+		fwprintf(stderr, L"[tamac] empty request\n");
+		return false;
+	}
+
+	std::wstring res = shiori(req);
+	if (res.empty()) {
+		fwprintf(stderr, L"[tamac] empty response\n");
+		return false;
+	}
+
+	// stdout はテキストモードで LF を CRLF に変換して出力するため、CRLF を LF にしておく
+	std::wstring out;
+	out.reserve(res.size());
+	for (size_t i = 0; i < res.size(); i++) {
+		if (res[i] == L'\r' && i + 1 < res.size() && res[i + 1] == L'\n')
+			continue;
+		out += res[i];
+	}
+	fputws(out.c_str(), stdout);
+	fflush(stdout);
+	return true;
+}
+
 int wmain(int argc, wchar_t* argv[]) {
 	if (argc < 2) {
-		fwprintf(stderr, L"Usage: tamac <yaya.dll> [-l fatal|error|warning|note] [--ci]\n");
+		fwprintf(stderr, L"Usage: tamac <yaya.dll> [-l fatal|error|warning|note] [--ci] [-r|--request]\n");
 		return 1;
 	}
 
@@ -213,6 +283,8 @@ int wmain(int argc, wchar_t* argv[]) {
 			g_threshold = lv;
 		} else if (!_wcsicmp(argv[i], L"--ci")) {
 			g_ci_mode = true;
+		} else if (!_wcsicmp(argv[i], L"-r") || !_wcsicmp(argv[i], L"--request")) {
+			g_request_mode = true;
 		}
 	}
 
@@ -246,16 +318,26 @@ int wmain(int argc, wchar_t* argv[]) {
 	shiori.set_logsend_hwnd(g_hwnd);
 	shiori.SetTo(argv[1]);
 
-	// load() は同期完了・WM_COPYDATA も同一スレッドの SendMessage で処理済みなので即終了
+	// load() は同期完了・WM_COPYDATA も同一スレッドの SendMessage で処理済み
+	if (!shiori.All_OK()) {
+		g_shiori = NULL;
+		// shiori のデストラクタが Dounload() を呼ぶ
+		return EXIT_FAILURE;
+	}
+
+	// リクエストモードではロード完了後に標準入力のリクエストを送信する
+	if (g_request_mode && !exec_request(shiori)) {
+		g_shiori = NULL;
+		return EXIT_FAILURE;
+	}
+
 	g_shiori = NULL;
-	// shiori のデストラクタが Dounload() を呼ぶ
-	if (!shiori.All_OK()) return EXIT_FAILURE;
 
 	// CI モードかつ対応 SHIORI なら CI_check_failed() による判定も行う（check-tool.cpp 参照）
 	if (g_ci_mode && shiori.can_make_CI_check()) {
 		auto failed = shiori.CI_check_failed();
 		if (failed)
-			fputws(L"::error title=open your tama!::some error in your dic\n", stdout);
+			fputws(L"::error title=open your tama!::some error in your dic\n", log_stdout());
 		return failed ? EXIT_FAILURE : EXIT_SUCCESS;
 	}
 

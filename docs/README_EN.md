@@ -23,6 +23,10 @@ tamac.exe yaya.dll --ci
 ```
 With `--ci` (or automatically when the `GITHUB_ACTIONS` environment variable is set), tamac outputs errors as GitHub Actions annotations (`::error file=...`, `::warning ...`, etc.), allowing errors to be highlighted directly in the PR diff.
 The CI mode output is compatible with [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check), and its implementation is based on that code.
+With `-r` / `--request`, tamac reads a raw SHIORI request from stdin until EOF, sends it to YAYA (like tama's "send request" dialog), writes the response to stdout, and exits. Line endings are normalized to CRLF and the terminating blank line is added automatically. In this mode all logs go to stderr, so stdout contains only the response.
+```bat
+tamac.exe yaya.dll -r < request.txt
+```
 - you can make your ghosts react to tama by using the `tamaOpen` and `tamaExit` events, the example code as follows  
 ```c
 On_tamaOpen{

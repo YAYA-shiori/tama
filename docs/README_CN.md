@@ -23,6 +23,10 @@ tamac.exe yaya.dll --ci
 ```
 使用 `--ci` 时（或当 `GITHUB_ACTIONS` 环境变量存在时自动启用），tamac 以 GitHub Actions 注解格式（`::error file=...`、`::warning ...` 等）输出错误，可在 PR 的 diff 中直接显示错误位置。
 CI模式的输出与 [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check) 兼容，其实现参考了该项目的代码。
+使用 `-r` / `--request` 时，tamac 会从标准输入读取原始 SHIORI 请求直到 EOF，将其发送给 YAYA（与 tama 的“发送请求”对话框相同），把响应输出到标准输出后退出。换行符会统一为 CRLF，并自动补上结尾的空行。此模式下所有日志都输出到标准错误，标准输出中只包含响应。
+```bat
+tamac.exe yaya.dll -r < request.txt
+```
 - 你可以通过使用`tamaOpen`和`tamaExit`事件使你的ghost对tama做出反应，示例代码如下  
 ```c
 On_tamaOpen{

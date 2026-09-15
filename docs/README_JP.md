@@ -23,6 +23,10 @@ tamac.exe yaya.dll --ci
 ```
 `--ci` を指定するか、`GITHUB_ACTIONS` 環境変数が設定されている場合（GitHub Actions上では自動）、エラーを GitHub Actions アノテーション形式（`::error file=...` など）で出力します。PRのdiff上にエラー箇所を直接表示できます。
 CIモードの出力は [yaya-CI-check](https://github.com/YAYA-shiori/yaya-CI-check) と互換性があります。実装はそのコードを参考にしました。
+`-r` / `--request` を指定すると、標準入力を EOF まで読み取って生の SHIORI リクエストとして YAYA に送信し（tama の「リクエスト送信」ダイアログと同様）、応答を標準出力に出して終了します。改行コードは CRLF に統一され、終端の空行は自動で付加されます。このモードではログはすべて標準エラー出力に出るため、標準出力には応答だけが出力されます。
+```bat
+tamac.exe yaya.dll -r < request.txt
+```
 - `tamaOpen` と `tamaExit` イベントを使用すると、ゴーストが tama に反応するようにすることができます。 
 ```c
 On_tamaOpen{
