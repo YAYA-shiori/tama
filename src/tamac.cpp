@@ -211,10 +211,23 @@ static int parse_level(const wchar_t* s) {
 // 標準入力を EOF まで読み取り、SHIORI リクエスト形式（CRLF 区切り・空行終端）に整える
 // 入力が空行のみなら空文字列を返す
 static std::wstring read_request_from_stdin() {
+	// 全バイトを読み切ってから一度だけ UTF-8 から変換する
+	// （fgetws + _O_U8TEXT はバッファ境界でマルチバイト文字が壊れる／入力が欠落するため使わない）
+	std::string bytes;
+	HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
+	char buf[65536];
+	DWORD got = 0;
+	while (ReadFile(hin, buf, (DWORD)sizeof(buf), &got, NULL) && got > 0)
+		bytes.append(buf, got);
+	if (bytes.compare(0, 3, "ï»¿") == 0) // UTF-8 BOM
+		bytes.erase(0, 3);
 	std::wstring in;
-	wchar_t buf[4096];
-	while (fgetws(buf, (int)_countof(buf), stdin))
-		in += buf;
+	if (!bytes.empty()) {
+		int wlen = MultiByteToWideChar(CP_UTF8, 0, bytes.data(), (int)bytes.size(), NULL, 0);
+		in.resize(wlen);
+		if (wlen > 0)
+			MultiByteToWideChar(CP_UTF8, 0, bytes.data(), (int)bytes.size(), &in[0], wlen);
+	}
 	if (!in.empty() && in[0] == L'﻿') // BOM
 		in.erase(0, 1);
 
